@@ -34,6 +34,9 @@ endif()
 # include helper file
 include( ${CGAL_USE_FILE} )
 
+# Compilation flags
+add_definitions (-Wall)
+
 
 # Boost and its components
 find_package( Boost REQUIRED )

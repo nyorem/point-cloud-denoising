@@ -44,3 +44,6 @@ report/*.pdf
 
 # cmake
 **/build/*
+
+# Others
+TODO
