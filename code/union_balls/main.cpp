@@ -9,8 +9,6 @@
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Point_2<Kernel> Point;
-typedef CGAL::Vector_2<Kernel> Vector;
-typedef CGAL::Segment_2<Kernel> Segment;
 
 // Intersection between a segment and a sphere
 template <class Point, class Segment, class OutputIterator>
@@ -49,13 +47,18 @@ bool segment_sphere_intersect (Point o, double r,
     return result;
 }
 
+// Positive floating modulus
+double fmodpos (double x, double N) {
+    return std::fmod(std::fmod(x, N) + N, N);
+}
+
 // Area of an angular sector defined by the vectors op and oq
 template <typename Vector>
 double angular_sector_area (Vector op, Vector oq,
                             double radius) {
-    double angle = std::atan2(op.y(), op.x()) - std::atan2(oq.y(), oq.x());
-    angle = std::fabs(std::fmod(angle, 2 * M_PI));
-    std::cout << "angle = " << angle << std::endl;
+    double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
+           theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
+    double angle = fmodpos(theta2 - theta1, 2 * M_PI);
 
     return radius * radius * angle / 2;
 }
@@ -232,13 +235,11 @@ double volume_union_balls (InputIterator begin,
 
 int main (int argc, const char *argv[]) {
     std::vector<Point> points;
-    points.push_back(Point(-5, 0));
-    points.push_back(Point(5, 0));
-    double vol = volume_union_balls(points.begin(), points.end(), 1);
-    std::cout << vol << std::endl;
+    points.push_back(Point(-1, 0));
+    points.push_back(Point(1, 0));
+    double vol = volume_union_balls(points.begin(), points.end(), 1.5);
 
-    Point p(0, 0), q(1, -1), r(1, 1);
-    std::cout << angular_sector_area(q - p, r - p, 1) << std::endl;
+    std::cout << vol << std::endl;
 
     return 0;
 }
