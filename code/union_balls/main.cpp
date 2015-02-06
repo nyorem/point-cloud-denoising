@@ -54,12 +54,13 @@ template <typename Vector>
 double angular_sector_area (Vector op, Vector oq,
                             double radius) {
     double angle = std::atan2(op.y(), op.x()) - std::atan2(oq.y(), oq.x());
-    angle = std::fabs(std::fmod(angle, M_PI));
+    angle = std::fabs(std::fmod(angle, 2 * M_PI));
+    std::cout << "angle = " << angle << std::endl;
 
     return radius * radius * angle / 2;
 }
 
-// A triplet of points
+// A triplet
 template <typename T>
 struct Triplet {
     Triplet (T p, T q, T r) : p(p), q(q), r(r) {}
@@ -219,9 +220,9 @@ double volume_union_balls (InputIterator begin,
         for (int i = 0; i < angular_sectors.size(); ++i) {
             Point_triplet& sector = angular_sectors[i];
             std::cout << "Sector " << i << " : " << sector.p << " / " << sector.q << " / " << sector.r << std::endl;
-            Vector op = sector.q - sector.p,
-                   oq = sector.r - sector.p;
-            vol += angular_sector_area(op, oq, radius);
+            Vector pq = sector.q - sector.p,
+                   pr = sector.r - sector.p;
+            vol += angular_sector_area(pq, pr, radius);
         }
         std::cout << std::endl;
     }
@@ -234,8 +235,10 @@ int main (int argc, const char *argv[]) {
     points.push_back(Point(-5, 0));
     points.push_back(Point(5, 0));
     double vol = volume_union_balls(points.begin(), points.end(), 1);
-
     std::cout << vol << std::endl;
+
+    Point p(0, 0), q(1, -1), r(1, 1);
+    std::cout << angular_sector_area(q - p, r - p, 1) << std::endl;
 
     return 0;
 }

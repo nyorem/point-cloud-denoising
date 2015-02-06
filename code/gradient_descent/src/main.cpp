@@ -1,7 +1,9 @@
 #include <iostream>
+#include <functional>
 
 #include "GradientDescentSolver.hpp"
 #include "NewtonSolver.hpp"
+#include "GradientDescentSolverAD.hpp"
 
 #include <CGAL/Simple_cartesian.h>
 #include "CGAL_AD.hpp"
@@ -11,9 +13,10 @@ typedef Kernel_ad::FT FT_ad;
 typedef CGAL::Point_2<Kernel_ad> Point;
 
 typedef Eigen::Matrix<FT_ad, Eigen::Dynamic, 1> VectorXAD;
+typedef std::function<FT_ad(const VectorXAD &x)> FunctionAD;
+typedef GradientDescentSolverAD<AD, FunctionAD, VectorXAD, FT_ad> SolverAD;
 
 int main (void) {
-    // Gradient solver
     float gamma = 10;
 
     Function f = [&] (const Eigen::VectorXd &x) -> double {
@@ -42,17 +45,15 @@ int main (void) {
     std::cout << xn << std::endl;
 
     std::cout << "AD" << std::endl;
-
     auto fad = [&] (const VectorXAD &x) -> FT_ad {
         return 0.5 * (x[0] * x[0] + gamma * x[1] * x[1]);
     };
 
-    VectorXAD xad(2);
-    xad[0] = AD(1, 2, 0);
-    xad[1] = AD(1, 2, 1);
-    FT_ad resad = fad(xad);
-    std::cout << resad.value() << std::endl;
-    std::cout << resad.derivatives() << std::endl;
+    SolverAD gsad(fad);
+    VectorXAD startAD(2);
+    startAD[0] = AD(1, 2, 0);
+    startAD[1] = AD(1, 2, 1);
+    std::cout << toValue(gsad.solve(startAD)) << std::endl;
 
     std::cout << "CGAL AD" << std::endl;
     Point p(AD(1, 2, 0), AD(1, 2, 1));
