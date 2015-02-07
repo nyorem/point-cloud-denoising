@@ -136,8 +136,15 @@ void MainWindow::randomPointsEllipse () {
     minorAxis->setSingleStep(0.1);
     minorAxis->setValue(1);
 
+    QDoubleSpinBox *noiseVariance = new QDoubleSpinBox();
+    noiseVariance->setMinimum(0);
+    noiseVariance->setMaximum(200);
+    noiseVariance->setSingleStep(1);
+    noiseVariance->setValue(0);
+
     formLayout.addRow("Major axis:", majorAxis);
     formLayout.addRow("Minor axis:", minorAxis);
+    formLayout.addRow("Noise variance:", noiseVariance);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
@@ -151,7 +158,8 @@ void MainWindow::randomPointsEllipse () {
     if (dialog.exec() == QDialog::Accepted) {
         m_view->m_scene->randomPointsEllipse(numberPoints->value(),
                                              majorAxis->value() * 10,
-                                             minorAxis->value() * 10);
+                                             minorAxis->value() * 10,
+                                             noiseVariance->value() * 10);
     }
 }
 

@@ -1,6 +1,8 @@
 #ifndef _CONST_HPP_
 #define _CONST_HPP_
 
+#include <boost/random.hpp>
+
 namespace consts {
     // Dimensions of the main window
     static const int width_window = 800;
@@ -9,6 +11,9 @@ namespace consts {
     // Dimensions of the view (left side of the window)
     static const int width_view = 600;
     static const int height_view = height_window;
+
+    // Global random number generator
+    static boost::mt19937 g_eng;
 };
 
 #endif

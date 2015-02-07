@@ -14,12 +14,15 @@ set (CMAKE_PREFIX_PATH "/usr/local/Cellar/qt5/5.4.0/")
 set (CMAKE_AUTOMOC ON)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Components
+## Components
 find_package(Qt5Widgets REQUIRED)
 
 # CGAL
 find_package(CGAL REQUIRED)
 include (${CGAL_USE_FILE})
+
+# Boost
+find_package(Boost REQUIRED)
 
 # run
 ADD_CUSTOM_TARGET(run

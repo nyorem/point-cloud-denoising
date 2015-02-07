@@ -73,9 +73,9 @@ void Scene::toggleVoronoiVertices () {
     }
 }
 
-void Scene::randomPointsEllipse (int N, float a, float b) {
+void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
     Points_2 points;
-    random_ellipse_2(N, a, b, std::back_inserter(points));
+    random_ellipse_2(N, a, b, noiseVariance, std::back_inserter(points));
     m_points->insert(points.begin(), points.end());
     m_balls->insert(points.begin(), points.end());
     m_dt->insert(points.begin(), points.end());
