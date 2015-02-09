@@ -14,12 +14,15 @@ class DescentSolver {
         Eigen::VectorXd solve (Eigen::VectorXd const& x0,
                                double eps = 0.01) const;
 
-    protected:
+    public:
         Function f;
         Gradient g;
 
         // Gives the descent direction at x
         virtual Eigen::VectorXd descentDirection (Eigen::VectorXd const& x) const = 0;
+
+        // One step of the algorithm
+        Eigen::VectorXd step (Eigen::VectorXd const& x) const;
 
         // Backtracking line search
         double lineSearch (Eigen::VectorXd const& x,

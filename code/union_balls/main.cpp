@@ -70,6 +70,10 @@ double angular_sector_area (Vector op, Vector oq,
 template <typename Vector>
 double perimeter_sector_area (Vector op, Vector oq,
                               double radius) {
+    if (op == Vector(0, 0) || oq == Vector(0, 0)) {
+        return 0;
+    }
+
     double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
            theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
     double angle = fmodpos(theta2 - theta1, 2 * M_PI);
@@ -77,7 +81,7 @@ double perimeter_sector_area (Vector op, Vector oq,
     return radius * angle;
 }
 
-// Compute the volume of the radius-offset of the point cloud
+// Compute the volume of the r-offset of the point cloud
 // InputIterator::value_type = Point
 template <typename InputIterator>
 double volume_union_balls (InputIterator begin,
@@ -191,12 +195,12 @@ double volume_union_balls (InputIterator begin,
                 allOutside = false;
                 notClosed = false;
                 if ((inter[0] - P).squared_length() < (inter[1] - P).squared_length()) {
-                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0]<< std::endl;
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0] << std::endl;
                     vol += angular_sector_area(lastOnBoundary - P, inter[0] - P, radius);
                     std::cout << vol << std::endl;
                     lastOnBoundary = inter[1];
                 } else {
-                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1]<< std::endl;
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1] << std::endl;
                     vol += angular_sector_area(lastOnBoundary - P, inter[1] - P, radius);
                     std::cout << vol << std::endl;
                     lastOnBoundary = inter[0];
@@ -239,11 +243,11 @@ double volume_union_balls (InputIterator begin,
             std::cout << inter.size() << std::endl;
             if (inter.size() == 2) {
                 if ((inter[0] - P).squared_length() < (inter[1] - P).squared_length()) {
-                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0]<< std::endl;
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0] << std::endl;
                     vol += angular_sector_area(lastOnBoundary - P, inter[0] - P, radius);
                     std::cout << vol << std::endl;
                 } else {
-                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1]<< std::endl;
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1] << std::endl;
                     vol += angular_sector_area(lastOnBoundary - P, inter[1] - P, radius);
                     std::cout << vol << std::endl;
                 }

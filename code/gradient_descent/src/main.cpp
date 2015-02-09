@@ -38,11 +38,12 @@ int main (void) {
     start << 1, 1;
     Eigen::VectorXd x = gs.solve(start);
     std::cout << x << std::endl;
+    std::cout << f(x) << std::endl;
 
-    std::cout << "Newton" << std::endl;
-    NewtonSolver ns(f, g, h);
-    Eigen::VectorXd xn = ns.solve(start);
-    std::cout << xn << std::endl;
+    /* std::cout << "Newton" << std::endl; */
+    /* NewtonSolver ns(f, g, h); */
+    /* Eigen::VectorXd xn = ns.solve(start); */
+    /* std::cout << xn << std::endl; */
 
     std::cout << "AD" << std::endl;
     auto fad = [&] (const VectorXAD &x) -> FT_ad {
@@ -53,15 +54,9 @@ int main (void) {
     VectorXAD startAD(2);
     startAD[0] = AD(1, 2, 0);
     startAD[1] = AD(1, 2, 1);
-    std::cout << toValue(gsad.solve(startAD)) << std::endl;
-
-    std::cout << "CGAL AD" << std::endl;
-    Point p(AD(1, 2, 0), AD(1, 2, 1));
-    std::cout << p.x().value() << std::endl;
-    std::cout << p.x().derivatives() << std::endl;
-
-    std::cout << p.y().value() << std::endl;
-    std::cout << p.y().derivatives() << std::endl;
+    VectorXAD sol = gsad.solve(startAD);
+    std::cout << toValue(sol) << std::endl;
+    std::cout << fad(sol) << std::endl;
 
     return 0;
 }

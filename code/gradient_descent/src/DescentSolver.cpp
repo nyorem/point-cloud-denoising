@@ -11,14 +11,17 @@ Eigen::VectorXd DescentSolver::solve (Eigen::VectorXd const& x0,
     g(x, gx);
 
     while (gx.norm() > eps) {
-        Eigen::VectorXd dir = descentDirection(x);
-        double t = lineSearch(x);
-        x += t * dir;
-        std::cout << gx.norm() << std::endl;
+        x = step(x);
         g(x, gx);
     }
 
     return x;
+}
+
+Eigen::VectorXd DescentSolver::step (Eigen::VectorXd const& x) const {
+    Eigen::VectorXd dir = descentDirection(x);
+    double t = lineSearch(x);
+    return x + t * dir;
 }
 
 double DescentSolver::lineSearch (Eigen::VectorXd const& x,
