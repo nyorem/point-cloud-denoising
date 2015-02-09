@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <map>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Point_2<Kernel> Point;
@@ -56,6 +55,10 @@ double fmodpos (double x, double N) {
 template <typename Vector>
 double angular_sector_area (Vector op, Vector oq,
                             double radius) {
+    if (op == Vector(0, 0) || oq == Vector(0, 0)) {
+        return 0;
+    }
+
     double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
            theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
     double angle = fmodpos(theta2 - theta1, 2 * M_PI);
@@ -63,15 +66,16 @@ double angular_sector_area (Vector op, Vector oq,
     return radius * radius * angle / 2;
 }
 
-// A triplet
-template <typename T>
-struct Triplet {
-    Triplet (T p, T q, T r) : p(p), q(q), r(r) {}
+// Perimeter of an angular sector defined by the vectors op and oq
+template <typename Vector>
+double perimeter_sector_area (Vector op, Vector oq,
+                              double radius) {
+    double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
+           theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
+    double angle = fmodpos(theta2 - theta1, 2 * M_PI);
 
-    T p;
-    T q;
-    T r;
-};
+    return radius * angle;
+}
 
 // Compute the volume of the radius-offset of the point cloud
 // InputIterator::value_type = Point
@@ -85,8 +89,6 @@ double volume_union_balls (InputIterator begin,
     typedef typename Kernel::Segment_2 Segment;
     typedef typename Kernel::Vector_2 Vector;
     typedef typename CGAL::Delaunay_triangulation_2<Kernel> DT;
-    typedef typename DT::Face_circulator Face_circulator;
-    typedef Triplet<Point> Point_triplet;
 
     // Bounding box
     CGAL::Bbox_2 b = CGAL::bbox_2(begin, beyond);
@@ -100,11 +102,10 @@ double volume_union_balls (InputIterator begin,
     dt.insert(bl); dt.insert(br);
     dt.insert(tl); dt.insert(tr);
 
+    double vol = 0;
+
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
-    std::map<Point, std::vector<Point_triplet> > triangles_map;
-    std::map<Point, std::vector<Point_triplet> > angular_sectors_map;
-
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
          vit != dt.finite_vertices_end();
          ++vit) {
@@ -114,7 +115,7 @@ double volume_union_balls (InputIterator begin,
         }
 
         // Compute the boundary of the Voronoi cell of P
-        Face_circulator fc = dt.incident_faces(vit), done(fc);
+        typename DT::Face_circulator fc = dt.incident_faces(vit), done(fc);
         std::vector<Point> adjacent_voronoi_vertices;
         std::cout << "Voronoi vertices of: " << P << std::endl;
         do {
@@ -125,44 +126,91 @@ double volume_union_balls (InputIterator begin,
         // Test if the first Voronoi vertex is inside
         Point p0 = adjacent_voronoi_vertices[0];
         bool isInside = (p0 - P).squared_length() <= radius * radius;
-
-        std::vector<Point_triplet> triangles;
-        std::vector<Point_triplet> angular_sectors;
+        Point lastOnBoundary(P); // Last point seen on the boundary
+        bool allOutside = true;
+        bool notClosed = false;
 
         const int N = adjacent_voronoi_vertices.size();
 
+        // Voronoi edges
+        std::vector<Segment> voronoi_edges;
+        for (int i = 0; i < N; ++i) {
+            voronoi_edges.push_back(Segment(adjacent_voronoi_vertices[i],
+                                            adjacent_voronoi_vertices[(i + 1) % N]));
+        }
+
+        // Sort the edges by the number of intersections
+        struct CompareInter {
+            CompareInter(Point P, double radius) : m_center(P), m_radius(radius) {
+            }
+
+            bool operator() (Segment s1, Segment s2) {
+                std::vector<Point> inter1;
+                segment_sphere_intersect(m_center, m_radius, s1, std::back_inserter(inter1));
+
+                std::vector<Point> inter2;
+                segment_sphere_intersect(m_center, m_radius, s2, std::back_inserter(inter2));
+
+                return inter1.size() > inter2.size();
+            }
+
+            private:
+                Point m_center;
+                double m_radius;
+        } compareInter(P, radius);
+        std::sort(voronoi_edges.begin(), voronoi_edges.end(), compareInter);
+
         // For each Voronoi vertex
         for (int i = 0; i < N; ++i) {
-            Point p = adjacent_voronoi_vertices[i];
-            Point next = adjacent_voronoi_vertices[(i + 1) % N];
-            Segment edge(p, next);
+            Segment edge = voronoi_edges[i];
+            Point p = edge.source();
+            Point next = edge.target();
 
             // Intersection points between the Voronoi edge [p, next] and the ball
             std::cout << "Current edge: " << edge << std::endl;
             std::vector<Point> inter;
             segment_sphere_intersect(P, radius, edge, std::back_inserter(inter));
+            std::cout << "Size intersection: " << inter.size() << std::endl;
 
             // Decompose the intersection accordingly
             if (inter.size() == 1) {
+                allOutside = false;
+                notClosed = false;
                 if (isInside) {
-                    triangles.push_back(Point_triplet(P, p, inter[0]));
+                    std::cout << "Triangle: " << P << ", " << p << ", " << inter[0] << std::endl;
+                    vol += std::fabs(CGAL::area(P, p, inter[0]));
+                    std::cout << vol << std::endl;
                 } else {
-                    triangles.push_back(Point_triplet(P, inter[0], next));
+                    vol += angular_sector_area(P - lastOnBoundary, P - inter[0], radius);
+                    std::cout << "Triangle: " << P << ", " << inter[0] << ", " << next << std::endl;
+                    vol += std::fabs(CGAL::area(P, inter[0], next));
+                    std::cout << vol << std::endl;
                 }
+                lastOnBoundary = inter[0];
             } else if (inter.size() == 2) {
-                triangles.push_back(Point_triplet(P, inter[0], inter[1]));
+                allOutside = false;
+                notClosed = false;
+                if ((inter[0] - P).squared_length() < (inter[1] - P).squared_length()) {
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0]<< std::endl;
+                    vol += angular_sector_area(lastOnBoundary - P, inter[0] - P, radius);
+                    std::cout << vol << std::endl;
+                    lastOnBoundary = inter[1];
+                } else {
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1]<< std::endl;
+                    vol += angular_sector_area(lastOnBoundary - P, inter[1] - P, radius);
+                    std::cout << vol << std::endl;
+                    lastOnBoundary = inter[0];
+                }
+                std::cout << "Triangle: " << P << ", " << inter[0] << ", " << inter[1] << std::endl;
+                vol += std::fabs(CGAL::area(P, inter[0], inter[1]));
+                std::cout << vol << std::endl;
             } else {
+                notClosed = true;
                 bool isInsidePlus1 = (next - P).squared_length() <= radius * radius;
                 if (isInside && isInsidePlus1) {
-                    triangles.push_back(Point_triplet(P, p, next));
-                } else if (!isInside && !isInsidePlus1) {
-                    Segment s1(P, p), s2(P, next);
-                    std::cout << s1 << " / " << s2 << std::endl;
-                    std::vector<Point> inter1, inter2;
-                    segment_sphere_intersect(P, radius, s1, std::back_inserter(inter1));
-                    segment_sphere_intersect(P, radius, s2, std::back_inserter(inter2));
-                    std::cout << inter1.size() << " / " << inter2.size() << std::endl;
-                    angular_sectors.push_back(Point_triplet(P, inter1[0], inter2[0]));
+                    std::cout << "Triangle: " << P << ", " << p << ", " << next << std::endl;
+                    vol += std::fabs(CGAL::area(P, p, next));
+                    std::cout << vol << std::endl;
                 }
             }
 
@@ -171,62 +219,37 @@ double volume_union_balls (InputIterator begin,
             if (inter.size() == 1) {
                 isInside = !isInside;
             }
+
+            std::cout << "lastOnBoundary = " << lastOnBoundary << std::endl;
         }
-        std::cout << std::endl;
 
-        triangles_map[P] = triangles;
-        angular_sectors_map[P] = angular_sectors;
-    }
-
-    // Compute the volume
-    double vol = 0;
-    typedef typename std::map<Point, std::vector<Point_triplet> >::iterator MapIterator;
-
-    // Triangles
-    std::cout << "triangles" << std::endl;
-    std::cout << triangles_map.size() << std::endl;
-    for (MapIterator mit = triangles_map.begin();
-         mit != triangles_map.end();
-         ++mit) {
-        Point P = mit->first;
-        if (P == bl || P == br ||
-            P == tl || P == tr) {
+        // The boundary of the Voronoi cell is entirely on the outside of the ball
+        std::cout << "allOutside " << allOutside << std::endl;
+        if (allOutside) {
+            vol += M_PI * radius * radius;
             continue;
         }
-        std::vector<Point_triplet>& triangles = mit->second;
 
-        std::cout << P << std::endl;
-        std::cout << triangles.size() << std::endl;
-        for (int i = 0; i < triangles.size(); ++i) {
-            Point_triplet& triplet = triangles[i];
-            std::cout << "Triangle " << i << " : " << triplet.p << " / " << triplet.q << " / " << triplet.r << std::endl;
-            vol += CGAL::area(triplet.p, triplet.q, triplet.r);
+        // Close the Voronoi cell
+        std::cout << "notClosed " << notClosed << std::endl;
+        if (notClosed) {
+            Segment firstEdge = voronoi_edges[0];
+            std::vector<Point> inter;
+            segment_sphere_intersect(P, radius, firstEdge, std::back_inserter(inter));
+            std::cout << inter.size() << std::endl;
+            if (inter.size() == 2) {
+                if ((inter[0] - P).squared_length() < (inter[1] - P).squared_length()) {
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[0]<< std::endl;
+                    vol += angular_sector_area(lastOnBoundary - P, inter[0] - P, radius);
+                    std::cout << vol << std::endl;
+                } else {
+                    std::cout << "Sector: " << P << ", " << lastOnBoundary << ", " << inter[1]<< std::endl;
+                    vol += angular_sector_area(lastOnBoundary - P, inter[1] - P, radius);
+                    std::cout << vol << std::endl;
+                }
+            }
         }
-        std::cout << std::endl;
-    }
 
-    // Angular sectors
-    std::cout << "angular sectors" << std::endl;
-    std::cout << angular_sectors_map.size() << std::endl;
-    for (MapIterator mit = angular_sectors_map.begin();
-         mit != angular_sectors_map.end();
-         ++mit) {
-        Point P = mit->first;
-        if (P == bl || P == br ||
-            P == tl || P == tr) {
-            continue;
-        }
-        std::vector<Point_triplet>& angular_sectors = mit->second;
-
-        std::cout << P << std::endl;
-        std::cout << angular_sectors.size() << std::endl;
-        for (int i = 0; i < angular_sectors.size(); ++i) {
-            Point_triplet& sector = angular_sectors[i];
-            std::cout << "Sector " << i << " : " << sector.p << " / " << sector.q << " / " << sector.r << std::endl;
-            Vector pq = sector.q - sector.p,
-                   pr = sector.r - sector.p;
-            vol += angular_sector_area(pq, pr, radius);
-        }
         std::cout << std::endl;
     }
 
@@ -235,11 +258,10 @@ double volume_union_balls (InputIterator begin,
 
 int main (int argc, const char *argv[]) {
     std::vector<Point> points;
-    points.push_back(Point(-1, 0));
-    points.push_back(Point(1, 0));
-    double vol = volume_union_balls(points.begin(), points.end(), 1.5);
-
-    std::cout << vol << std::endl;
+    points.push_back(Point(0, 0));
+    points.push_back(Point(2, 0));
+    points.push_back(Point(1, 1));
+    std::cout << volume_union_balls(points.begin(), points.end(), 1) << std::endl;
 
     return 0;
 }
