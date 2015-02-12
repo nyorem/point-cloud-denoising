@@ -1,5 +1,5 @@
-#ifndef _VOLUME_UNION_BALLS_2_H_
-#define _VOLUME_UNION_BALLS_2_H_
+#ifndef _VOLUME_UNION_BALLS_2_AD_H_
+#define _VOLUME_UNION_BALLS_2_AD_H_
 
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Bbox_2.h>
@@ -264,18 +264,57 @@ FT volume_union_balls_2 (InputIterator begin,
     return vol;
 }
 
+// Converts a point cloud to a vector
+template <typename Vector, typename InputIterator>
+Vector pointCloudToVector (InputIterator begin,
+                           InputIterator beyond) {
+    int N = 0;
+    for (InputIterator it = begin; it != beyond; ++it)
+        ++N;
+
+    Vector vec(2 * N);
+    int i = 0;
+    for (InputIterator it = begin; it != beyond; ++it) {
+        vec(2 * i) = AD(it->x(), 2 * N, 2 * i);
+        vec(2 * i + 1) = AD(it->y(), 2 * N, 2 * i + 1);
+        ++i;
+    }
+
+    return vec;
+}
+
+// Converts a vector to a list of points
+template <typename Point, typename Vector, typename OutputIterator>
+void vectorToPointCloud (Vector const& v,
+                         OutputIterator out) {
+    int N = v.rows() / 2;
+    for (int i = 0; i < N; ++i) {
+        *out++ = Point(v(2 * i), v(2 * i + 1));
+    }
+}
+
 // A version of `volume_union_balls_2` for Eigen vectors
 template <typename FT, typename Point, typename Vector>
 FT volume_union_balls_2_vector (Vector const& v,
                                 double radius) {
-    int N = v.rows() / 2;
     std::vector<Point> vec;
-    for (int i = 0; i < N; ++i) {
-        vec.push_back(Point(v(2 * i), v(2 * i + 1)));
-    }
+    vectorToPointCloud<Point>(v, std::back_inserter(vec));
 
     return volume_union_balls_2<FT>(vec.begin(), vec.end(), radius);
 }
+
+template <typename PointAD, typename FTAD, typename VectorAD>
+struct VolumeUnion {
+    VolumeUnion (double radius) : m_radius(radius) {
+    }
+
+    FTAD operator() (VectorAD const& v) {
+        return volume_union_balls_2_vector<FTAD, PointAD, VectorAD>(v, m_radius);
+    }
+
+    private:
+        double m_radius;
+};
 
 #endif
 

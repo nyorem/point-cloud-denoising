@@ -27,6 +27,18 @@ class QPointListItem : public QGraphicsItem {
             m_points.insert(m_points.begin(), begin, beyond);
         }
 
+        void clear () {
+            m_points.clear();
+        }
+
+        std::vector<Point_2>::iterator begin () {
+            return m_points.begin();
+        }
+
+        std::vector<Point_2>::iterator end () {
+            return m_points.end();
+        }
+
         void setRadius (float radius) {
             m_radius = radius;
         }

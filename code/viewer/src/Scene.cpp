@@ -3,6 +3,8 @@
 #include "random_square_2.hpp"
 #include "random_ellipse_2.hpp"
 
+#include "CGAL_AD_typedefs.hpp"
+
 #include <iterator>
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
@@ -79,6 +81,19 @@ void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
     m_points->insert(points.begin(), points.end());
     m_balls->insert(points.begin(), points.end());
     m_dt->insert(points.begin(), points.end());
+}
+
+void Scene::oneStep () {
+    // TODO: radius
+    VolumeUnion_ad volume_union_ad(1);
+    Solver_ad solver_ad(volume_union_ad);
+
+    VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
+    VectorXd_ad new_points_vec = solver_ad.step(points_vec);
+    Points_2 new_points;
+    vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
+    m_points->clear();
+    m_points->insert(new_points.begin(), new_points.end());
 }
 
 void Scene::reset () {

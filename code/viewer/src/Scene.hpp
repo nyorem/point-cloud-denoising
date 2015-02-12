@@ -22,6 +22,7 @@ class Scene : public QGraphicsScene {
         void toggleDelaunayTriangulation ();
         void toggleVoronoiVertices ();
         void randomPointsEllipse (int N, float a, float b, float noiseVariance);
+        void oneStep ();
 
         void reset ();
 

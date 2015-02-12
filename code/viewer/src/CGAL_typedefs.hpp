@@ -3,10 +3,9 @@
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Delaunay_triangulation_2.h>
+#include "QDelaunayTriangulationItem.hpp"
 
 #include <vector>
-
-#include "QDelaunayTriangulationItem.hpp"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 

@@ -90,7 +90,8 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
             this, &MainWindow::randomPointsEllipse);
 
     // One step
-    // TODO
+    connect(m_oneStepButton, &QPushButton::clicked,
+            this, &MainWindow::oneStep);
 
     // Parameters initialization
     // Ball radius
@@ -121,7 +122,7 @@ void MainWindow::toggleVoronoiVertices () {
 }
 
 void MainWindow::oneStep () {
-    // TODO
+    m_view->m_scene->oneStep();
 }
 
 void MainWindow::randomPointsEllipse () {

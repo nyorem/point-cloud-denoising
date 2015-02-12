@@ -9,7 +9,7 @@
 #include "CGAL_AD.hpp"
 #include "NewtonSolver.hpp"
 
-#include "volume_union_balls_2.hpp"
+#include "volume_union_balls_2_ad.hpp"
 #include <vector>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
@@ -24,18 +24,6 @@ typedef Eigen::Matrix<FT_ad, Eigen::Dynamic, 1> VectorXAD;
 typedef std::function<FT_ad(const VectorXAD &x)> FunctionAD;
 typedef GradientDescentSolverAD<AD, FunctionAD, VectorXAD, FT_ad> SolverAD;
 
-template <typename PointAD, typename FTAD, typename VectorAD>
-struct VolumeUnion {
-    VolumeUnion (double radius) : m_radius(radius) {
-    }
-
-    FTAD operator() (VectorAD const& v) {
-        return volume_union_balls_2_vector<FTAD, PointAD, VectorAD>(v, m_radius);
-    }
-
-    private:
-        double m_radius;
-};
 typedef VolumeUnion<Point_ad, FT_ad, VectorXAD> VolumeUnionAD;
 
 int main (void) {
@@ -81,21 +69,20 @@ int main (void) {
     points.push_back(Point(1.5, 0));
     /* points.push_back(Point(2, 0)); */
     /* points.push_back(Point(1, 1)); */
-    int N = points.size();
-    // Transform std::vector<Point> to VectorXAD
-    VectorXAD points_vec(2 * N);
-    for (int i = 0; i < N; ++i) {
-        points_vec(2 * i) = AD(points[i].x(), 2 * N, 2 * i);
-        points_vec(2 * i + 1) = AD(points[i].y(), 2 * N, 2 * i + 1);
-    }
+    VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end());
     VolumeUnionAD volume(1);
     std::cout << volume(points_vec) << std::endl;
 
     // TODO
     std::cout << "Gradient descent volume AD" << std::endl;
     SolverAD gsadv(volume);
+    std::cout << toValue(gsadv.gradient(points_vec)) << std::endl;
     VectorXAD newX = gsadv.step(points_vec);
-    std::cout << toValue(newX) << std::endl;
+    std::vector<Point_ad> points_bis;
+    vectorToPointCloud<Point_ad>(newX, std::back_inserter(points_bis));
+    for (size_t i = 0; i < points_bis.size(); ++i) {
+        std::cout << points_bis[i] << std::endl;
+    }
 
     return 0;
 }

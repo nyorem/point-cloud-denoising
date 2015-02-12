@@ -8,6 +8,8 @@ set (SOURCE_DIR "src")
 # Compilation flags
 add_definitions (-Wall)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 # Qt5
 set (CMAKE_PREFIX_PATH "/usr/local/Cellar/qt5/5.4.0/")
 # For automoc to work headers and source files must be in the same directory
@@ -23,6 +25,12 @@ include (${CGAL_USE_FILE})
 
 # Boost
 find_package(Boost REQUIRED)
+
+# Eigen3
+find_package (Eigen3 REQUIRED)
+
+# Include directories
+include_directories(${INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR})
 
 # run
 ADD_CUSTOM_TARGET(run
@@ -44,4 +52,4 @@ ADD_EXECUTABLE(${EXECUTABLE_NAME} ${${EXECUTABLE_NAME}_SOURCES})
 # Libraries
 target_link_libraries(${EXECUTABLE_NAME}
     Qt5::Widgets
-    )
+)
