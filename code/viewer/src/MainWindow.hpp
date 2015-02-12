@@ -21,6 +21,7 @@ class MainWindow : public QWidget {
         void toggleDelaunayTriangulation ();
         void toggleVoronoiVertices ();
         void randomPointsEllipse ();
+        void oneStep ();
 
     private:
         View *m_view;
@@ -32,6 +33,7 @@ class MainWindow : public QWidget {
         QPushButton* m_delaunayButton;
         QPushButton* m_voronoiVerticesButton;
         QPushButton* m_randomEllipseButton;
+        QPushButton* m_oneStepButton;
 };
 
 #endif

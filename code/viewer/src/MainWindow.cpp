@@ -49,6 +49,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_randomEllipseButton = new QPushButton("Points on ellipse", m_rightside);
     m_randomEllipseButton->move((m_rightside->width() - m_randomEllipseButton->width()) / 2, 0);
 
+    // One step of the algorithm
+    m_oneStepButton = new QPushButton("One step", m_rightside);
+    m_oneStepButton->move((m_rightside->width() - m_oneStepButton->width()) / 2, 0);
+
     // Layout
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(m_resetButton);
@@ -57,6 +61,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     layout->addWidget(m_delaunayButton);
     layout->addWidget(m_voronoiVerticesButton);
     layout->addWidget(m_ballsButton);
+    layout->addWidget(m_oneStepButton);
     m_rightside->setLayout(layout);
 
     // Slots
@@ -84,6 +89,9 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     connect(m_randomEllipseButton, &QPushButton::clicked,
             this, &MainWindow::randomPointsEllipse);
 
+    // One step
+    // TODO
+
     // Parameters initialization
     // Ball radius
     double radius = QInputDialog::getDouble(this, "Parameters for balls", "Radius",
@@ -110,6 +118,10 @@ void MainWindow::toggleDelaunayTriangulation () {
 
 void MainWindow::toggleVoronoiVertices () {
     m_view->m_scene->toggleVoronoiVertices();
+}
+
+void MainWindow::oneStep () {
+    // TODO
 }
 
 void MainWindow::randomPointsEllipse () {

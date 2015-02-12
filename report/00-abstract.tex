@@ -3,14 +3,30 @@
 
 % English
 \begin{abstract}
-This internship deals with the denoising of point clouds.
+
+During this internship, we were interested in the denoising of point clouds and
+more specifically an adaptive one: the smoothing is more important at a higher
+scale. The idea is to move the point cloud in while minimizing an energy. The
+energy we considered here was given by the volume of the Minkowski sum of the
+point set with a convex polyhedron.
+
+In order to efficiently construct this sum, we had to construct the Voronoi
+diagram for a polyhedral norm.
+
+This report is divided as follows: firstly, we will give a detailed
+introduction, then we will focus on the state of the art related techniques.
+Moreover, we will start by studying the two dimensional case with the $r$-offset
+of a point cloud. We will continue by dealing with the 3D case with a polyhedral
+norm.
+
 \end{abstract}
 
 \abstractintoc
-\renewcommand\abstractname{R\'esum\'e}
+\renewcommand\abstractname{R\'{e}sum\'{e}}
 
 % Français
 \begin{abstract} \selectlanguage{french}
+% TODO
 Durant ce stage, nous nous sommes intéressés au lissage de nuage de points.
 \end{abstract}
 
