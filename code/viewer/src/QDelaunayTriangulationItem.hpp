@@ -10,11 +10,14 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
     public:
         typedef typename DT::Point Point_2;
         typedef typename DT::Segment Segment_2;
+        typedef typename CGAL::Kernel_traits<Point_2>::Kernel Kernel;
+        typedef typename Kernel::Ray_2 Ray_2;
 
         QDelaunayTriangulationItem (const QPen &pen,
                                     const QPen &penVoronoiVertices,
                                     QGraphicsItem *parent = 0) : QTriangulationItem<DT>(pen, parent),
                                                                  m_voronoiVerticesVisible(false),
+                                                                 m_voronoiEdgesVisible(false),
                                                                  penVoronoiVertices(penVoronoiVertices) {}
 
         void insert (Point_2 p) {
@@ -41,6 +44,18 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
             m_voronoiVerticesVisible = false;
         }
 
+        bool isVoronoiEdgesVisible () const {
+            return m_voronoiEdgesVisible;
+        }
+
+        void showVoronoiEdges () {
+            m_voronoiEdgesVisible = true;
+        }
+
+        void hideVoronoiEdges () {
+            m_voronoiEdgesVisible = false;
+        }
+
         void paint (QPainter *painter,
                     const QStyleOptionGraphicsItem *option,
                     QWidget *widget) {
@@ -55,6 +70,24 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
                                          1, 1);
                 }
             }
+
+            if (isVoronoiEdgesVisible()) {
+                painter->setPen(penVoronoiVertices);
+                for (typename DT::Finite_edges_iterator eit = this->tri.finite_edges_begin();
+                     eit != this->tri.finite_edges_end();
+                     ++eit) {
+                    CGAL::Object vEdge = this->tri.dual(eit);
+                    if (const Segment_2* segment = CGAL::object_cast<Segment_2>(&vEdge)) {
+                        const Point_2& p1 = segment->source();
+                        const Point_2& p2 = segment->target();
+                        painter->drawLine(p1.x(), p1.y(), p2.x(), p2.y());
+                    } else if (const Ray_2* ray = CGAL::object_cast<Ray_2>(&vEdge)) {
+                        const Point_2& p = ray->source();
+                        const Point_2 q = p + 10 * ray->to_vector();
+                        painter->drawLine(p.x(), p.y(), q.x(), q.y());
+                    }
+                }
+            }
         }
 
         ~QDelaunayTriangulationItem () {
@@ -63,6 +96,7 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
 
     private:
         bool m_voronoiVerticesVisible;
+        bool m_voronoiEdgesVisible;
         QPen penVoronoiVertices;
         std::vector<Point_2> m_voronoiVertices;
 

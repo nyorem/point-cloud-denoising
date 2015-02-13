@@ -75,6 +75,15 @@ void Scene::toggleVoronoiVertices () {
     }
 }
 
+void Scene::toggleVoronoiEdges () {
+    if (m_dt->isVoronoiEdgesVisible()) {
+        m_dt->hideVoronoiEdges();
+    } else {
+        m_dt->showVoronoiEdges();
+        update();
+    }
+}
+
 void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
     Points_2 points;
     random_ellipse_2(N, a, b, noiseVariance, std::back_inserter(points));

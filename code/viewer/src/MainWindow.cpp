@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
@@ -45,6 +46,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_voronoiVerticesButton = new QPushButton("Voronoi vertices", m_rightside);
     m_voronoiVerticesButton->move((m_rightside->width() - m_voronoiVerticesButton->width()) / 2, 0);
 
+    // Voronoi edges
+    m_voronoiEdgesButton = new QPushButton("Voronoi edges", m_rightside);
+    m_voronoiEdgesButton->move((m_rightside->width() - m_voronoiEdgesButton->width()) / 2, 0);
+
     // Points on an ellipse
     m_randomEllipseButton = new QPushButton("Points on ellipse", m_rightside);
     m_randomEllipseButton->move((m_rightside->width() - m_randomEllipseButton->width()) / 2, 0);
@@ -60,6 +65,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     layout->addWidget(m_randomEllipseButton);
     layout->addWidget(m_delaunayButton);
     layout->addWidget(m_voronoiVerticesButton);
+    layout->addWidget(m_voronoiEdgesButton);
     layout->addWidget(m_ballsButton);
     layout->addWidget(m_oneStepButton);
     m_rightside->setLayout(layout);
@@ -84,6 +90,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     // Voronoi vertices
     connect(m_voronoiVerticesButton, &QPushButton::clicked,
             this, &MainWindow::toggleVoronoiVertices);
+
+    // Voronoi edges
+    connect(m_voronoiEdgesButton, &QPushButton::clicked,
+            this, &MainWindow::toggleVoronoiEdges);
 
     // Points on ellipse
     connect(m_randomEllipseButton, &QPushButton::clicked,
@@ -119,6 +129,10 @@ void MainWindow::toggleDelaunayTriangulation () {
 
 void MainWindow::toggleVoronoiVertices () {
     m_view->m_scene->toggleVoronoiVertices();
+}
+
+void MainWindow::toggleVoronoiEdges () {
+    m_view->m_scene->toggleVoronoiEdges();
 }
 
 void MainWindow::oneStep () {
