@@ -1,3 +1,3 @@
-# Adaptative point cloud denoising
+Adaptive point cloud denoising
 ---
 

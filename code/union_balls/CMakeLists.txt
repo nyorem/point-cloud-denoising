@@ -21,6 +21,11 @@ if ( COMMAND cmake_policy )
 
 endif()
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+# Eigen3
+find_package (Eigen3 REQUIRED)
+
 # CGAL and its components
 find_package( CGAL QUIET COMPONENTS  )
 
@@ -52,6 +57,7 @@ endif()
 # include for local directory
 
 # include for local package
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 
 # Creating entries for all .cpp/.C files with "main" routine
