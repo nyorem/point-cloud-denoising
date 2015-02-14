@@ -4,6 +4,8 @@
 #include "random_ellipse_2.hpp"
 
 #include "CGAL_AD_typedefs.hpp"
+#include "GradientUtils.hpp"
+#include "PointCloudUtils.hpp"
 
 #include <iterator>
 
@@ -27,6 +29,10 @@ void Scene::init () {
     addItem(m_balls);
     m_balls->hide();
 
+    // Gradients
+    m_gradients = new QVectorFieldItem(Graphics::solidBlue);
+    addItem(m_gradients);
+    m_gradients->hide();
 }
 
 void Scene::addPoint (int x, int y) {
@@ -87,22 +93,39 @@ void Scene::toggleVoronoiEdges () {
 void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
     Points_2 points;
     random_ellipse_2(N, a, b, noiseVariance, std::back_inserter(points));
+
     m_points->insert(points.begin(), points.end());
     m_balls->insert(points.begin(), points.end());
     m_dt->insert(points.begin(), points.end());
 }
 
 void Scene::oneStep () {
-    // TODO: radius
+    // TODO: dialog box for radius / timestep
+    // TODO: use new solver / volume
     VolumeUnion_ad volume_union_ad(1);
-    Solver_ad solver_ad(volume_union_ad);
 
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
-    VectorXd_ad new_points_vec = solver_ad.step(points_vec);
+    GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
+    VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume_union_ad, points_vec, 0.1);
     Points_2 new_points;
     vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
+
+    // New point cloud
     m_points->clear();
     m_points->insert(new_points.begin(), new_points.end());
+
+    // New gradients
+    // TODO
+    Eigen::VectorXd gradients = volume_union_ad.grad();
+}
+
+void Scene::toggleGradients () {
+    if (m_gradients->isVisible()) {
+        m_gradients->hide();
+    } else {
+        m_gradients->show();
+        update();
+    }
 }
 
 void Scene::reset () {

@@ -5,7 +5,8 @@
 #include <functional>
 #include <vector>
 
-#include "Utils.hpp"
+#include "GradientUtils.hpp"
+#include "PointCloudUtils.hpp"
 
 #include "GradientDescentSolver.hpp"
 #include "GradientDescentSolverAD.hpp"
@@ -66,8 +67,8 @@ int main (void) {
     VectorXAD xad(2);
     xad(0) = AD(x(0), 2, 0);
     xad(1) = AD(x(1), 2, 1);
-    std::cout << toValue(grad_ad(fad, xad)) << std::endl;
-    GradAdEval<FunctionAD, VectorXAD> grad_ad_eval;
+    std::cout << toValue(grad_ad<FT_ad>(fad, xad)) << std::endl;
+    GradAdEval<FT_ad, FunctionAD, VectorXAD> grad_ad_eval;
     std::cout << toValue(step_gradient_descent(grad_ad_eval, fad, xad, 0.1)) << std::endl;
 
     /* std::cout << "Gradient descent" << std::endl; */
@@ -87,15 +88,20 @@ int main (void) {
     /* std::cout << toValue(sol) << std::endl; */
     /* std::cout << fad(sol) << std::endl; */
 
-    /* std::cout << "Volume AD" << std::endl; */
-    /* std::vector<Point> points; */
-    /* points.push_back(Point(0, 0)); */
-    /* points.push_back(Point(1.5, 0)); */
-    /* /1* points.push_back(Point(2, 0)); *1/ */
-    /* /1* points.push_back(Point(1, 1)); *1/ */
-    /* VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end()); */
-    /* VolumeUnionAD volume(1); */
-    /* std::cout << volume(points_vec) << std::endl; */
+    std::cout << "Volume AD" << std::endl;
+    std::vector<Point> points;
+    points.push_back(Point(0, 0));
+    points.push_back(Point(1.5, 0));
+    points.push_back(Point(3, 0));
+    /* points.push_back(Point(2, 0)); */
+    /* points.push_back(Point(1, 1)); */
+    VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end());
+    VolumeUnionAD volume(1);
+    std::cout << volume(points_vec) << std::endl;
+    std::cout << volume.grad() << std::endl;
+
+    VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.1);
+    std::cout << toValue(new_points_vec) << std::endl;
 
     /* // TODO */
     /* std::cout << "Gradient descent volume AD" << std::endl; */

@@ -48,3 +48,6 @@ report/*.pdf
 # Others
 TODO
 snippets
+books/
+papers/
+others/

@@ -6,6 +6,7 @@
 
 #include "CGAL_typedefs.hpp"
 #include "QPointListItem.hpp"
+#include "QVectorFieldItem.hpp"
 
 class Scene : public QGraphicsScene {
     public:
@@ -24,6 +25,7 @@ class Scene : public QGraphicsScene {
         void toggleVoronoiEdges ();
         void randomPointsEllipse (int N, float a, float b, float noiseVariance);
         void oneStep ();
+        void toggleGradients ();
 
         void reset ();
 
@@ -31,6 +33,7 @@ class Scene : public QGraphicsScene {
         QPointListItem* m_points;
         QPointListItem* m_balls;
         QDelaunayTriangulation2Item* m_dt;
+        QVectorFieldItem *m_gradients;
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include "QTriangulationItem.hpp"
 
 // Wrapper for displaying a CGAL 2D Delaunay triangulation
-// and its Voronoi vertices
+// and its Voronoi vertices / edges.
 template <typename DT>
 class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
     public:
@@ -83,7 +83,7 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
                         painter->drawLine(p1.x(), p1.y(), p2.x(), p2.y());
                     } else if (const Ray_2* ray = CGAL::object_cast<Ray_2>(&vEdge)) {
                         const Point_2& p = ray->source();
-                        const Point_2 q = p + 10 * ray->to_vector();
+                        const Point_2 q = p + 100 * ray->to_vector();
                         painter->drawLine(p.x(), p.y(), q.x(), q.y());
                     }
                 }

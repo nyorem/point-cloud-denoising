@@ -1,7 +1,22 @@
 \chapter{Introduction}
 
+% TODO
+
 Given a cloud of points, we want to be able to smooth it by taking into account
 the different scales present in the cloud. We want to have a more important
 smoothing on large parts of the point set.
+
+A lot of smoothing algorithms already exist, some are related to Computer
+Vision, some are more based on Computational Geometry:
+\begin{itemize}
+    \item Gaussian / Laplacian smoothing and all the derived filters
+    \item Jet smoothing: a jet is a truncated Taylor expansion. Such jets are
+        fitted on the surface. Jets are good because they intrinsically contain
+        differential information such as normal, curvature...
+\end{itemize}
+
+In this report, we will focus on another algorithm which was proposed by
+\cite{chambolle2012nonlocal}. Basically, it is a mean curvature flow under an
+energy minimization. This energy is related to a non-local curvature.
 
 % vim: set spelllang=en :

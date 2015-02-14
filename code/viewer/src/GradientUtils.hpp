@@ -1,5 +1,5 @@
-#ifndef _UTILS_HPP_
-#define _UTILS_HPP_
+#ifndef _GRADIENTUTILS_HPP_
+#define _GRADIENTUTILS_HPP_
 
 #include "AD.hpp"
 
@@ -55,22 +55,23 @@ struct GradFinite2Eval {
 };
 
 // Computes the gradient using AD.
-template <typename FunctionAD, typename VectorAD>
+template <typename FTAD, typename FunctionAD, typename VectorAD>
 VectorAD grad_ad (FunctionAD const& fad, VectorAD const& x) {
     VectorAD grad(x.rows());
+    FTAD eval = fad(x);
 
     for (int i = 0; i < x.rows(); ++i) {
-        grad[i] = AD(fad(x).derivatives().coeffRef(i), x.rows(), i);
+        grad[i] = AD(eval.derivatives().coeffRef(i), x.rows(), i);
     }
 
     return grad;
 }
 
 // Wrapper over grad_ad
-template <typename FunctionAD, typename VectorAD>
+template <typename FTAD, typename FunctionAD, typename VectorAD>
 struct GradAdEval {
     VectorAD operator() (FunctionAD const& fad, VectorAD const& x) const {
-        return grad_ad(fad, x);
+        return grad_ad<FTAD>(fad, x);
     }
 };
 
@@ -83,33 +84,16 @@ Vector step_gradient_descent (EvalGradient const& eval_grad,
     return x0 - step * grad;
 }
 
-// Converts a vector to a list of points
-template <typename Point, typename Vector, typename OutputIterator>
-void vectorToPointCloud (Vector const& v,
-                         OutputIterator out) {
-    int N = v.rows() / 2;
-    for (int i = 0; i < N; ++i) {
-        *out++ = Point(v(2 * i), v(2 * i + 1));
-    }
-}
+// Convert a VectorAD to a normal Eigen::VectorXd
+template <typename VectorAD>
+Eigen::VectorXd toValue (VectorAD const& x) {
+    Eigen::VectorXd res(x.rows());
 
-// Converts a point cloud to a vector
-template <typename Vector, typename InputIterator>
-Vector pointCloudToVector (InputIterator begin,
-                           InputIterator beyond) {
-    int N = 0;
-    for (InputIterator it = begin; it != beyond; ++it)
-        ++N;
-
-    Vector vec(2 * N);
-    int i = 0;
-    for (InputIterator it = begin; it != beyond; ++it) {
-        vec(2 * i) = AD(it->x(), 2 * N, 2 * i);
-        vec(2 * i + 1) = AD(it->y(), 2 * N, 2 * i + 1);
-        ++i;
+    for (int i = 0; i < x.rows(); ++i) {
+        res[i] = x[i].value();
     }
 
-    return vec;
+    return res;
 }
 
 #endif

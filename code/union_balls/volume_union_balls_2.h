@@ -151,7 +151,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 
         // Remember the edge corresponding to an intersection point
         if (inter.size() != 0) {
-            for (int i = 0; i < inter.size(); ++i) {
+            for (size_t i = 0; i < inter.size(); ++i) {
                 edge_map[inter[i]] = edge;
             }
             if (inter.size() == 2) {
@@ -197,7 +197,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         return vol;
     }
 
-    for (int i = 0; i < boundary.size(); ++i) {
+    for (size_t i = 0; i < boundary.size(); ++i) {
         Point p = boundary[i],
               pp = boundary[(i + 1) % boundary.size()];
 
@@ -329,6 +329,20 @@ FT volume_union_balls_2_vector_in (Vector const& v,
     }
 
     return volume_union_balls_2<FT>(vec.begin(), vec.end(), radius);
+}
+
+// A version of `volume_union_balls_2` that takes the point
+// cloud as an Eigen vector and that returns an Eigen vector.
+template <typename Point, typename Vector>
+Vector volume_union_balls_2_vector_in_out (Vector const& v,
+                                           double radius) {
+    int N = v.rows() / 2;
+    std::vector<Point> vec;
+    for (int i = 0; i < N; ++i) {
+        vec.push_back(Point(v(2 * i), v(2 * i + 1)));
+    }
+
+    return volume_union_balls_2_vector_out<Vector>(vec.begin(), vec.end(), radius);
 }
 
 #endif

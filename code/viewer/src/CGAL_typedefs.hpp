@@ -12,6 +12,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 // Basic geometric types
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
+typedef CGAL::Vector_2<Kernel> Vector_2;
 
 typedef std::vector<Point_2> Points_2;
 typedef std::vector<Segment_2> Segments_2;
