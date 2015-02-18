@@ -8,24 +8,34 @@
 
 #include "CGAL_typedefs.hpp"
 
-// Wrapper for displaying a 2D path
+// Wrapper for displaying a list of 2D segments
 class QSegmentListItem : public QGraphicsItem {
     public:
         QSegmentListItem (const QPen& pen,
                           QGraphicsItem *parent = 0) : QGraphicsItem(parent), pen(pen) {}
 
-        void insert (Point_2 p) {
-            m_points.push_back(p);
+        void insert (Segment_2 s) {
+            m_points.push_back(s.source());
+            m_points.push_back(s.target());
 
-            computeSegments();
+            m_segments.push_back(s);
         }
 
         template <typename InputIterator>
         void insert (InputIterator begin,
                      InputIterator beyond) {
-            m_points.insert(m_points.begin(), begin, beyond);
+            m_segments.insert(m_segments.begin(), begin, beyond);
 
-            computeSegments();
+            for (InputIterator it = begin;
+                 it != beyond;
+                 ++it) {
+                m_points.push_back(it->source());
+                m_points.push_back(it->target());
+            }
+        }
+
+        void clear () {
+            m_segments.clear();
         }
 
         void paint (QPainter *painter,
@@ -56,8 +66,6 @@ class QSegmentListItem : public QGraphicsItem {
         }
 
     protected:
-        virtual void computeSegments () = 0;
-
         Points_2 m_points;
         Segments_2 m_segments;
         QPen pen;

@@ -1,18 +1,10 @@
-#ifndef _VOLUME_UNION_BALLS_2_H_
-#define _VOLUME_UNION_BALLS_2_H_
-
-#include <CGAL/Delaunay_triangulation_2.h>
-#include <CGAL/Bbox_2.h>
-
-#include <cmath>
-#include <vector>
-
-#include <iostream>
+#ifndef _VOLUME_UNION_BALLS_2_DEBUG_H_
+#define _VOLUME_UNION_BALLS_2_DEBUG_H_
 
 // Test if p and q are in a counter clockwise order wrt ref
 template <typename Point>
-bool in_counter_clockwise (Point const& p, Point const& q,
-                           Point const& ref) {
+bool in_counter_clockwise_debug (Point const& p, Point const& q,
+                                 Point const& ref) {
     double thetap = std::atan2(p.y() - ref.y(), p.x() - ref.x()),
            thetaq = std::atan2(q.y() - ref.y(), q.x() - ref.x());
 
@@ -21,9 +13,9 @@ bool in_counter_clockwise (Point const& p, Point const& q,
 
 // Intersection between a segment and a sphere
 template <class Point, class Segment, class OutputIterator>
-bool segment_sphere_intersect (Point o, double r,
-                               Segment seg,
-                               OutputIterator out) {
+bool segment_sphere_intersect_debug (Point o, double r,
+                                     Segment seg,
+                                     OutputIterator out) {
     typedef typename CGAL::Kernel_traits<Point>::Kernel Kernel;
     typedef typename Kernel::Vector_2 Vector;
     typedef typename Kernel::FT FT;
@@ -57,45 +49,32 @@ bool segment_sphere_intersect (Point o, double r,
 }
 
 // Positive floating modulus
-double fmodpos (double x, double N) {
+double fmodpos_debug (double x, double N) {
     return std::fmod(std::fmod(x, N) + N, N);
 }
 
 // Area of an angular sector defined by the vectors op and oq
 template <typename Vector>
-double angular_sector_area (Vector op, Vector oq,
-                            double radius) {
+double angular_sector_area_debug (Vector op, Vector oq,
+                                  double radius) {
     if (op == Vector(0, 0) || oq == Vector(0, 0)) {
         return 0;
     }
 
-    double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
-           theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
-    double angle = fmodpos(theta2 - theta1, 2 * M_PI);
+    double theta1 = fmodpos_debug(std::atan2(op.y(), op.x()), 2 * M_PI),
+           theta2 = fmodpos_debug(std::atan2(oq.y(), oq.x()), 2 * M_PI);
+    double angle = fmodpos_debug(theta2 - theta1, 2 * M_PI);
 
     return radius * radius * angle / 2;
 }
 
-// Perimeter of an angular sector defined by the vectors op and oq
-template <typename Vector>
-double perimeter_sector_area (Vector op, Vector oq,
-                              double radius) {
-    if (op == Vector(0, 0) || oq == Vector(0, 0)) {
-        return 0;
-    }
-
-    double theta1 = fmodpos(std::atan2(op.y(), op.x()), 2 * M_PI),
-           theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
-    double angle = fmodpos(theta2 - theta1, 2 * M_PI);
-
-    return radius * angle;
-}
-
-// Volume of one ball intersected with a Voronoi cell
+// Version of volume_ball_voronoi_cell_2 outputing
+// a list of segments corresponding to the decomposition
 template <typename Kernel, typename DT, typename Vertex_handle>
-typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
-                                                Vertex_handle const& v,
-                                                double radius) {
+typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
+                                                      Vertex_handle const& v,
+                                                      double radius,
+                                                      std::vector<typename Kernel::Segment_2>& out) {
     typedef typename Kernel::Point_2 Point;
     typedef typename Kernel::Line_2 Line;
     typedef typename Kernel::FT FT;
@@ -139,7 +118,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         // Intersection points between the Voronoi edge [p, next] and the ball
         std::cout << "Current edge: " << edge << std::endl;
         std::vector<Point> inter;
-        segment_sphere_intersect(P, radius, edge, std::back_inserter(inter));
+        segment_sphere_intersect_debug(P, radius, edge, std::back_inserter(inter));
         std::cout << "Size intersection: " << inter.size() << std::endl;
 
         // Remember the edge corresponding to an intersection point
@@ -149,7 +128,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             }
             if (inter.size() == 2) {
                 // Keep a counter clockwise order
-                if (in_counter_clockwise(inter[0], inter[1], P)) {
+                if (in_counter_clockwise_debug(inter[0], inter[1], P)) {
                     boundary.insert(boundary.end(), inter.begin(), inter.end());
                 } else {
                     boundary.push_back(inter[1]);
@@ -168,6 +147,8 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         }
     }
 
+    out.clear();
+
     // The boundary of the Voronoi cell is entirely outside of the ball
     std::cout << "allOutside " << allOutside << std::endl;
     if (allOutside) {
@@ -181,15 +162,20 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     if (boundary.size() == 2) {
         Point p = boundary[0], pp = boundary[1];
         Line l(p, pp);
+
+        out.push_back(Segment(P, p));
+        out.push_back(Segment(P, pp));
+        out.push_back(Segment(p, pp));
+
         if (l.oriented_side(P) == CGAL::ON_POSITIVE_SIDE) {
             vol += CGAL::area(P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(pp - P, p - P, radius);
+            vol += angular_sector_area_debug(pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
         } else {
             vol += CGAL::area(P, pp, p);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(p - P, pp - P, radius);
+            vol += angular_sector_area_debug(p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
         }
 
@@ -203,14 +189,23 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         if (interior_map[p] && interior_map[pp]) {
             // 2 interior points: triangle
             vol += CGAL::area(P, p, pp);
+            out.push_back(Segment(P, p));
+            out.push_back(Segment(P, pp));
+            out.push_back(Segment(p, pp));
             std::cout << "vol = " << vol << std::endl;
         } else if (interior_map[p] && !interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
+            out.push_back(Segment(P, p));
+            out.push_back(Segment(P, pp));
+            out.push_back(Segment(p, pp));
             std::cout << "vol = " << vol << std::endl;
         } else if (!interior_map[p] && interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
+            out.push_back(Segment(P, p));
+            out.push_back(Segment(P, pp));
+            out.push_back(Segment(p, pp));
             std::cout << "vol = " << vol << std::endl;
         } else {
             // 0 interior points: 2 on the boundary
@@ -221,10 +216,15 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             if (pedge == ppedge) {
                 // Same edge: triangle
                 vol += CGAL::area(P, p, pp);
+                out.push_back(Segment(P, p));
+                out.push_back(Segment(P, pp));
+                out.push_back(Segment(p, pp));
                 std::cout << "vol = " << vol << std::endl;
             } else {
                 // Different edges: angular sector
-                vol += angular_sector_area(p - P, pp - P, radius);
+                vol += angular_sector_area_debug(p - P, pp - P, radius);
+                out.push_back(Segment(P, p));
+                out.push_back(Segment(P, pp));
                 std::cout << "vol = " << vol << std::endl;
             }
         }
@@ -235,57 +235,13 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     return vol;
 }
 
-// Compute the volume of each Voronoi cell intersected with a ball
-// Put all the results in a Eigen vector
-template <typename Vector, typename InputIterator>
-Vector volume_union_balls_2_vector_out (InputIterator begin,
-                                        InputIterator beyond,
-                                        double radius) {
-    typedef typename std::iterator_traits<InputIterator>::value_type Point;
-    typedef typename CGAL::Kernel_traits<Point>::Kernel Kernel;
-    typedef typename CGAL::Delaunay_triangulation_2<Kernel> DT;
-
-    // Bounding box
-    CGAL::Bbox_2 b = CGAL::bbox_2(begin, beyond);
-    Point bl(b.xmin() - 2 * radius, b.ymin() - 2 * radius),
-          br(b.xmax() + 2 * radius, b.ymin() - 2 * radius),
-          tl(b.xmin() - 2 * radius, b.ymax() + 2 * radius),
-          tr(b.xmax() + 2 * radius, b.ymax() + 2 * radius);
-
-    // Delaunay triangulation
-    DT dt(begin, beyond);
-    dt.insert(bl); dt.insert(br);
-    dt.insert(tl); dt.insert(tr);
-
-    int N = 0;
-    for (InputIterator it = begin; it != beyond; ++it)
-        ++N;
-    Vector vol(N);
-
-    int i = 0;
-    // Decomposition of the intersection of a Voronoi cell and a ball
-    // It is made of triangles and agular sectors
-    for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
-         vit != dt.finite_vertices_end();
-         ++vit) {
-        Point P = vit->point();
-
-        if (P == bl || P == br || P == tl || P == tr) {
-            continue;
-        }
-
-        vol[i++] = volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius);
-    }
-
-    return vol;
-}
-
-// Compute the volume of the r-offset of the point cloud
-// InputIterator::value_type = Point
-template <typename FT, typename InputIterator>
-FT volume_union_balls_2 (InputIterator begin,
-                         InputIterator beyond,
-                         double radius) {
+// Version of volume_union_balls_2 outputing
+// a list of segments corresponding to the decomposition
+template <typename FT, typename Segment, typename InputIterator>
+FT volume_union_balls_2_debug (InputIterator begin,
+                               InputIterator beyond,
+                               double radius,
+                               std::vector<Segment>& out) {
     typedef typename std::iterator_traits<InputIterator>::value_type Point;
     typedef typename CGAL::Kernel_traits<Point>::Kernel Kernel;
     typedef typename CGAL::Delaunay_triangulation_2<Kernel> DT;
@@ -304,6 +260,7 @@ FT volume_union_balls_2 (InputIterator begin,
 
     FT vol = 0;
 
+    out.clear();
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
@@ -315,38 +272,12 @@ FT volume_union_balls_2 (InputIterator begin,
             continue;
         }
 
-        vol += volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius);
+        std::vector<Segment> segments;
+        vol += volume_ball_voronoi_cell_2_debug<Kernel>(dt, vit, radius, segments);
+        out.insert(out.end(), segments.begin(), segments.end());
     }
 
     return vol;
-}
-
-// A version of `volume_union_balls_2` that takes the point
-// cloud as an Eigen vector.
-template <typename FT, typename Point, typename Vector>
-FT volume_union_balls_2_vector_in (Vector const& v,
-                                   double radius) {
-    int N = v.rows() / 2;
-    std::vector<Point> vec;
-    for (int i = 0; i < N; ++i) {
-        vec.push_back(Point(v(2 * i), v(2 * i + 1)));
-    }
-
-    return volume_union_balls_2<FT>(vec.begin(), vec.end(), radius);
-}
-
-// A version of `volume_union_balls_2` that takes the point
-// cloud as an Eigen vector and that returns an Eigen vector.
-template <typename Point, typename Vector>
-Vector volume_union_balls_2_vector_in_out (Vector const& v,
-                                           double radius) {
-    int N = v.rows() / 2;
-    std::vector<Point> vec;
-    for (int i = 0; i < N; ++i) {
-        vec.push_back(Point(v(2 * i), v(2 * i + 1)));
-    }
-
-    return volume_union_balls_2_vector_out<Vector>(vec.begin(), vec.end(), radius);
 }
 
 #endif

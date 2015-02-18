@@ -24,6 +24,7 @@ class MainWindow : public QWidget {
         void randomPointsEllipse ();
         void oneStep ();
         void toggleGradients ();
+        void toggleDecomposition ();
 
     private:
         View *m_view;
@@ -37,6 +38,7 @@ class MainWindow : public QWidget {
         QPushButton* m_randomEllipseButton;
         QPushButton* m_oneStepButton;
         QPushButton* m_gradientsButton;
+        QPushButton* m_decompositionButton;
 };
 
 #endif

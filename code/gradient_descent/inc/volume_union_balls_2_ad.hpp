@@ -362,13 +362,15 @@ struct VolumeUnion {
     }
 
     Eigen::VectorXd grad () const {
-        Eigen::VectorXd grad = Eigen::VectorXd::Zero(m_volumes.rows());
+        Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_volumes.rows());
 
         for (int i = 0; i < m_volumes.rows(); ++i) {
-            grad += m_volumes(i).derivatives();
+            if (m_volumes(i).derivatives().rows() != 0) {
+                g += m_volumes(i).derivatives();
+            }
         }
 
-        return grad;
+        return g;
     }
 
     private:

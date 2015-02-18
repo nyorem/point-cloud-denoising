@@ -6,6 +6,7 @@
 
 #include "CGAL_typedefs.hpp"
 #include "QPointListItem.hpp"
+#include "QSegmentListItem.hpp"
 #include "QVectorFieldItem.hpp"
 
 class Scene : public QGraphicsScene {
@@ -17,6 +18,7 @@ class Scene : public QGraphicsScene {
         void addPoint (int x, int y);
 
         void setBallRadius (float radius);
+        void setTimestep (double timestep);
 
         void togglePoints ();
         void toggleBalls ();
@@ -26,6 +28,7 @@ class Scene : public QGraphicsScene {
         void randomPointsEllipse (int N, float a, float b, float noiseVariance);
         void oneStep ();
         void toggleGradients ();
+        void toggleDecomposition ();
 
         void reset ();
 
@@ -33,7 +36,11 @@ class Scene : public QGraphicsScene {
         QPointListItem* m_points;
         QPointListItem* m_balls;
         QDelaunayTriangulation2Item* m_dt;
+        QSegmentListItem *m_decomposition;
         QVectorFieldItem *m_gradients;
+
+        double m_timestep;
+        double m_radius;
 };
 
 #endif

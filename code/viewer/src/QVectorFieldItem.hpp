@@ -38,6 +38,10 @@ class QVectorFieldItem : public QGraphicsItem {
             m_points.insert(m_points.begin(), pbegin, pbeyond);
         }
 
+        void clear () {
+            m_field.clear();
+        }
+
         void paint (QPainter *painter,
                     const QStyleOptionGraphicsItem *option,
                     QWidget *widget) {
@@ -48,7 +52,9 @@ class QVectorFieldItem : public QGraphicsItem {
                  ++mit) {
                 Point_2 p = mit->first;
                 Vector_2 v = mit->second;
-                Point_2 q = p + v.squared_length() * v;
+                v = v / CGAL::sqrt(v.squared_length());
+                v = 50 * v;
+                Point_2 q = p + v;
 
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());
             }

@@ -62,6 +62,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_gradientsButton = new QPushButton("Gradients", m_rightside);
     m_gradientsButton->move((m_rightside->width() - m_gradientsButton->width()) / 2, 0);
 
+    // Decomposition
+    m_decompositionButton = new QPushButton("Decomposition", m_rightside);
+    m_decompositionButton->move((m_rightside->width() - m_decompositionButton->width()) / 2, 0);
+
     // Layout
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(m_resetButton);
@@ -73,6 +77,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     layout->addWidget(m_ballsButton);
     layout->addWidget(m_oneStepButton);
     layout->addWidget(m_gradientsButton);
+    layout->addWidget(m_decompositionButton);
     m_rightside->setLayout(layout);
 
     // Slots
@@ -112,11 +117,20 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     connect(m_gradientsButton, &QPushButton::clicked,
             this, &MainWindow::toggleGradients);
 
+    // Decomposition
+    connect(m_decompositionButton, &QPushButton::clicked,
+            this, &MainWindow::toggleDecomposition);
+
     // Parameters initialization
     // Ball radius
-    double radius = QInputDialog::getDouble(this, "Parameters for balls", "Radius",
-                                            20.0, 0, 100);
+    double radius = QInputDialog::getDouble(this, "Balls", "Radius",
+                                            50.0, 0, 100);
     m_view->m_scene->setBallRadius(radius);
+
+    // Timestep for gradient descent
+    double timestep = QInputDialog::getDouble(this, "Gradient descent", "Timestep",
+                                              0.1, 0, 100);
+    m_view->m_scene->setTimestep(timestep);
 }
 
 // Slots
@@ -150,6 +164,10 @@ void MainWindow::oneStep () {
 
 void MainWindow::toggleGradients () {
     m_view->m_scene->toggleGradients();
+}
+
+void MainWindow::toggleDecomposition () {
+    m_view->m_scene->toggleDecomposition();
 }
 
 void MainWindow::randomPointsEllipse () {

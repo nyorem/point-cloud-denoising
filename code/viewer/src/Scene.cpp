@@ -6,8 +6,11 @@
 #include "CGAL_AD_typedefs.hpp"
 #include "GradientUtils.hpp"
 #include "PointCloudUtils.hpp"
+#include "volume_union_balls_2_debug.h"
 
 #include <iterator>
+
+#include <QInputDialog>
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
     init();
@@ -27,12 +30,18 @@ void Scene::init () {
     // Balls (offset)
     m_balls = new QPointListItem(Graphics::solidRed, true);
     addItem(m_balls);
+    m_balls->setRadius(m_radius);
     m_balls->hide();
 
     // Gradients
     m_gradients = new QVectorFieldItem(Graphics::solidBlue);
     addItem(m_gradients);
     m_gradients->hide();
+
+    // Decomposition
+    m_decomposition = new QSegmentListItem(Graphics::solidGreen);
+    addItem(m_decomposition);
+    m_decomposition->hide();
 }
 
 void Scene::addPoint (int x, int y) {
@@ -43,6 +52,11 @@ void Scene::addPoint (int x, int y) {
 
 void Scene::setBallRadius (float radius) {
     m_balls->setRadius(radius);
+    m_radius = radius;
+}
+
+void Scene::setTimestep (double timestep) {
+    m_timestep = timestep;
 }
 
 void Scene::togglePoints () {
@@ -100,23 +114,42 @@ void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
 }
 
 void Scene::oneStep () {
-    // TODO: dialog box for radius / timestep
-    // TODO: use new solver / volume
-    VolumeUnion_ad volume_union_ad(1);
-
+    // TODO: problem when points too far (gradients empty)
+    // TODO: correctly display gradients
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
+
+    VolumeUnion_ad volume(m_radius);
+    std::cout << "area: " << volume(points_vec) << std::endl;
+    Eigen::VectorXd grad = volume.grad();
+    std::cout << "gradient: " << grad << std::endl;
+
+    // New gradients
+    std::vector<Vector_2> gradients_vectors;
+    for (int i = 0; i < grad.rows() / 2; ++i) {
+        Vector_2 v(grad(2 * i), grad(2 * i + 1));
+        std::cout << v << std::endl;
+        gradients_vectors.push_back(v);
+    }
+    m_gradients->clear();
+    m_gradients->insert(m_points->begin(), m_points->end(),
+                        gradients_vectors.begin(), gradients_vectors.end());
+
+    // New point cloud: one step of gradient descent
     GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-    VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume_union_ad, points_vec, 0.1);
+    VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, m_timestep);
     Points_2 new_points;
     vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
-
-    // New point cloud
     m_points->clear();
     m_points->insert(new_points.begin(), new_points.end());
 
-    // New gradients
-    // TODO
-    Eigen::VectorXd gradients = volume_union_ad.grad();
+    m_balls->clear();
+    m_balls->insert(new_points.begin(), new_points.end());
+
+    // Decomposition
+    m_decomposition->clear();
+    std::vector<Segment_2> segments;
+    volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments);
+    m_decomposition->insert(segments.begin(), segments.end());
 }
 
 void Scene::toggleGradients () {
@@ -124,6 +157,15 @@ void Scene::toggleGradients () {
         m_gradients->hide();
     } else {
         m_gradients->show();
+        update();
+    }
+}
+
+void Scene::toggleDecomposition () {
+    if (m_decomposition->isVisible()) {
+        m_decomposition->hide();
+    } else {
+        m_decomposition->show();
         update();
     }
 }

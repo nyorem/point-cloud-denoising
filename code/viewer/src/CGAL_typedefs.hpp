@@ -13,15 +13,12 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Vector_2<Kernel> Vector_2;
+typedef CGAL::Triangle_2<Kernel> Triangle_2;
+typedef CGAL::Line_2<Kernel> Line_2;
+typedef Kernel::FT FT;
 
 typedef std::vector<Point_2> Points_2;
 typedef std::vector<Segment_2> Segments_2;
-
-typedef CGAL::Triangle_2<Kernel> Triangle_2;
-
-typedef CGAL::Line_2<Kernel> Line_2;
-
-typedef Kernel::FT FT;
 
 // Delaunay triangulations
 typedef CGAL::Delaunay_triangulation_2<Kernel> Delaunay_triangulation_2;

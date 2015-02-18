@@ -92,18 +92,24 @@ int main (void) {
     std::vector<Point> points;
     points.push_back(Point(0, 0));
     points.push_back(Point(1.5, 0));
-    points.push_back(Point(3, 0));
+    /* points.push_back(Point(3, 0)); */
     /* points.push_back(Point(2, 0)); */
     /* points.push_back(Point(1, 1)); */
     VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end());
     VolumeUnionAD volume(1);
-    std::cout << volume(points_vec) << std::endl;
-    std::cout << volume.grad() << std::endl;
+    std::cout << "volume: " << volume(points_vec) << std::endl;
+    Eigen::VectorXd grad = volume.grad();
+    std::cout << "gradient: " << grad << std::endl;
+    std::cout << "gradients" << std::endl;
+    for (int i = 0; i < grad.rows() / 2; ++i) {
+        std::cout << grad(2 * i) << ", " << grad(2 * i + 1) << std::endl;
+    }
 
+    // Gradient descent using AD
     VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.1);
-    std::cout << toValue(new_points_vec) << std::endl;
+    std::cout << "new points: " << toValue(new_points_vec) << std::endl;
 
-    /* // TODO */
+    /* // TODO: remove */
     /* std::cout << "Gradient descent volume AD" << std::endl; */
     /* SolverAD gsadv(volume); */
     /* std::cout << toValue(gsadv.gradient(points_vec)) << std::endl; */

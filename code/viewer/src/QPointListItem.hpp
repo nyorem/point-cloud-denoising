@@ -76,7 +76,7 @@ class QPointListItem : public QGraphicsItem {
 
             for (int i = 0; i < m_points.size(); ++i) {
                 if (m_drawBalls) {
-                    drawFilledCircle(painter, m_points[i]);
+                    drawCircle(painter, m_points[i]);
                 } else {
                     drawPoint(painter, m_points[i]);
                 }
