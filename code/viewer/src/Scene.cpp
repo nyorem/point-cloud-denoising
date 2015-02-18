@@ -22,8 +22,8 @@ void Scene::init () {
     addItem(m_points);
     m_points->show();
 
-    // Delaunay Triangulation and Voronoi vertices
-    m_dt = new QDelaunayTriangulation2Item(Graphics::solidRed, Graphics::solidBlue);
+    // Delaunay Triangulation and Voronoi vertices / edges
+    m_dt = new QDelaunayTriangulation2Item(Graphics::solidBlack, Graphics::solidBlue);
     addItem(m_dt);
     m_dt->hide();
 

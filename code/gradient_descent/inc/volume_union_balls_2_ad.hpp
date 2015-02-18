@@ -13,10 +13,7 @@
 template <typename Point>
 bool in_counter_clockwise (Point const& p, Point const& q,
                            Point const& ref) {
-    double thetap = std::atan2(p.y().value() - ref.y().value(), p.x().value() - ref.x().value()),
-           thetaq = std::atan2(q.y().value() - ref.y().value(), q.x().value() - ref.x().value());
-
-    return thetap < thetaq;
+    return CGAL::left_turn(ref, p, pq);
 }
 
 // Intersection between a segment and a sphere
@@ -183,7 +180,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     }
 
     // Special case: 2 points
-    if (boundary.size() == 2) {
+    if (boundary.size() == 2 && !interior_map[boundary[0]] && !interior_map[boundary[1]]) {
         Point p = boundary[0], pp = boundary[1];
         Line l(p, pp);
         if (l.oriented_side(P) == CGAL::ON_POSITIVE_SIDE) {

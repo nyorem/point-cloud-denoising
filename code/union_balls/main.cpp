@@ -18,15 +18,15 @@ int main (int argc, const char *argv[]) {
     std::vector<Point> points;
     points.push_back(Point(0, 0));
     points.push_back(Point(1.5, 0));
-    /* points.push_back(Point(3, 0)); */
+    points.push_back(Point(3, 0));
     /* points.push_back(Point(2, 0)); */
     /* points.push_back(Point(1, 1)); */
-    /* std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), 1) << std::endl; */
+    std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), 1) << std::endl;
 
     // Test volume_union_balls_2_debug
-    std::vector<Segment> segments;
-    std::cout << volume_union_balls_2_debug<FT>(points.begin(), points.end(), 1, segments) << std::endl;
-    std::cout << segments.size() << std::endl;
+    /* std::vector<Segment> segments; */
+    /* std::cout << volume_union_balls_2_debug<FT>(points.begin(), points.end(), 1, segments) << std::endl; */
+    /* std::cout << segments.size() << std::endl; */
 
     // Test volume_union_balls_2_vector_out
     /* VectorXd vol = volume_union_balls_2_vector_out<VectorXd>(points.begin(), points.end(), 1); */
@@ -45,6 +45,8 @@ int main (int argc, const char *argv[]) {
     /* std::cout << in_counter_clockwise(Point(1, 1), Point (1, -1), Point(0, 0)) << std::endl; */
     /* std::cout << in_counter_clockwise(Point(2, 0), Point (2, 2), Point(1, 1)) << std::endl; */
     /* std::cout << in_counter_clockwise(Point(2, 2), Point (2, 0), Point(1, 1)) << std::endl; */
+    /* std::cout << in_counter_clockwise(Point(0.75, -0.6), Point (0.75, 0.6), Point(1.5, 0)) << std::endl; */
+    /* std::cout << in_counter_clockwise(Point(0.75, -0.6), Point (0.75, 0.6), Point(1.5, 0)) << std::endl; */
 
     return 0;
 }
