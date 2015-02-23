@@ -13,7 +13,7 @@
 template <typename Point>
 bool in_counter_clockwise (Point const& p, Point const& q,
                            Point const& ref) {
-    return CGAL::left_turn(ref, p, pq);
+    return CGAL::left_turn(ref, p, q);
 }
 
 // Intersection between a segment and a sphere

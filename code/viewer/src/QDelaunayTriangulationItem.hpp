@@ -90,8 +90,13 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
             }
         }
 
-        ~QDelaunayTriangulationItem () {
+        void clear () {
+            QTriangulationItem<DT>::clear();
             m_voronoiVertices.clear();
+        }
+
+        ~QDelaunayTriangulationItem () {
+            clear();
         }
 
     private:

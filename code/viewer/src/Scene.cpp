@@ -114,36 +114,46 @@ void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
 }
 
 void Scene::oneStep () {
-    // TODO: problem when points too far (gradients empty)
-    // TODO: correctly display gradients
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
+    // Compute the volume of the union and the gradient
     VolumeUnion_ad volume(m_radius);
-    std::cout << "area: " << volume(points_vec) << std::endl;
+    volume(points_vec);
     Eigen::VectorXd grad = volume.grad();
-    std::cout << "gradient: " << grad << std::endl;
 
-    // New gradients
+    // Update the gradients
     std::vector<Vector_2> gradients_vectors;
-    for (int i = 0; i < grad.rows() / 2; ++i) {
-        Vector_2 v(grad(2 * i), grad(2 * i + 1));
-        std::cout << v << std::endl;
-        gradients_vectors.push_back(v);
-    }
+    vectorToPointCloud<Vector_2>(grad, std::back_inserter(gradients_vectors));
     m_gradients->clear();
     m_gradients->insert(m_points->begin(), m_points->end(),
                         gradients_vectors.begin(), gradients_vectors.end());
 
     // New point cloud: one step of gradient descent
-    GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-    VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, m_timestep);
+    // TODO: problem with grad
+    /* GradFinite1Eval<Function_ad, VectorXd_ad> grad_finite_1_eval; */
+    /* VectorXd_ad new_points_vec = step_gradient_descent(grad_finite_1_eval, volume, points_vec, m_timestep); */
+     GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
+     /* VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, m_timestep); */
+     VectorXd_ad new_points_vec = gradient_descent(grad_ad_eval, volume, points_vec, m_timestep);
     Points_2 new_points;
+    /* int i = 0; */
+    /* for (std::vector<Point_2>::const_iterator it = m_points->begin(); */
+    /*      it != m_points->end(); */
+    /*      ++it) { */
+    /*     new_points.push_back(*it - m_timestep * gradients_vectors[i]); */
+    /*     i++; */
+    /* } */
     vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
     m_points->clear();
     m_points->insert(new_points.begin(), new_points.end());
 
+    // Update the balls
     m_balls->clear();
-    m_balls->insert(new_points.begin(), new_points.end());
+    m_balls->insert(m_points->begin(), m_points->end());
+
+    // Update the Delaunay triangulation
+    m_dt->clear();
+    m_dt->insert(m_points->begin(), m_points->end());
 
     // Decomposition
     m_decomposition->clear();

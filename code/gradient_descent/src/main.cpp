@@ -54,6 +54,7 @@ int main (void) {
     /* }; */
 
     // Test grad_finite_n
+    std::cout << "gradient eval" << std::endl;
     VectorXd x(2);
     x << 1, 1;
     std::cout << grad_finite_1(f, x) << std::endl;
@@ -70,6 +71,12 @@ int main (void) {
     std::cout << toValue(grad_ad<FT_ad>(fad, xad)) << std::endl;
     GradAdEval<FT_ad, FunctionAD, VectorXAD> grad_ad_eval;
     std::cout << toValue(step_gradient_descent(grad_ad_eval, fad, xad, 0.1)) << std::endl;
+
+    // Test gradient_descent
+    std::cout << "gradient descent" << std::endl;
+    std::cout << gradient_descent(grad_finite_1_eval, f, x, 0.1) << std::endl;
+    std::cout << gradient_descent(grad_finite_2_eval, f, x, 0.1) << std::endl;
+    std::cout << toValue(gradient_descent(grad_ad_eval, fad, xad, 0.1)) << std::endl;
 
     /* std::cout << "Gradient descent" << std::endl; */
     /* GradientDescentSolver gs(f, g); */
@@ -88,37 +95,37 @@ int main (void) {
     /* std::cout << toValue(sol) << std::endl; */
     /* std::cout << fad(sol) << std::endl; */
 
-    std::cout << "Volume AD" << std::endl;
-    std::vector<Point> points;
-    points.push_back(Point(0, 0));
-    points.push_back(Point(1.5, 0));
-    /* points.push_back(Point(3, 0)); */
-    /* points.push_back(Point(2, 0)); */
-    /* points.push_back(Point(1, 1)); */
-    VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end());
-    VolumeUnionAD volume(1);
-    std::cout << "volume: " << volume(points_vec) << std::endl;
-    Eigen::VectorXd grad = volume.grad();
-    std::cout << "gradient: " << grad << std::endl;
-    std::cout << "gradients" << std::endl;
-    for (int i = 0; i < grad.rows() / 2; ++i) {
-        std::cout << grad(2 * i) << ", " << grad(2 * i + 1) << std::endl;
-    }
-
-    // Gradient descent using AD
-    VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.1);
-    std::cout << "new points: " << toValue(new_points_vec) << std::endl;
-
-    /* // TODO: remove */
-    /* std::cout << "Gradient descent volume AD" << std::endl; */
-    /* SolverAD gsadv(volume); */
-    /* std::cout << toValue(gsadv.gradient(points_vec)) << std::endl; */
-    /* VectorXAD newX = gsadv.step(points_vec); */
-    /* std::vector<Point_ad> points_bis; */
-    /* vectorToPointCloud<Point_ad>(newX, std::back_inserter(points_bis)); */
-    /* for (size_t i = 0; i < points_bis.size(); ++i) { */
-    /*     std::cout << points_bis[i] << std::endl; */
+    /* std::cout << "Volume AD" << std::endl; */
+    /* std::vector<Point> points; */
+    /* points.push_back(Point(0, 0)); */
+    /* points.push_back(Point(1.5, 0)); */
+    /* /1* points.push_back(Point(3, 0)); *1/ */
+    /* /1* points.push_back(Point(2, 0)); *1/ */
+    /* /1* points.push_back(Point(1, 1)); *1/ */
+    /* VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end()); */
+    /* VolumeUnionAD volume(1); */
+    /* std::cout << "volume: " << volume(points_vec) << std::endl; */
+    /* Eigen::VectorXd grad = volume.grad(); */
+    /* std::cout << "gradient: " << grad << std::endl; */
+    /* std::cout << "gradients" << std::endl; */
+    /* for (int i = 0; i < grad.rows() / 2; ++i) { */
+    /*     std::cout << grad(2 * i) << ", " << grad(2 * i + 1) << std::endl; */
     /* } */
+
+    /* // Gradient descent using AD */
+    /* VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.1); */
+    /* std::cout << "new points: " << toValue(new_points_vec) << std::endl; */
+
+    /* /1* // TODO: remove *1/ */
+    /* /1* std::cout << "Gradient descent volume AD" << std::endl; *1/ */
+    /* /1* SolverAD gsadv(volume); *1/ */
+    /* /1* std::cout << toValue(gsadv.gradient(points_vec)) << std::endl; *1/ */
+    /* /1* VectorXAD newX = gsadv.step(points_vec); *1/ */
+    /* /1* std::vector<Point_ad> points_bis; *1/ */
+    /* /1* vectorToPointCloud<Point_ad>(newX, std::back_inserter(points_bis)); *1/ */
+    /* /1* for (size_t i = 0; i < points_bis.size(); ++i) { *1/ */
+    /* /1*     std::cout << points_bis[i] << std::endl; *1/ */
+    /* /1* } *1/ */
 
     return 0;
 }

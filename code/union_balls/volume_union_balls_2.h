@@ -75,8 +75,8 @@ double angular_sector_area (Vector op, Vector oq,
 
 // Perimeter of an angular sector defined by the vectors op and oq
 template <typename Vector>
-double perimeter_sector_area (Vector op, Vector oq,
-                              double radius) {
+double angular_sector_perimeter (Vector op, Vector oq,
+                                 double radius) {
     if (op == Vector(0, 0) || oq == Vector(0, 0)) {
         return 0;
     }
@@ -100,7 +100,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 
     Point P = v->point();
 
-    FT vol = 0;
+    FT vol = 0, per = 0;
 
     // Compute the boundary of the Voronoi cell of P
     typename DT::Face_circulator fc = dt.incident_faces(v), done(fc);
@@ -169,7 +169,9 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     std::cout << "allOutside " << allOutside << std::endl;
     if (allOutside) {
         vol = M_PI * radius * radius;
+        per = 0;
         std::cout << "vol = " << vol << std::endl;
+        std::cout << "perimeter: " << per << std::endl;
 
         return vol;
     }
@@ -183,11 +185,17 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             std::cout << "vol = " << vol << std::endl;
             vol += angular_sector_area(pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
+            per += CGAL::sqrt(Segment(p, pp).squared_length());
+            per += angular_sector_perimeter(pp - P, p - P, radius);
+            std::cout << "perimeter: " << per << std::endl;
         } else {
             vol += CGAL::area(P, pp, p);
             std::cout << "vol = " << vol << std::endl;
             vol += angular_sector_area(p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
+            per += CGAL::sqrt(Segment(p, pp).squared_length());
+            per += angular_sector_perimeter(p - P, pp - P, radius);
+            std::cout << "perimeter: " << per << std::endl;
         }
 
         return vol;
@@ -201,14 +209,17 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             // 2 interior points: triangle
             vol += CGAL::area(P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (interior_map[p] && !interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (!interior_map[p] && interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else {
             // 0 interior points: 2 on the boundary
             // It depends on the corresponding edges
@@ -217,23 +228,19 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 
             if (pedge == ppedge) {
                 // Same edge: triangle
-                if (CGAL::area(P, p, pp) < 0) {
-                    std::cout << "negative" << std::endl;
-                    std::cout << P << std::endl;
-                    std::cout << p << std::endl;
-                    std::cout << pp << std::endl;
-                    std::cout << std::endl;
-                }
                 vol += CGAL::area(P, p, pp);
                 std::cout << "vol = " << vol << std::endl;
+                per += CGAL::sqrt(Segment(p, pp).squared_length());
             } else {
                 // Different edges: angular sector
                 vol += angular_sector_area(p - P, pp - P, radius);
                 std::cout << "vol = " << vol << std::endl;
+                per += angular_sector_perimeter(p - P, pp - P, radius);
             }
         }
     }
 
+    std::cout << "perimeter: " << per << std::endl;
     std::cout << std::endl;
 
     return vol;

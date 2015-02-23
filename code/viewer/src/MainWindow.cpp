@@ -124,7 +124,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     // Parameters initialization
     // Ball radius
     double radius = QInputDialog::getDouble(this, "Balls", "Radius",
-                                            50.0, 0, 100);
+                                            100.0, 0, 1000);
     m_view->m_scene->setBallRadius(radius);
 
     // Timestep for gradient descent
@@ -183,13 +183,13 @@ void MainWindow::randomPointsEllipse () {
     formLayout.addRow("Number of points:", numberPoints);
 
     QDoubleSpinBox *majorAxis = new QDoubleSpinBox();
-    majorAxis->setMinimum(1.5);
+    majorAxis->setMinimum(0.5);
     majorAxis->setMaximum(100);
     majorAxis->setSingleStep(0.1);
-    majorAxis->setValue(1);
+    majorAxis->setValue(1.5);
 
     QDoubleSpinBox *minorAxis = new QDoubleSpinBox();
-    minorAxis->setMinimum(1);
+    minorAxis->setMinimum(0.5);
     minorAxis->setMaximum(100);
     minorAxis->setSingleStep(0.1);
     minorAxis->setValue(1);

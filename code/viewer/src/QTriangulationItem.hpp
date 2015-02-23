@@ -29,6 +29,11 @@ class QTriangulationItem : public QGraphicsItem {
             m_points.insert(m_points.begin(), begin, beyond);
         }
 
+        void clear () {
+            tri.clear();
+            m_points.clear();
+        }
+
         void paint (QPainter *painter,
                     const QStyleOptionGraphicsItem *option,
                     QWidget *widget) {
@@ -55,8 +60,7 @@ class QTriangulationItem : public QGraphicsItem {
         }
 
         ~QTriangulationItem () {
-            tri.clear();
-            m_points.clear();
+            clear();
         }
 
     protected:

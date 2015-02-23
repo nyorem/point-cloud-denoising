@@ -118,13 +118,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 
     const int N = adjacent_voronoi_vertices.size();
 
-    // Voronoi edges
-    std::vector<Segment> voronoi_edges;
-    for (int i = 0; i < N; ++i) {
-        voronoi_edges.push_back(Segment(adjacent_voronoi_vertices[i],
-                                        adjacent_voronoi_vertices[(i + 1) % N]));
-    }
-
     std::vector<Point> boundary;
     std::map<Point, Segment> edge_map;
     std::map<Point, bool> interior_map;

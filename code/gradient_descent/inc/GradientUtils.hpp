@@ -75,13 +75,42 @@ struct GradAdEval {
     }
 };
 
-// One step of the gradient descent algorithm using a constant step
+// One step of the gradient descent algorithm using a constant timestep
 template <typename EvalGradient, typename Function, typename Vector>
 Vector step_gradient_descent (EvalGradient const& eval_grad,
                               Function const& f, Vector const& x0, double step) {
     Vector grad = eval_grad(f, x0);
 
     return x0 - step * grad;
+}
+
+// Gradient descent algorithm using a constant timestep
+template <typename EvalGradient, typename Function, typename Vector>
+Vector gradient_descent (EvalGradient const& eval_grad,
+                         Function const& f, Vector const& x0,
+                         double step, double eps = 1e-5, int maxiter = 50) {
+    int i = 0;
+    Vector x = x0, g = eval_grad(f, x);
+
+    while (g.norm() > eps && i < maxiter) {
+        x = step_gradient_descent(eval_grad, f, x, step);
+        g = eval_grad(f, x);
+        i++;
+    }
+
+    return x;
+}
+
+// Convert a VectorAD to a normal Eigen::VectorXd
+template <typename VectorAD>
+Eigen::VectorXd toValue (VectorAD const& x) {
+   Eigen::VectorXd res(x.rows());
+
+   for (int i = 0; i < x.rows(); ++i) {
+       res[i] = x[i].value();
+   }
+
+   return res;
 }
 
 #endif

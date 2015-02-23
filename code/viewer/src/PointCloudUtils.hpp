@@ -13,7 +13,7 @@ void vectorToPointCloud (Vector const& v,
     }
 }
 
-// Converts a point cloud to a vector
+// Converts a point cloud to an AD vector
 template <typename Vector, typename InputIterator>
 Vector pointCloudToVector (InputIterator begin,
                            InputIterator beyond) {
