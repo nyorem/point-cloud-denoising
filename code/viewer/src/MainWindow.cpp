@@ -38,6 +38,14 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_resetButton = new QPushButton("Reset", m_rightside);
     m_resetButton->move((m_rightside->width() - m_resetButton->width()) / 2, 0);
 
+    // Save
+    m_saveButton = new QPushButton("Save", m_rightside);
+    m_saveButton->move((m_rightside->width() - m_saveButton->width()) / 2, 0);
+
+    // Save
+    m_loadButton = new QPushButton("Load", m_rightside);
+    m_loadButton->move((m_rightside->width() - m_loadButton->width()) / 2, 0);
+
     // Delaunay Triangulation
     m_delaunayButton = new QPushButton("Delaunay Triangulation", m_rightside);
     m_delaunayButton->move((m_rightside->width() - m_delaunayButton->width()) / 2, 0);
@@ -69,6 +77,8 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     // Layout
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(m_resetButton);
+    layout->addWidget(m_saveButton);
+    layout->addWidget(m_loadButton);
     layout->addWidget(m_pointsButton);
     layout->addWidget(m_randomEllipseButton);
     layout->addWidget(m_delaunayButton);
@@ -92,6 +102,14 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     // Reset
     connect(m_resetButton, &QPushButton::clicked,
             this, &MainWindow::resetScene);
+
+    // Save
+    connect(m_saveButton, &QPushButton::clicked,
+            this, &MainWindow::savePointCloud);
+
+    // Load
+    connect(m_loadButton, &QPushButton::clicked,
+            this, &MainWindow::loadPointCloud);
 
     // Delaunay Triangulation
     connect(m_delaunayButton, &QPushButton::clicked,
@@ -144,6 +162,14 @@ void MainWindow::toggleBalls () {
 
 void MainWindow::resetScene () {
     m_view->m_scene->reset();
+}
+
+void MainWindow::savePointCloud () {
+    m_view->m_scene->savePointCloud();
+}
+
+void MainWindow::loadPointCloud () {
+    m_view->m_scene->loadPointCloud();
 }
 
 void MainWindow::toggleDelaunayTriangulation () {

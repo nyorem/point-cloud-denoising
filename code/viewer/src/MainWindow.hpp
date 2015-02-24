@@ -16,6 +16,8 @@ class MainWindow : public QWidget {
 
     public slots:
         void resetScene ();
+        void savePointCloud ();
+        void loadPointCloud ();
         void togglePoints ();
         void toggleBalls ();
         void toggleDelaunayTriangulation ();
@@ -31,6 +33,8 @@ class MainWindow : public QWidget {
         QWidget *m_rightside;
 
         QPushButton* m_resetButton;
+        QPushButton* m_saveButton;
+        QPushButton* m_loadButton;
         QPushButton* m_pointsButton;
         QPushButton* m_ballsButton;
         QPushButton* m_delaunayButton;

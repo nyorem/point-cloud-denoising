@@ -86,14 +86,14 @@ Vector step_gradient_descent (EvalGradient const& eval_grad,
 
 // Gradient descent algorithm using a constant timestep
 template <typename EvalGradient, typename Function, typename Vector>
-Vector gradient_descent (EvalGradient const& eval_grad,
-                         Function const& f, Vector const& x0,
+Vector gradient_descent (EvalGradient const& eval_grad, Function const& f,
+                         Vector const& x0,
                          double step, double eps = 1e-5, int maxiter = 50) {
     int i = 0;
     Vector x = x0, g = eval_grad(f, x);
 
     while (g.norm() > eps && i < maxiter) {
-        x = step_gradient_descent(eval_grad, f, x, step);
+        x = x - step * g;
         g = eval_grad(f, x);
         i++;
     }

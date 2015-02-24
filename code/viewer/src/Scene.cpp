@@ -9,8 +9,10 @@
 #include "volume_union_balls_2_debug.h"
 
 #include <iterator>
+#include <fstream>
+#include <QFileDialog>
 
-#include <QInputDialog>
+#define __DEBUG__
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
     init();
@@ -129,20 +131,10 @@ void Scene::oneStep () {
                         gradients_vectors.begin(), gradients_vectors.end());
 
     // New point cloud: one step of gradient descent
-    // TODO: problem with grad
-    /* GradFinite1Eval<Function_ad, VectorXd_ad> grad_finite_1_eval; */
-    /* VectorXd_ad new_points_vec = step_gradient_descent(grad_finite_1_eval, volume, points_vec, m_timestep); */
-     GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-     /* VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, m_timestep); */
-     VectorXd_ad new_points_vec = gradient_descent(grad_ad_eval, volume, points_vec, m_timestep);
+    // TODO: too slow
+    GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
+    VectorXd_ad new_points_vec = gradient_descent(grad_ad_eval, volume, points_vec, m_timestep);
     Points_2 new_points;
-    /* int i = 0; */
-    /* for (std::vector<Point_2>::const_iterator it = m_points->begin(); */
-    /*      it != m_points->end(); */
-    /*      ++it) { */
-    /*     new_points.push_back(*it - m_timestep * gradients_vectors[i]); */
-    /*     i++; */
-    /* } */
     vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
     m_points->clear();
     m_points->insert(new_points.begin(), new_points.end());
@@ -156,10 +148,12 @@ void Scene::oneStep () {
     m_dt->insert(m_points->begin(), m_points->end());
 
     // Decomposition
+#ifdef __DEBUG__
     m_decomposition->clear();
     std::vector<Segment_2> segments;
     volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments);
     m_decomposition->insert(segments.begin(), segments.end());
+#endif
 }
 
 void Scene::toggleGradients () {
@@ -178,6 +172,37 @@ void Scene::toggleDecomposition () {
         m_decomposition->show();
         update();
     }
+}
+
+void Scene::savePointCloud () {
+    QString filename = QFileDialog::getSaveFileName(0, tr("Save Point Cloud"),
+                                                    QDir::currentPath(),
+                                                    tr("Point Clouds (*.xy)"));
+
+    std::ofstream file(filename.toStdString().c_str());
+
+    for (std::vector<Point_2>::iterator it = m_points->begin();
+         it != m_points->end();
+         ++it) {
+        Point_2 p = *it;
+        file << p.x() << " " << p.y() << std::endl;
+    }
+}
+
+void Scene::loadPointCloud () {
+    QString filename = QFileDialog::getOpenFileName(0, tr("Open Point Cloud"),
+                                                    QDir::currentPath(),
+                                                    tr("Point Clouds (*.xy)"));
+
+    std::vector<Point_2> points;
+    std::ifstream file(filename.toStdString().c_str());
+    float x, y;
+
+    while (file >> x >> y) {
+        points.push_back(Point_2(x, y));
+    }
+
+    m_points->insert(points.begin(), points.end());
 }
 
 void Scene::reset () {

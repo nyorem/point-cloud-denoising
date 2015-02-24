@@ -70,17 +70,5 @@ class DescentSolverAD {
         }
 };
 
-// Convert a VectorAD to a normal Eigen::VectorXd
-template <typename VectorAD>
-Eigen::VectorXd toValue (VectorAD const& x) {
-    Eigen::VectorXd res(x.rows());
-
-    for (int i = 0; i < x.rows(); ++i) {
-        res[i] = x[i].value();
-    }
-
-    return res;
-}
-
 #endif
 

@@ -32,6 +32,9 @@ class Scene : public QGraphicsScene {
 
         void reset ();
 
+        void savePointCloud ();
+        void loadPointCloud ();
+
     private:
         QPointListItem* m_points;
         QPointListItem* m_balls;
