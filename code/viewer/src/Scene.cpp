@@ -147,7 +147,7 @@ void Scene::oneStep () {
     m_dt->clear();
     m_dt->insert(m_points->begin(), m_points->end());
 
-    // Decomposition
+    // Update the decomposition
 #ifdef __DEBUG__
     m_decomposition->clear();
     std::vector<Segment_2> segments;
@@ -184,7 +184,7 @@ void Scene::savePointCloud () {
     for (std::vector<Point_2>::iterator it = m_points->begin();
          it != m_points->end();
          ++it) {
-        Point_2 p = *it;
+        Point_2& p = *it;
         file << p.x() << " " << p.y() << std::endl;
     }
 }

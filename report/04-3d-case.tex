@@ -1,9 +1,116 @@
 \chapter{3D case}
 
 \section{Polyhedral norm}
+A polyhedral norm is a norm $ N $ defined as the following:
 
-\section{Construction of the Voronoi diagram}
+$$ \forall x \in \mathbb{R}^d,~ N(x) = \max_{i} (x | v_i) $$
+
+where the $ v_i $ are given vectors from $ \mathbb{R}^d $.
+
+This definition implies that the unit ball for the norm $ N $ is a polyhedron.
+Indeed, if $ x \in B_N(0, 1) $, then :
+
+$$ N(x) \leq 1 \Longleftrightarrow \forall i, (x | v_i) \leq 1 $$
+
+So, the unit ball is defined by linear constraints. Thus, it is an intersection
+of halfspaces and so is a convex polyhedron. Hence, computing the $ r $-offset
+of a point cloud under a polyhedral norm $ N $ is the same as computing the
+Minkowski sum of a point cloud and a convex polyhedron.
+
+\section{Construction of the Voronoi diagram for a polyhedral norm}
+
+The main problem of a polyhedral norm is that the underlying Voronoi diagram is
+not a partition of the space anymore.
+
+For example, if we consider the $ L_\infty $ norm in the plane and two aligned
+points, we have the following Voronoi region:
+% TODO: insert figure
+
+\subsection{Symbolic perturbation}
+
+Given a polyhedral norm $ N $, we define its symbolic perturbation $ N_\epsilon
+$ by: $ N_\epsilon (x) = N + \epsilon || x || $ where $ || \cdot || $ is an
+euclidean norm (typically an $ L_p $ norm where $ 1 \leq p \leq +\infty $).
+
+Then, we will show that the Voronoi cell of a point $ x $ under the norm $
+N_\epsilon $ converges (when $ \epsilon \rightarrow 0 $) towards the Voronoi
+cell defined as the following:
+
+$$ V_{N'}(x, X) = \{ y \in \mathbb{R}^d,~\forall x' \in X,~N(x - y) \leq N(x'
+-y) \text{ or } (N(x - y) = N(x' - y) \text { and } || x -y || \leq || x' - y ||) \} $$
+
+First, we define the convergence of a set $ A $ towards another set $ B $: we
+say that $ A $ converges towards $ B $ if the Hausdorff distance of $ A $ and $
+B $ converges towards $ 0 $.
+
+We recall that the Hausdorff distance is defined as follows:
+
+$$ d_H(A, B) = \min \{ r \geq 0,~X \subset Y^{\oplus r} \text{ and } Y \subset
+X^{\oplus r} \} $$
+
+Now, we prove that $ V_{N_\epsilon}(x, X) $ converges towards $ V_{N'}(x, X) $
+under the Hausdorff distance.
+
+We want to prove that $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X)) \rightarrow 0 $
+Let's take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
+\epsilon \leq \epsilon_\delta $ then $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X))
+\leq \delta $. The last inequality is equivalent to say that:
+\begin{align}
+    V_{N'}(x, X)) \subset V_{N_\epsilon}(x, X)^{\oplus \delta} \\
+    V_{N_\epsilon}(x, X) \subset V_{N'}(x, X)^{\oplus \delta}
+    \label{eqn:haussdorf-voronoi1}
+\end{align}
+
+Let's take care of the first inclusion:
+% TODO: proof
+
+And now the second inclusion:
+Let's take $ y \in V_{N_\epsilon}(x, X) $. By definition of $ N_\epsilon $, we
+have: $ \forall x' \in X,~N(x - y) + \epsilon || x - y || \leq N(x' - y) +
+\epsilon || x' - y || $. If we choose $ z = y $ then $ z $ satisfies $ || z - y
+|| \leq \delta $ and $ z \in V_{N'}(x, X) $. Indeed, using the previous
+inequality, there are two cases: either $ N(x - y) \leq N(x' - y) $ or $ N(x -
+y) = N(x' - y) $. In the latter case, the inequality reduces to: $ || x - y || \leq
+|| x' - y || $. So $ y \in V_{N'}(x, X)^{\oplus \delta} $.
+
+We also want to prove that this new Voronoi diagram has good properties, notably
+this new diagram forms a good "partition" of $ \mathbb{R}^d $. Thus, we need to
+define what a "good" partition is.
+We can define it in two ways:
+\begin{enumerate}
+    \item for any point $ x $, $ V_{N'}(x, X) $ is homeomorphic to a disk. For
+        any couple $ (x, y) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) $ is
+        homeomorphic to a segment / half-line / line. For any triplet $ (x, y,
+        z) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) \cap V_{N'}(z, X) $ is
+        homeomorphic to a point.
+    \item Let's consider the open Voronoi regions: $ \ocirc{V}_N(x, X) = \{ y
+        \in X,~ N(x - y) < N(x' - y)\} $.
+\end{enumerate}
+% TODO: definition
+
+\subsection{Construction of a Voronoi cell}
+
+The goal of this part will be to provide an incremental algorithm for
+constructing the Voronoi cell $ V_{N'}(x, X)) $ in 3D using a 2D triangulation
+on a sphere.
+
+If we project the Voronoi cell onto the unit sphere, we will obtain a mesh.
+
+% TODO: normal cone
+
+We will need some definitions:
+\begin{itemize}
+    \item normal cone to a convex set $ K $
+\end{itemize}
 
 \section{Experiments}
+
+% Construction of the Voronoi diagram
+% -> polyhedral norm
+% -> construction
+% -> r-offset for the norm N
+% -> volume
+% -> evolution
+% Experiments
 
 % vim: set spelllang=en :
