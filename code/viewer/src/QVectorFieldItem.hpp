@@ -53,9 +53,15 @@ class QVectorFieldItem : public QGraphicsItem {
                 Point_2 p = mit->first;
                 Vector_2 v = mit->second;
                 // Normalize the vector
+                // TODO
                 v = v / CGAL::sqrt(v.squared_length());
                 v = 50 * v;
                 Point_2 q = p + v;
+                /* Point_2 q = p - 0.1 * v; */
+                /* if (v.squared_length() >= 1e6) { */
+                /*     painter->setBrush(QBrush(m_pen.color())); */
+                /*     painter->drawEllipse(p.x(), p.y(), 10.0, 10.0); */
+                /* } */
 
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());
             }

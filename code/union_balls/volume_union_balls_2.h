@@ -141,7 +141,8 @@ double angular_sector_perimeter (Vector op, Vector oq,
 template <typename Kernel, typename DT, typename Vertex_handle>
 typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
                                                 Vertex_handle const& v,
-                                                double radius) {
+                                                double radius,
+                                                double &per) {
     typedef typename Kernel::Point_2 Point;
     typedef typename Kernel::Line_2 Line;
     typedef typename Kernel::FT FT;
@@ -149,7 +150,8 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 
     Point P = v->point();
 
-    FT vol = 0, per = 0;
+    FT vol = 0;
+    per = 0;
 
     // Compute the boundary of the Voronoi cell of P
     typename DT::Face_circulator fc = dt.incident_faces(v), done(fc);
@@ -221,7 +223,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         std::cout << "vol = " << vol << std::endl;
         ps_arc(std::cerr, P, radius, 0, 2 * M_PI, true, 255, 0, 0);
 
-        per = 0;
+        per = 2 * M_PI * radius;
         std::cout << "perimeter: " << per << std::endl;
 
         return vol;
@@ -236,7 +238,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             std::cout << "vol = " << vol << std::endl;
             ps_arc(std::cerr, P, radius, 0, 2 * M_PI, true, 255, 0, 0);
 
-            per = 0;
+            per = 2 * M_PI * radius;
             std::cout << "perimeter: " << per << std::endl;
 
             return vol;
@@ -251,7 +253,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += angular_sector_area(P, pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
 
-            per += CGAL::sqrt(Segment(p, pp).squared_length());
             per += angular_sector_perimeter(pp - P, p - P, radius);
             std::cout << "perimeter: " << per << std::endl;
         } else {
@@ -262,7 +263,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += angular_sector_area(P, p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
 
-            per += CGAL::sqrt(Segment(p, pp).squared_length());
             per += angular_sector_perimeter(p - P, pp - P, radius);
             std::cout << "perimeter: " << per << std::endl;
         }
@@ -279,22 +279,16 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += CGAL::area(P, p, pp);
             ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-
-            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (interior_map[p] && !interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-
-            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (!interior_map[p] && interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-
-            per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else {
             // 0 interior points: 2 on the boundary
             // It depends on the corresponding edges
@@ -306,8 +300,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
                 vol += CGAL::area(P, p, pp);
                 ps_triangle(std::cerr, P, p, pp);
                 std::cout << "vol = " << vol << std::endl;
-
-                per += CGAL::sqrt(Segment(p, pp).squared_length());
             } else {
                 // Different edges: angular sector
                 vol += angular_sector_area(P, p - P, pp - P, radius);
@@ -328,7 +320,8 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
 template <typename Vector, typename InputIterator>
 Vector volume_union_balls_2_vector_out (InputIterator begin,
                                         InputIterator beyond,
-                                        double radius) {
+                                        double radius,
+                                        double &per) {
     typedef typename std::iterator_traits<InputIterator>::value_type Point;
     typedef typename CGAL::Kernel_traits<Point>::Kernel Kernel;
     typedef typename CGAL::Delaunay_triangulation_2<Kernel> DT;
@@ -350,6 +343,7 @@ Vector volume_union_balls_2_vector_out (InputIterator begin,
         ++N;
     Vector vol(N);
 
+    per = 0;
     int i = 0;
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
@@ -362,7 +356,9 @@ Vector volume_union_balls_2_vector_out (InputIterator begin,
             continue;
         }
 
-        vol[i++] = volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius);
+        double pper = 0;
+        vol[i++] = volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius, pper);
+        per += pper;
     }
 
     return vol;
@@ -373,7 +369,8 @@ Vector volume_union_balls_2_vector_out (InputIterator begin,
 template <typename FT, typename InputIterator>
 FT volume_union_balls_2 (InputIterator begin,
                          InputIterator beyond,
-                         double radius) {
+                         double radius,
+                         double &per) {
     typedef typename std::iterator_traits<InputIterator>::value_type Point;
     typedef typename CGAL::Kernel_traits<Point>::Kernel Kernel;
     typedef typename CGAL::Delaunay_triangulation_2<Kernel> DT;
@@ -391,6 +388,7 @@ FT volume_union_balls_2 (InputIterator begin,
     dt.insert(tl); dt.insert(tr);
 
     FT vol = 0;
+    per = 0;
 
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
@@ -403,7 +401,9 @@ FT volume_union_balls_2 (InputIterator begin,
             continue;
         }
 
-        vol += volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius);
+        double pper =  0;
+        vol += volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius, pper);
+        per += pper;
     }
 
     return vol;
@@ -413,28 +413,30 @@ FT volume_union_balls_2 (InputIterator begin,
 // cloud as an Eigen vector.
 template <typename FT, typename Point, typename Vector>
 FT volume_union_balls_2_vector_in (Vector const& v,
-                                   double radius) {
+                                   double radius,
+                                   double &per) {
     int N = v.rows() / 2;
     std::vector<Point> vec;
     for (int i = 0; i < N; ++i) {
         vec.push_back(Point(v(2 * i), v(2 * i + 1)));
     }
 
-    return volume_union_balls_2<FT>(vec.begin(), vec.end(), radius);
+    return volume_union_balls_2<FT>(vec.begin(), vec.end(), radius, per);
 }
 
 // A version of `volume_union_balls_2` that takes the point
 // cloud as an Eigen vector and that returns an Eigen vector.
 template <typename Point, typename Vector>
 Vector volume_union_balls_2_vector_in_out (Vector const& v,
-                                           double radius) {
+                                           double radius,
+                                           double &per) {
     int N = v.rows() / 2;
     std::vector<Point> vec;
     for (int i = 0; i < N; ++i) {
         vec.push_back(Point(v(2 * i), v(2 * i + 1)));
     }
 
-    return volume_union_balls_2_vector_out<Vector>(vec.begin(), vec.end(), radius);
+    return volume_union_balls_2_vector_out<Vector>(vec.begin(), vec.end(), radius, per);
 }
 
 #endif

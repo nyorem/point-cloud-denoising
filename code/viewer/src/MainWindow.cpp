@@ -66,7 +66,11 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_oneStepButton = new QPushButton("One step", m_rightside);
     m_oneStepButton->move((m_rightside->width() - m_oneStepButton->width()) / 2, 0);
 
-    // One step of the algorithm
+    // Compute gradients
+    m_computeGradientsButton = new QPushButton("Compute Gradients", m_rightside);
+    m_computeGradientsButton->move((m_rightside->width() - m_computeGradientsButton->width()) / 2, 0);
+
+    // Gradients
     m_gradientsButton = new QPushButton("Gradients", m_rightside);
     m_gradientsButton->move((m_rightside->width() - m_gradientsButton->width()) / 2, 0);
 
@@ -86,6 +90,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     layout->addWidget(m_voronoiEdgesButton);
     layout->addWidget(m_ballsButton);
     layout->addWidget(m_oneStepButton);
+    layout->addWidget(m_computeGradientsButton);
     layout->addWidget(m_gradientsButton);
     layout->addWidget(m_decompositionButton);
     m_rightside->setLayout(layout);
@@ -135,6 +140,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     connect(m_gradientsButton, &QPushButton::clicked,
             this, &MainWindow::toggleGradients);
 
+    // Compute Gradients
+    connect(m_computeGradientsButton, &QPushButton::clicked,
+            this, &MainWindow::computeGradients);
+
     // Decomposition
     connect(m_decompositionButton, &QPushButton::clicked,
             this, &MainWindow::toggleDecomposition);
@@ -147,7 +156,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
 
     // Timestep for gradient descent
     double timestep = QInputDialog::getDouble(this, "Gradient descent", "Timestep",
-                                              0.1, 0, 100, 2);
+                                              0.01, 0, 100, 3);
     m_view->m_scene->setTimestep(timestep);
 }
 
@@ -190,6 +199,10 @@ void MainWindow::oneStep () {
 
 void MainWindow::toggleGradients () {
     m_view->m_scene->toggleGradients();
+}
+
+void MainWindow::computeGradients () {
+    m_view->m_scene->computeGradients();
 }
 
 void MainWindow::toggleDecomposition () {

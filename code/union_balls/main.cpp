@@ -28,9 +28,13 @@ int main (int argc, const char *argv[]) {
     /* points.push_back(Point(-87.269, 0.793098)); */
     /* points.push_back(Point(-81.3591, 0.859669)); */
     /* points.push_back(Point(-81.3373, 1.31607)); */
+    double per = 0;
+    double radius = 1;
     ps_header(std::cerr);
-    std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), 1) << std::endl;
+    std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), radius, per) << std::endl;
     ps_footer(std::cerr);
+    std::cout << "perimeter: " << per << std::endl;
+    std::cout << "weighted perimeter: " << (per / (2 * M_PI * radius)) << std::endl;
 
     // Test volume_union_balls_2_debug
     /* std::vector<Segment> segments; */
@@ -38,7 +42,7 @@ int main (int argc, const char *argv[]) {
     /* std::cout << segments.size() << std::endl; */
 
     // Test volume_union_balls_2_vector_out
-    /* VectorXd vol = volume_union_balls_2_vector_out<VectorXd>(points.begin(), points.end(), 1); */
+    /* VectorXd vol = volume_union_balls_2_vector_out<VectorXd>(points.begin(), points.end(), 1, per); */
     /* std::cout << vol << std::endl; */
 
     // Test volume_union_balls_2_vector_in
@@ -47,7 +51,7 @@ int main (int argc, const char *argv[]) {
     /* points_vec[1] = points[0].y(); */
     /* points_vec[2] = points[1].x(); */
     /* points_vec[3] = points[1].y(); */
-    /* std::cout << volume_union_balls_2_vector_in<FT, Point>(points_vec, 1) << std::endl; */
+    /* std::cout << volume_union_balls_2_vector_in<FT, Point>(points_vec, 1, per) << std::endl; */
 
     // Test in_counter_clockwise
     /* std::cout << in_counter_clockwise(Point(1, -1), Point (1, 1), Point(0, 0)) << std::endl; */

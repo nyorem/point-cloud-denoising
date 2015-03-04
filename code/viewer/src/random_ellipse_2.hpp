@@ -22,7 +22,7 @@ void random_ellipse_2 (int N,
     boost::normal_distribution<float> nd(0.0, std::sqrt(noiseVariance));
     boost::variate_generator<boost::mt19937, boost::normal_distribution<float> > gen(consts::g_eng, nd);
 
-    Random_points_on_circle_2 random_points(a);
+    Random_points_on_circle_2 random_points(a); // TODO: replace a by 1
     for (int i = 0; i < N; ++i) {
         double noise = gen();
 

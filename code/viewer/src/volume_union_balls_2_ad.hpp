@@ -3,6 +3,8 @@
 
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Bbox_2.h>
+#include <CGAL/Exact_circular_kernel_2.h>
+#include <CGAL/Circular_kernel_intersections.h>
 
 #include <cmath>
 #include <vector>
@@ -53,12 +55,50 @@ bool segment_sphere_intersect (Point o, double r,
     return result;
 }
 
+// see: http://stackoverflow.com/questions/26246381/how-to-calculate-the-intersection-of-a-line-segment-and-circle-with-cgal
+template <class Point, class Segment, class OutputIterator>
+bool segment_sphere_intersect_robust (Point o, double r,
+                                      Segment seg,
+                                      OutputIterator out) {
+    typedef CGAL::Exact_circular_kernel_2        CircK;
+    typedef CGAL::Point_2<CircK>                 Pt2;
+    typedef CGAL::Circle_2<CircK>                Circ2;
+    typedef CGAL::Line_arc_2<CircK>              LineArc2;
+    typedef CGAL::Circular_arc_point_2<CircK>    CircPoint2;
+    typedef boost::variant<std::pair<CircPoint2, unsigned> > InterRes;
+
+    Circ2 c = Circ2(Pt2(o.x().value(), o.y().value()), r * r);
+    LineArc2 l = LineArc2(Pt2(seg.source().x().value(), seg.source().y().value()),
+                          Pt2(seg.target().x().value(), seg.target().y().value()));
+
+    std::vector<InterRes> inter;
+    CGAL::intersection(c, l, std::back_inserter(inter));
+
+    if (inter.size() == 0) {
+        return false;
+    }
+
+    bool result = false;
+    for (size_t i = 0; i < inter.size(); ++i) {
+        std::pair<CircPoint2, unsigned> res =
+            boost::get<std::pair<CircPoint2, unsigned> >(inter[i]);
+        double x = CGAL::to_double(res.first.x());
+        double y = CGAL::to_double(res.first.y());
+
+        *out++ = Point(x, y);
+        result = true;
+    }
+
+    return result;
+}
+
 // Positive floating modulus
 double fmodpos (double x, double N) {
     return std::fmod(std::fmod(x, N) + N, N);
 }
 
 // Area of an angular sector defined by the vectors op and oq
+// in counterclockwise order.
 template <typename Vector>
 double angular_sector_area (Vector op, Vector oq,
                             double radius) {
@@ -73,10 +113,28 @@ double angular_sector_area (Vector op, Vector oq,
     return radius * radius * angle / 2;
 }
 
+// An other method to compute the area of angular sector.
+template <typename Point>
+double angular_sector_area_bis (Point a, Point b, Point c,
+                                double radius) {
+    double A = (c - b).squared_length().value(),
+           B = (c - a).squared_length().value(),
+           C = (b - a).squared_length().value();
+
+    // Heron's formula
+    double p = (A + B + C) / 2,
+           S = std::sqrt(p * (p - A) * (p - B) * (p - C));
+
+    double stheta = (2 * S) / (B * C),
+           theta = fmodpos(std::asin(stheta), 2 * M_PI);
+
+    return radius * radius * theta / 2;
+}
+
 // Perimeter of an angular sector defined by the vectors op and oq
 template <typename Vector>
-double perimeter_sector_area (Vector op, Vector oq,
-                              double radius) {
+double angular_sector_perimeter (Vector op, Vector oq,
+                                 double radius) {
     if (op == Vector(0, 0) || oq == Vector(0, 0)) {
         return 0;
     }
@@ -92,7 +150,8 @@ double perimeter_sector_area (Vector op, Vector oq,
 template <typename Kernel, typename DT, typename Vertex_handle>
 typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
                                                 Vertex_handle const& v,
-                                                double radius) {
+                                                double radius,
+                                                double eps = 0.05) {
     typedef typename Kernel::Point_2 Point;
     typedef typename Kernel::Line_2 Line;
     typedef typename Kernel::FT FT;
@@ -179,9 +238,11 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         if (l.oriented_side(P) == CGAL::ON_POSITIVE_SIDE) {
             vol += CGAL::area(P, p, pp);
             vol += angular_sector_area(pp - P, p - P, radius);
+            /* vol += angular_sector_area_bis(P, pp, p, radius); */
         } else {
             vol += CGAL::area(P, pp, p);
             vol += angular_sector_area(p - P, pp - P, radius);
+            /* vol += angular_sector_area_bis(P, p, pp, radius); */
         }
 
         return vol;
@@ -211,7 +272,15 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
                 vol += CGAL::area(P, p, pp);
             } else {
                 // Different edges: angular sector
-                vol += angular_sector_area(p - P, pp - P, radius);
+                /* if ((p - pp).squared_length() <= eps * eps) { */
+                    // TODO
+                    // If p and pp are close, then we can approximate the area of the angular sector
+                    // by the area of the underlying triangle
+                    /* vol += CGAL::area(P, p, pp); */
+                /* } else { */
+                    vol += angular_sector_area(p - P, pp - P, radius);
+                    /* vol += angular_sector_area_bis(P, p, pp, radius); */
+                /* } */
             }
         }
     }
@@ -355,6 +424,7 @@ struct VolumeUnion {
         Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_volumes.rows());
 
         for (int i = 0; i < m_volumes.rows(); ++i) {
+            // We filter the null gradients (balls don't intersect)
             if (m_volumes(i).derivatives().rows() != 0) {
                 g += m_volumes(i).derivatives();
             }

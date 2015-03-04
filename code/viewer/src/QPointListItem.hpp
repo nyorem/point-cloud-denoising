@@ -31,6 +31,16 @@ class QPointListItem : public QGraphicsItem {
             m_points.clear();
         }
 
+        template <typename Comparator>
+        void uniquify (Comparator cmp) {
+            std::sort(m_points.begin(), m_points.end());
+
+            m_points.erase(std::unique(m_points.begin(), m_points.end(), cmp),
+                            m_points.end());
+
+            std::cout << "SIZE: " << m_points.size() << std::endl;
+        }
+
         std::vector<Point_2>::iterator begin () {
             return m_points.begin();
         }
