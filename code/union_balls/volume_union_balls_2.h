@@ -3,11 +3,15 @@
 
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Bbox_2.h>
+#include <CGAL/Exact_circular_kernel_2.h>
+#include <CGAL/Circular_kernel_intersections.h>
 
 #include <cmath>
 #include <vector>
 
 #include <iostream>
+
+#include "ps.h"
 
 // Test if p and q are in a counter clockwise order wrt ref
 template <typename Point>
@@ -53,14 +57,50 @@ bool segment_sphere_intersect (Point o, double r,
     return result;
 }
 
+// Robust? way for computing the intersection between a circle and a segment.
+template <class Point, class Segment, class OutputIterator>
+bool segment_sphere_intersect_robust (Point o, double r,
+                                      Segment seg,
+                                      OutputIterator out) {
+    typedef CGAL::Exact_circular_kernel_2        CircK;
+    typedef CGAL::Point_2<CircK>                 Pt2;
+    typedef CGAL::Circle_2<CircK>                Circ2;
+    typedef CGAL::Line_arc_2<CircK>              LineArc2;
+    typedef CGAL::Circular_arc_point_2<CircK>    CircPoint2;
+    typedef boost::variant<std::pair<CircPoint2, unsigned> > InterRes;
+
+    Circ2 c = Circ2(Pt2(o.x(), o.y()), r * r);
+    LineArc2 l = LineArc2(Pt2(seg.source().x(), seg.source().y()),
+                          Pt2(seg.target().x(), seg.target().y()));
+
+    std::vector<InterRes> inter;
+    CGAL::intersection(c, l, std::back_inserter(inter));
+
+    if (inter.size() == 0) {
+        return false;
+    }
+
+    bool result = false;
+    for (size_t i = 0; i < inter.size(); ++i) {
+        std::pair<CircPoint2, unsigned> res = boost::get<std::pair<CircPoint2, unsigned> >(inter[i]);
+        double x = CGAL::to_double(res.first.x());
+        double y = CGAL::to_double(res.first.y());
+
+        *out++ = Point(x, y);
+        result = true;
+    }
+
+    return result;
+}
+
 // Positive floating modulus
 double fmodpos (double x, double N) {
     return std::fmod(std::fmod(x, N) + N, N);
 }
 
 // Area of an angular sector defined by the vectors op and oq
-template <typename Vector>
-double angular_sector_area (Vector op, Vector oq,
+template <typename Point, typename Vector>
+double angular_sector_area (Point P, Vector op, Vector oq,
                             double radius) {
     if (op == Vector(0, 0) || oq == Vector(0, 0)) {
         return 0;
@@ -70,7 +110,16 @@ double angular_sector_area (Vector op, Vector oq,
            theta2 = fmodpos(std::atan2(oq.y(), oq.x()), 2 * M_PI);
     double angle = fmodpos(theta2 - theta1, 2 * M_PI);
 
+    ps_arc(std::cerr, P, radius, theta1, theta2, false, 255, 0, 0);
+
     return radius * radius * angle / 2;
+}
+
+// Area of an angular sector defined by the points P, p and pp
+template <typename Point>
+double angular_sector_area (Point P, Point p, Point pp,
+                            double radius) {
+    return angular_sector_area(p - P, pp - P, radius);
 }
 
 // Perimeter of an angular sector defined by the vectors op and oq
@@ -169,8 +218,10 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     std::cout << "allOutside " << allOutside << std::endl;
     if (allOutside) {
         vol = M_PI * radius * radius;
-        per = 0;
         std::cout << "vol = " << vol << std::endl;
+        ps_arc(std::cerr, P, radius, 0, 2 * M_PI, true, 255, 0, 0);
+
+        per = 0;
         std::cout << "perimeter: " << per << std::endl;
 
         return vol;
@@ -179,20 +230,38 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     // Special case: 2 intersection points
     if (boundary.size() == 2 && !interior_map[boundary[0]] && !interior_map[boundary[1]]) {
         Point p = boundary[0], pp = boundary[1];
+        // Only 1 point: balls are tangential
+        if (p == pp) {
+            vol = M_PI * radius * radius;
+            std::cout << "vol = " << vol << std::endl;
+            ps_arc(std::cerr, P, radius, 0, 2 * M_PI, true, 255, 0, 0);
+
+            per = 0;
+            std::cout << "perimeter: " << per << std::endl;
+
+            return vol;
+        }
+
         Line l(p, pp);
         if (l.oriented_side(P) == CGAL::ON_POSITIVE_SIDE) {
             vol += CGAL::area(P, p, pp);
+            ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(pp - P, p - P, radius);
+            /* vol += angular_sector_area(P, pp, p, radius); */
+            vol += angular_sector_area(P, pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
+
             per += CGAL::sqrt(Segment(p, pp).squared_length());
             per += angular_sector_perimeter(pp - P, p - P, radius);
             std::cout << "perimeter: " << per << std::endl;
         } else {
             vol += CGAL::area(P, pp, p);
+            ps_triangle(std::cerr, P, pp, p);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(p - P, pp - P, radius);
+            /* vol += angular_sector_area(P, p, pp, radius); */
+            vol += angular_sector_area(P, p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
+
             per += CGAL::sqrt(Segment(p, pp).squared_length());
             per += angular_sector_perimeter(p - P, pp - P, radius);
             std::cout << "perimeter: " << per << std::endl;
@@ -208,17 +277,23 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         if (interior_map[p] && interior_map[pp]) {
             // 2 interior points: triangle
             vol += CGAL::area(P, p, pp);
+            ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+
             per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (interior_map[p] && !interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
+            ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+
             per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else if (!interior_map[p] && interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
+            ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
+
             per += CGAL::sqrt(Segment(p, pp).squared_length());
         } else {
             // 0 interior points: 2 on the boundary
@@ -229,11 +304,13 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             if (pedge == ppedge) {
                 // Same edge: triangle
                 vol += CGAL::area(P, p, pp);
+                ps_triangle(std::cerr, P, p, pp);
                 std::cout << "vol = " << vol << std::endl;
+
                 per += CGAL::sqrt(Segment(p, pp).squared_length());
             } else {
                 // Different edges: angular sector
-                vol += angular_sector_area(p - P, pp - P, radius);
+                vol += angular_sector_area(P, p - P, pp - P, radius);
                 std::cout << "vol = " << vol << std::endl;
                 per += angular_sector_perimeter(p - P, pp - P, radius);
             }

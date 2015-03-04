@@ -6,6 +6,7 @@
 
 #include "volume_union_balls_2.h"
 #include "volume_union_balls_2_debug.h"
+#include "ps.h"
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Point_2<Kernel> Point;
@@ -17,11 +18,19 @@ int main (int argc, const char *argv[]) {
     // Test volume_union_balls_2
     std::vector<Point> points;
     points.push_back(Point(0, 0));
+    points.push_back(Point(0, 1));
+    points.push_back(Point(1, 0));
+    points.push_back(Point(2, 0));
     points.push_back(Point(1.5, 0));
-    /* points.push_back(Point(3, 0)); */
-    /* points.push_back(Point(2, 0)); */
-    /* points.push_back(Point(1, 1)); */
+    points.push_back(Point(3, 0));
+    /* points.push_back(Point(-88.5358, 0.71007)); */
+    /* points.push_back(Point(-88.4987, 1.32109)); */
+    /* points.push_back(Point(-87.269, 0.793098)); */
+    /* points.push_back(Point(-81.3591, 0.859669)); */
+    /* points.push_back(Point(-81.3373, 1.31607)); */
+    ps_header(std::cerr);
     std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), 1) << std::endl;
+    ps_footer(std::cerr);
 
     // Test volume_union_balls_2_debug
     /* std::vector<Segment> segments; */
