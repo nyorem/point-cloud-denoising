@@ -25,7 +25,8 @@ class Scene : public QGraphicsScene {
         void toggleDelaunayTriangulation ();
         void toggleVoronoiVertices ();
         void toggleVoronoiEdges ();
-        void randomPointsEllipse (int N, float a, float b, float noiseVariance);
+        void randomPointsEllipse (int N, float a, float b,
+                                  float noiseVariance, bool uniform);
         void oneStep ();
         void computeGradients ();
         void toggleGradients ();

@@ -7,30 +7,55 @@
 
 #include "Consts.hpp"
 
-// Generate N points on an ellipse with minor / major axes of a / b.
+// Generate N points uniformly distributed (or nor) on a circle
+// with radius 'r'.
+// Pre-condition:
+// -> OutputIterator::value_type = Point_2
+template <typename OutputIterator>
+void random_on_circle_2 (int N,
+                         float r,
+                         bool uniform,
+                         OutputIterator out) {
+    if (uniform) {
+        for (int i = 0; i < N; ++i) {
+            Point_2 p(r * cos(2 * i * M_PI / N), r * sin(2 * i * M_PI / N));
+            *(out++) = p;
+        }
+    } else {
+        typedef CGAL::Random_points_on_circle_2<Point_2> Random_points_on_circle_2;
+
+        Random_points_on_circle_2 random_points(r);
+        for (int i = 0; i < N; ++i) {
+            *(out++) = *random_points;
+            random_points++;
+        }
+    }
+}
+
+// Generate N points uniformly distributed (or not) on an ellipse
+// with minor / major axes of a / b.
 // Noise can also be added.
 // Pre-condition:
 // -> OutputIterator::value_type = Point_2
 template <typename OutputIterator>
-void random_ellipse_2 (int N,
-                      float a,
-                      float b,
-                      float noiseVariance,
-                      OutputIterator out) {
-    typedef CGAL::Random_points_on_circle_2<Point_2> Random_points_on_circle_2;
-
+void random_on_ellipse_2 (int N,
+                          float a,
+                          float b,
+                          float noiseVariance,
+                          bool uniform,
+                          OutputIterator out) {
     consts::g_eng.seed(static_cast<unsigned int>(std::time(0)));
     boost::normal_distribution<float> nd(0.0, std::sqrt(noiseVariance));
     boost::variate_generator<boost::mt19937, boost::normal_distribution<float> > gen(consts::g_eng, nd);
 
-    Random_points_on_circle_2 random_points(1.0);
-    for (int i = 0; i < N; ++i) {
+    Points_2 points;
+    random_on_circle_2(N, 1.0, uniform, std::back_inserter(points));
+
+    for (int i = 0; i < points.size(); ++i) {
         double noise = gen();
 
-        Point_2 p = *random_points,
-                q(a * p.x() + noise, b * p.y() + noise);
-        *(out++) = q;
-        random_points++;
+        Point_2 p(a * points[i].x() + noise, b * points[i].y() + noise);
+        *(out++) = p;
     }
 }
 

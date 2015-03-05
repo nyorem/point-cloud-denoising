@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QInputDialog>
@@ -239,9 +240,13 @@ void MainWindow::randomPointsEllipse () {
     noiseVariance->setSingleStep(1);
     noiseVariance->setValue(0);
 
+    QCheckBox *uniform = new QCheckBox("Uniform");
+    uniform->setChecked(true);
+
     formLayout.addRow("Major axis:", majorAxis);
     formLayout.addRow("Minor axis:", minorAxis);
     formLayout.addRow("Noise variance:", noiseVariance);
+    formLayout.addRow(uniform);
 
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
@@ -256,7 +261,8 @@ void MainWindow::randomPointsEllipse () {
         m_view->m_scene->randomPointsEllipse(numberPoints->value(),
                                              majorAxis->value() * 120,
                                              minorAxis->value() * 120,
-                                             noiseVariance->value() * 10);
+                                             noiseVariance->value() * 10,
+                                             uniform->isChecked());
     }
 }
 

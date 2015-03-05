@@ -104,9 +104,10 @@ void Scene::toggleVoronoiEdges () {
     }
 }
 
-void Scene::randomPointsEllipse (int N, float a, float b, float noiseVariance) {
+void Scene::randomPointsEllipse (int N, float a, float b,
+                                 float noiseVariance, bool uniform) {
     Points_2 points;
-    random_ellipse_2(N, a, b, noiseVariance, std::back_inserter(points));
+    random_on_ellipse_2(N, a, b, noiseVariance, uniform, std::back_inserter(points));
 
     m_points->insert(points.begin(), points.end());
     m_balls->insert(points.begin(), points.end());
