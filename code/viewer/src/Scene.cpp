@@ -168,6 +168,9 @@ void Scene::computeGradients () {
     volume(points_vec);
     Eigen::VectorXd grad = volume.grad();
 
+    std::cout << "ratio1: " << volume.weighted_perimeter() << std::endl;
+    std::cout << "ratio2: " << grad.norm() << std::endl;
+
     // Update the gradients
     std::vector<Vector_2> gradients_vectors;
     vectorToPointCloud<Vector_2>(grad, std::back_inserter(gradients_vectors));

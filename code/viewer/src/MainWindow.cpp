@@ -254,8 +254,8 @@ void MainWindow::randomPointsEllipse () {
 
     if (dialog.exec() == QDialog::Accepted) {
         m_view->m_scene->randomPointsEllipse(numberPoints->value(),
-                                             majorAxis->value() * 10,
-                                             minorAxis->value() * 10,
+                                             majorAxis->value() * 120,
+                                             minorAxis->value() * 120,
                                              noiseVariance->value() * 10);
     }
 }

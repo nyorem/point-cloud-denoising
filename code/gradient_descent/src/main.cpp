@@ -79,9 +79,14 @@ int main (void) {
     std::vector<Point> points;
     points.push_back(Point(0, 0));
     points.push_back(Point(1.5, 0));
-    points.push_back(Point(3, 0));
+    /* points.push_back(Point(3, 0)); */
     /* points.push_back(Point(2, 0)); */
     /* points.push_back(Point(1, 1)); */
+    /* points.push_back(Point(-88.5358, 0.71007)); */
+    /* points.push_back(Point(-88.4987, 1.32109)); */
+    /* points.push_back(Point(-87.269, 0.793098)); */
+    /* points.push_back(Point(-81.3591, 0.859669)); */
+    /* points.push_back(Point(-81.3373, 1.31607)); */
     VectorXAD points_vec = pointCloudToVector<VectorXAD>(points.begin(), points.end());
     VolumeUnionAD volume(1);
     std::cout << "volume: " << volume(points_vec) << std::endl;
@@ -92,9 +97,9 @@ int main (void) {
         std::cout << grad(2 * i) << ", " << grad(2 * i + 1) << std::endl;
     }
 
-    // Gradient descent using AD
-    VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.1);
-    std::cout << "new points: " << toValue(new_points_vec) << std::endl;
+    // One step of gradient descent using AD
+    /* VectorXAD new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, 0.01); */
+    /* std::cout << "new points: " << toValue(new_points_vec) << std::endl; */
 
     return 0;
 }

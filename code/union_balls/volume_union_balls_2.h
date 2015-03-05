@@ -115,13 +115,6 @@ double angular_sector_area (Point P, Vector op, Vector oq,
     return radius * radius * angle / 2;
 }
 
-// Area of an angular sector defined by the points P, p and pp
-template <typename Point>
-double angular_sector_area (Point P, Point p, Point pp,
-                            double radius) {
-    return angular_sector_area(p - P, pp - P, radius);
-}
-
 // Perimeter of an angular sector defined by the vectors op and oq
 template <typename Vector>
 double angular_sector_perimeter (Vector op, Vector oq,
@@ -249,7 +242,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += CGAL::area(P, p, pp);
             ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-            /* vol += angular_sector_area(P, pp, p, radius); */
             vol += angular_sector_area(P, pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
 
@@ -259,7 +251,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += CGAL::area(P, pp, p);
             ps_triangle(std::cerr, P, pp, p);
             std::cout << "vol = " << vol << std::endl;
-            /* vol += angular_sector_area(P, p, pp, radius); */
             vol += angular_sector_area(P, p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
 

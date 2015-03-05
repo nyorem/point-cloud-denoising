@@ -34,6 +34,7 @@ class AD
       m_derivatives.coeffRef(derNumber) = Scalar(1);
     }
   
+ // TODO: remove this constructor or put explicit back
   /** Conversion from a scalar constant to an active scalar.
    * The derivatives are set to zero. */
   /*explicit*/ AD(const Scalar& value)

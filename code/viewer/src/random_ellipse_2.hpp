@@ -19,10 +19,11 @@ void random_ellipse_2 (int N,
                       OutputIterator out) {
     typedef CGAL::Random_points_on_circle_2<Point_2> Random_points_on_circle_2;
 
+    consts::g_eng.seed(static_cast<unsigned int>(std::time(0)));
     boost::normal_distribution<float> nd(0.0, std::sqrt(noiseVariance));
     boost::variate_generator<boost::mt19937, boost::normal_distribution<float> > gen(consts::g_eng, nd);
 
-    Random_points_on_circle_2 random_points(a); // TODO: replace a by 1
+    Random_points_on_circle_2 random_points(1.0);
     for (int i = 0; i < N; ++i) {
         double noise = gen();
 
