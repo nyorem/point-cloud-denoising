@@ -169,8 +169,11 @@ void Scene::computeGradients () {
     volume(points_vec);
     Eigen::VectorXd grad = volume.grad();
 
-    std::cout << "ratio1: " << volume.weighted_perimeter() << std::endl;
-    std::cout << "ratio2: " << grad.norm() << std::endl;
+    std::cout << grad << std::endl;
+    std::cout << "perimetre bord union disques: " << volume.weighted_perimeter() << std::endl;
+    std::cout << "norme du gradient: " << grad.norm() << std::endl;
+    std::cout << "moyenne gradient: " << volume.weighted_gradient() << std::endl;
+    std::cout << "ratio: " << volume.weighted_perimeter() / grad.norm() << std::endl;
 
     // Update the gradients
     std::vector<Vector_2> gradients_vectors;

@@ -85,8 +85,10 @@ double angular_sector_perimeter (Vector op, Vector oq,
         return 0;
     }
 
-    double theta1 = fmodpos(std::atan2(op.y().value(), op.x().value()), 2 * M_PI),
-           theta2 = fmodpos(std::atan2(oq.y().value(), oq.x().value()), 2 * M_PI);
+    /* double theta1 = fmodpos(std::atan2(op.y().value(), op.x().value()), 2 * M_PI), */
+    /*        theta2 = fmodpos(std::atan2(oq.y().value(), oq.x().value()), 2 * M_PI); */
+    double theta1 = std::atan2(op.y().value(), op.x().value()) + M_PI,
+           theta2 = std::atan2(oq.y().value(), oq.x().value()) + M_PI;
     double angle = fmodpos(theta2 - theta1, 2 * M_PI);
 
     return radius * angle;

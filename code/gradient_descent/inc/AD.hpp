@@ -37,11 +37,17 @@ class AD
  // TODO: remove this constructor or put explicit back
   /** Conversion from a scalar constant to an active scalar.
    * The derivatives are set to zero. */
-  /*explicit*/ AD(const Scalar& value)
+  /*explicit*/
+ AD(const Scalar& value)
     : m_value(value)
   {
-    if(m_derivatives.size()>0)
-      m_derivatives.setZero();
+    /* if(m_derivatives.size()>0) */
+    /*   m_derivatives.setZero(); */
+  }
+
+  AD(const Scalar& value, int nbDer)
+    : m_value(value), m_derivatives(Vector(nbDer))
+  {
   }
 
   /** Constructs an active scalar from its \a value and derivatives \a der */
@@ -234,11 +240,28 @@ class AD
   }
 };
 
-AD  sqrt(const AD &x)
+AD sqrt(const AD &x)
 {
   using std::sqrt;
   double sqrtx = sqrt(x.value());
   return AD(sqrtx,x.derivatives() * (double(0.5) / sqrtx));
+}
+
+AD atan2(const AD &y, const AD& x)
+{
+  using std::atan2;
+  double atan2yx = atan2(y.value(), x.value());
+
+  double tmp2 = y.value() * y.value();
+  double tmp3 = x.value() * x.value();
+  double tmp4 = tmp3/(tmp2+tmp3);
+
+  if (tmp4 != 0) {
+    return AD(atan2yx,
+              (y.derivatives() * x.value() - y.value() * x.derivatives()) * (tmp2+tmp3));
+  }
+
+  return AD(atan2yx);
 }
 
 #endif // EIGEN_AUTODIFF_SCALAR_H
