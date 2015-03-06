@@ -157,7 +157,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
 
     // Timestep for gradient descent
     double timestep = QInputDialog::getDouble(this, "Gradient descent", "Timestep",
-                                              0.1, 0, 100, 3);
+                                              10, 0, 100, 3);
     m_view->m_scene->setTimestep(timestep);
 }
 

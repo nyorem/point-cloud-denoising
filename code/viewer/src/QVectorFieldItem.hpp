@@ -55,9 +55,9 @@ class QVectorFieldItem : public QGraphicsItem {
                 // Normalize the vector
                 // TODO
                 v = v / CGAL::sqrt(v.squared_length());
-                v = 50 * v;
-                Point_2 q = p + v;
-                /* Point_2 q = p - 0.1 * v; */
+                /* v = 50 * v; */
+                /* Point_2 q = p + v; */
+                Point_2 q = p + 20 * v;
 
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());
             }
