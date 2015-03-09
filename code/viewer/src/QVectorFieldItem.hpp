@@ -58,10 +58,6 @@ class QVectorFieldItem : public QGraphicsItem {
                 v = 50 * v;
                 Point_2 q = p + v;
                 /* Point_2 q = p - 0.1 * v; */
-                /* if (v.squared_length() >= 1e6) { */
-                /*     painter->setBrush(QBrush(m_pen.color())); */
-                /*     painter->drawEllipse(p.x(), p.y(), 10.0, 10.0); */
-                /* } */
 
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());
             }
