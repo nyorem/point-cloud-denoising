@@ -160,7 +160,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
     // Test if the first Voronoi vertex is inside
     Point p0 = adjacent_voronoi_vertices[0];
     bool isInside = (p0 - P).squared_length() <= radius * radius;
-    bool allOutside = true;
+    bool allOutside = !isInside;
 
     std::vector<Point> boundary;
     std::map<Point, Segment> edge_map;
