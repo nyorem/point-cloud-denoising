@@ -6,7 +6,7 @@ set (EXECUTABLE_NAME "main")
 set (SOURCE_DIR "src")
 
 # Compilation flags
-add_definitions (-Wall)
+add_definitions (-std=c++11 -Wall)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
