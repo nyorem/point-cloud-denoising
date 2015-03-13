@@ -227,6 +227,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
         Point p = boundary[0], pp = boundary[1];
         // Only 1 point: balls are tangential
         if (p == pp) {
+            std::cout << "TANGENTIAL" << std::endl;
             vol = M_PI * radius * radius;
             std::cout << "vol = " << vol << std::endl;
             ps_arc(std::cerr, P, radius, 0, 2 * M_PI, true, 255, 0, 0);

@@ -54,10 +54,10 @@ class QVectorFieldItem : public QGraphicsItem {
                 Vector_2 v = mit->second;
                 // Normalize the vector
                 // TODO
-                v = v / CGAL::sqrt(v.squared_length());
-                v = 50 * v;
+                /* v = v / CGAL::sqrt(v.squared_length()); */
+                /* v = 50 * v; */
+                /* Point_2 q = p + v; */
                 Point_2 q = p + v;
-                /* Point_2 q = p - 0.1 * v; */
 
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());
             }

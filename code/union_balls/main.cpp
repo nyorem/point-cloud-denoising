@@ -18,16 +18,12 @@ int main (int argc, const char *argv[]) {
     // Test volume_union_balls_2
     std::vector<Point> points;
     points.push_back(Point(0, 0));
+    /* points.push_back(Point(2, 0)); */
+    /* points.push_back(Point(1, 1)); */
     points.push_back(Point(0, 1));
     points.push_back(Point(1, 0));
-    points.push_back(Point(2, 0));
     points.push_back(Point(1.5, 0));
     points.push_back(Point(3, 0));
-    /* points.push_back(Point(-88.5358, 0.71007)); */
-    /* points.push_back(Point(-88.4987, 1.32109)); */
-    /* points.push_back(Point(-87.269, 0.793098)); */
-    /* points.push_back(Point(-81.3591, 0.859669)); */
-    /* points.push_back(Point(-81.3373, 1.31607)); */
     double per = 0;
     double radius = 1;
     ps_header(std::cerr);

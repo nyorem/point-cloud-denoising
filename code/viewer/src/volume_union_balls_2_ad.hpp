@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <iostream>
+#include <fstream>
 
 #include "ps.hpp"
 
@@ -60,19 +61,34 @@ double fmodpos (double x, double N) {
     return std::fmod(std::fmod(x, N) + N, N);
 }
 
+// fmodpos for FT
+template <typename FT>
+FT fmodpos_ft (FT x, double N) {
+    while (x > N)
+        x -= N;
+
+    while (x < 0)
+        x += N;
+
+    return x;
+}
+
 // Area of an angular sector defined by the vectors op and oq
-template <typename Point, typename Vector>
-double angular_sector_area (Point P, Vector op, Vector oq,
-                            double radius) {
+template <typename FT, typename Point, typename Vector>
+FT angular_sector_area (Point P, Vector op, Vector oq,
+                        double radius) {
     if (op == Vector(0, 0) || oq == Vector(0, 0)) {
         return 0;
     }
 
-    double theta1 = fmodpos(std::atan2(op.y().value(), op.x().value()), 2 * M_PI),
-           theta2 = fmodpos(std::atan2(oq.y().value(), oq.x().value()), 2 * M_PI);
-    double angle = fmodpos(theta2 - theta1, 2 * M_PI);
+    /* double theta1 = fmodpos(std::atan2(op.y().value(), op.x().value()), 2 * M_PI), */
+    /*        theta2 = fmodpos(std::atan2(oq.y().value(), oq.x().value()), 2 * M_PI); */
+    FT theta1 = fmodpos_ft(atan2(op.y(), op.x()), 2 * M_PI),
+       theta2 = fmodpos_ft(atan2(oq.y(), oq.x()), 2 * M_PI);
+    FT angle = fmodpos_ft(theta2 - theta1, 2 * M_PI);
+    /* double angle = fmodpos(theta2.value() - theta1.value(), 2 * M_PI); */
 
-    ps_arc(std::cerr, P, radius, theta1, theta2, false, 255, 0, 0);
+    ps_arc(std::cerr, P, radius, theta1.value(), theta2.value(), false, 255, 0, 0);
 
     return radius * radius * angle / 2;
 }
@@ -211,7 +227,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += CGAL::area(P, p, pp);
             ps_triangle(std::cerr, P, p, pp);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(P, pp - P, p - P, radius);
+            vol += angular_sector_area<FT>(P, pp - P, p - P, radius);
             std::cout << "vol = " << vol << std::endl;
 
             per += angular_sector_perimeter(pp - P, p - P, radius);
@@ -220,7 +236,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
             vol += CGAL::area(P, pp, p);
             ps_triangle(std::cerr, P, pp, p);
             std::cout << "vol = " << vol << std::endl;
-            vol += angular_sector_area(P, p - P, pp - P, radius);
+            vol += angular_sector_area<FT>(P, p - P, pp - P, radius);
             std::cout << "vol = " << vol << std::endl;
 
             per += angular_sector_perimeter(p - P, pp - P, radius);
@@ -262,7 +278,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2 (DT const& dt,
                 std::cout << "vol = " << vol << std::endl;
             } else {
                 // Different edges: angular sector
-                vol += angular_sector_area(P, p - P, pp - P, radius);
+                vol += angular_sector_area<FT>(P, p - P, pp - P, radius);
                 std::cout << "vol = " << vol << std::endl;
                 per += angular_sector_perimeter(p - P, pp - P, radius);
             }
@@ -305,6 +321,8 @@ Vector volume_union_balls_2_vector_out (InputIterator begin,
         ++N;
     Vector vol(N);
 
+    std::ofstream perimeters("perimeters.txt");
+
     int i = 0;
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
@@ -319,6 +337,7 @@ Vector volume_union_balls_2_vector_out (InputIterator begin,
 
         double pper = 0;
         vol[i++] = volume_ball_voronoi_cell_2<Kernel>(dt, vit, radius, pper);
+        perimeters << pper << std::endl;
         per += pper;
     }
 
@@ -432,8 +451,20 @@ struct VolumeUnion {
         return g;
     }
 
+    float weighted_gradient () const {
+        float s = 0;
+
+        for (int i = 0; i < m_volumes.rows(); ++i) {
+            s += m_volumes(i).derivatives().norm();
+        }
+
+        s /= m_volumes.rows();
+
+        return s;
+    }
+
     double weighted_perimeter () const {
-        return m_per / (2 * M_PI * m_radius);
+        return m_per / (2 * M_PI * m_radius * m_volumes.rows());
     }
 
     private:
