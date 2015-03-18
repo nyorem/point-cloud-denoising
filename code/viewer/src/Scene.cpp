@@ -11,6 +11,7 @@
 #include <iterator>
 #include <fstream>
 #include <QFileDialog>
+#include <QInputDialog>
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
     init();
@@ -114,68 +115,51 @@ void Scene::randomPointsEllipse (int N, float a, float b,
     m_dt->insert(points.begin(), points.end());
 }
 
-// Two points are considered equal if they are distant of at most eps
-// TODO: not used
-/* template <typename Point> */
-/* struct CompareDistance { */
-/*     CompareDistance (double eps) : m_eps(eps) {} */
-
-/*     bool operator() (Point const& lhs, Point const& rhs) { */
-/*         return (lhs - rhs).squared_length() <= m_eps * m_eps; */
-/*     } */
-
-/*     private: */
-/*         double m_eps; */
-/* }; */
-
 void Scene::oneStep () {
-    VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
+    int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
+                                 1, 0, 100, 10);
 
-    // Compute the volume of the union and the gradient
-    /* VolumeUnion_ad volume(m_radius); */
-    /* volume(points_vec); */
+    for (int i = 0; i <= N; ++i) {
+        VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
-    // Compute the perimeter of the union and the gradient
-    PerimeterUnion_ad perimeter(m_radius);
-    perimeter(points_vec);
+        // Compute the perimeter of the union and the gradient
+        FunctionUnion_ad f(m_radius);
+        f(points_vec);
 
-    // Update the gradients
-    computeGradients();
+        // Update the gradients
+        computeGradients();
 
-    // New point cloud: gradient descent
-    GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-    /* VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, volume, points_vec, m_timestep); */
-    VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, perimeter, points_vec, m_timestep);
-    Points_2 new_points;
-    vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
-    m_points->clear();
-    m_points->insert(new_points.begin(), new_points.end());
+        // New point cloud: gradient descent
+        GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
+        VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, f, points_vec, m_timestep);
+        Points_2 new_points;
+        vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
+        m_points->clear();
+        m_points->insert(new_points.begin(), new_points.end());
 
-    // Update the balls
-    m_balls->clear();
-    m_balls->insert(m_points->begin(), m_points->end());
+        // Update the balls
+        m_balls->clear();
+        m_balls->insert(m_points->begin(), m_points->end());
 
-    // Update the Delaunay triangulation
-    m_dt->clear();
-    m_dt->insert(m_points->begin(), m_points->end());
+        // Update the Delaunay triangulation
+        m_dt->clear();
+        m_dt->insert(m_points->begin(), m_points->end());
 
-    // Update the decomposition
-    m_decomposition->clear();
-    std::vector<Segment_2> segments;
-    volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments);
-    m_decomposition->insert(segments.begin(), segments.end());
+        // Update the decomposition
+        m_decomposition->clear();
+        std::vector<Segment_2> segments;
+        volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments);
+        m_decomposition->insert(segments.begin(), segments.end());
+    }
 }
 
 void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
     // Compute the perimeter of the union and the gradient
-    PerimeterUnion_ad perimeter(m_radius);
-    perimeter(points_vec);
-    Eigen::VectorXd grad = perimeter.grad();
-
-    /* std::cout << "ratio1: " << volume.weighted_perimeter() << std::endl; */
-    /* std::cout << "ratio2: " << grad.norm() << std::endl; */
+    FunctionUnion_ad f(m_radius);
+    f(points_vec);
+    Eigen::VectorXd grad = f.grad();
 
     // Update the gradients
     std::vector<Vector_2> gradients_vectors;

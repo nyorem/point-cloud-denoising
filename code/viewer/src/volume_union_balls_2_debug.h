@@ -87,9 +87,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
     // Compute the boundary of the Voronoi cell of P
     typename DT::Face_circulator fc = dt.incident_faces(v), done(fc);
     std::vector<Point> adjacent_voronoi_vertices;
-    std::cout << "Voronoi vertices of: " << P << std::endl;
     do {
-        std::cout << dt.dual(fc) << std::endl;
         adjacent_voronoi_vertices.push_back(dt.dual(fc));
     } while (++fc != done);
 
@@ -116,10 +114,8 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
         interior_map[p] = isInside;
 
         // Intersection points between the Voronoi edge [p, next] and the ball
-        std::cout << "Current edge: " << edge << std::endl;
         std::vector<Point> inter;
         segment_sphere_intersect_debug(P, radius, edge, std::back_inserter(inter));
-        std::cout << "Size intersection: " << inter.size() << std::endl;
 
         // Remember the edge corresponding to an intersection point
         if (inter.size() != 0) {
@@ -141,7 +137,6 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
         }
 
         // Update isInside boolean
-        std::cout << "isInside = " << (isInside ? "true" : "false") << std::endl;
         if (inter.size() == 1) {
             isInside = !isInside;
         }
@@ -150,10 +145,8 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
     out.clear();
 
     // The boundary of the Voronoi cell is entirely outside of the ball
-    std::cout << "allOutside " << allOutside << std::endl;
     if (allOutside) {
         vol = M_PI * radius * radius;
-        std::cout << "vol = " << vol << std::endl;
 
         return vol;
     }
@@ -169,14 +162,10 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
 
         if (l.oriented_side(P) == CGAL::ON_POSITIVE_SIDE) {
             vol += CGAL::area(P, p, pp);
-            std::cout << "vol = " << vol << std::endl;
             vol += angular_sector_area_debug(pp - P, p - P, radius);
-            std::cout << "vol = " << vol << std::endl;
         } else {
             vol += CGAL::area(P, pp, p);
-            std::cout << "vol = " << vol << std::endl;
             vol += angular_sector_area_debug(p - P, pp - P, radius);
-            std::cout << "vol = " << vol << std::endl;
         }
 
         return vol;
@@ -192,21 +181,18 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
             out.push_back(Segment(P, p));
             out.push_back(Segment(P, pp));
             out.push_back(Segment(p, pp));
-            std::cout << "vol = " << vol << std::endl;
         } else if (interior_map[p] && !interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             out.push_back(Segment(P, p));
             out.push_back(Segment(P, pp));
             out.push_back(Segment(p, pp));
-            std::cout << "vol = " << vol << std::endl;
         } else if (!interior_map[p] && interior_map[pp]) {
             // 1 interior point: triangle
             vol += CGAL::area(P, p, pp);
             out.push_back(Segment(P, p));
             out.push_back(Segment(P, pp));
             out.push_back(Segment(p, pp));
-            std::cout << "vol = " << vol << std::endl;
         } else {
             // 0 interior points: 2 on the boundary
             // It depends on the corresponding edges
@@ -219,18 +205,15 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
                 out.push_back(Segment(P, p));
                 out.push_back(Segment(P, pp));
                 out.push_back(Segment(p, pp));
-                std::cout << "vol = " << vol << std::endl;
             } else {
                 // Different edges: angular sector
                 vol += angular_sector_area_debug(p - P, pp - P, radius);
                 out.push_back(Segment(P, p));
                 out.push_back(Segment(P, pp));
-                std::cout << "vol = " << vol << std::endl;
             }
         }
     }
 
-    std::cout << std::endl;
 
     return vol;
 }
