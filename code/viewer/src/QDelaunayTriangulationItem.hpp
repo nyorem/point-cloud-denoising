@@ -64,7 +64,7 @@ class QDelaunayTriangulationItem : public QTriangulationItem<DT> {
             if (isVoronoiVerticesVisible()) {
                 painter->setPen(penVoronoiVertices);
 
-                for (int i = 0; i < m_voronoiVertices.size(); ++i) {
+                for (size_t i = 0; i < m_voronoiVertices.size(); ++i) {
                     painter->drawEllipse(m_voronoiVertices[i].x(),
                                          m_voronoiVertices[i].y(),
                                          1, 1);

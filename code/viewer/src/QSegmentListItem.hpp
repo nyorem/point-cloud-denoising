@@ -43,7 +43,7 @@ class QSegmentListItem : public QGraphicsItem {
                     QWidget *widget) {
             painter->setPen(pen);
 
-            for (int i = 0; i < m_segments.size(); ++i) {
+            for (size_t i = 0; i < m_segments.size(); ++i) {
                 Segment_2 s = m_segments[i];
                 Point_2 p = s.source(), q = s.target();
                 painter->drawLine(p.x(), p.y(), q.x(), q.y());

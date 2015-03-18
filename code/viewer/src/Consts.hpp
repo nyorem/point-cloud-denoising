@@ -9,7 +9,7 @@ namespace consts {
     static const int height_window = 600;
 
     // Dimensions of the view (left side of the window)
-    static const int width_view = 600;
+    static const int width_view = width_window - 200;
     static const int height_view = height_window;
 
     // Global random number generator

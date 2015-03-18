@@ -14,6 +14,8 @@ class MainWindow : public QWidget {
         MainWindow (int w = consts::width_window,
                     int h = consts::height_window);
 
+        void resizeEvent (QResizeEvent* event);
+
     public slots:
         void resetScene ();
         void savePointCloud ();

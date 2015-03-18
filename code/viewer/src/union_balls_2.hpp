@@ -42,7 +42,7 @@ void intersection_sphere_voronoi_cell_2 (FTri &ftri, FArc &farc,
 
     // Voronoi edges
     std::vector<Segment> voronoi_edges;
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         voronoi_edges.push_back(Segment(adjacent_voronoi_vertices[i],
                                         adjacent_voronoi_vertices[(i + 1) % N]));
     }
@@ -52,7 +52,7 @@ void intersection_sphere_voronoi_cell_2 (FTri &ftri, FArc &farc,
     std::map<Point, bool> interior_map;
 
     // For each Voronoi vertex
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         Point p = adjacent_voronoi_vertices[i],
               next = adjacent_voronoi_vertices[(i + 1) % N];
         Segment edge(p, next);

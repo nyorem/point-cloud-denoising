@@ -40,7 +40,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
     std::map<Point, bool> interior_map;
 
     // For each Voronoi vertex
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         Point p = adjacent_voronoi_vertices[i],
               next = adjacent_voronoi_vertices[(i + 1) % N];
         Segment edge(p, next);

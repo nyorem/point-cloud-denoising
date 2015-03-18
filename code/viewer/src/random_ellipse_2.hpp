@@ -51,7 +51,7 @@ void random_on_ellipse_2 (int N,
     Points_2 points;
     random_on_circle_2(N, 1.0, uniform, std::back_inserter(points));
 
-    for (int i = 0; i < points.size(); ++i) {
+    for (size_t i = 0; i < points.size(); ++i) {
         double noise = gen();
 
         Point_2 p(a * points[i].x() + noise, b * points[i].y() + noise);

@@ -161,6 +161,17 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_view->m_scene->setTimestep(timestep);
 }
 
+void MainWindow::resizeEvent (QResizeEvent* event) {
+    int w = event->size().width(),
+        h = event->size().height();
+
+    resize(w, h);
+    m_view->resize(w - 200, h);
+
+    m_rightside->move(w - 200, 0);
+    m_rightside->resize(200, h);
+}
+
 // Slots
 void MainWindow::togglePoints () {
     m_view->m_scene->togglePoints();

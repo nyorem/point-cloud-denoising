@@ -84,7 +84,7 @@ class QPointListItem : public QGraphicsItem {
                     QWidget *widget) {
             painter->setPen(m_pen);
 
-            for (int i = 0; i < m_points.size(); ++i) {
+            for (size_t i = 0; i < m_points.size(); ++i) {
                 if (m_drawBalls) {
                     drawCircle(painter, m_points[i]);
                 } else {

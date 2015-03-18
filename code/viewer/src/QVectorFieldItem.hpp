@@ -53,7 +53,6 @@ class QVectorFieldItem : public QGraphicsItem {
                 Point_2 p = mit->first;
                 Vector_2 v = mit->second;
                 // Normalize the vector
-                // TODO
                 /* v = v / CGAL::sqrt(v.squared_length()); */
                 /* v = 50 * v; */
                 /* Point_2 q = p + v; */

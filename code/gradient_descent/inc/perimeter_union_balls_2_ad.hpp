@@ -110,7 +110,7 @@ typename Kernel::FT perimeter_ball_voronoi_cell_2 (DT const& dt,
 
     // Voronoi edges
     std::vector<Segment> voronoi_edges;
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         voronoi_edges.push_back(Segment(adjacent_voronoi_vertices[i],
                                         adjacent_voronoi_vertices[(i + 1) % N]));
     }
