@@ -134,6 +134,15 @@ void Scene::oneStep () {
         VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, f, points_vec, m_timestep);
         Points_2 new_points;
         vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
+
+        // Do not move the fixed points
+        for (size_t j = 0; j < new_points.size(); ++j) {
+            Point_2 p = (*m_points)[j];
+            if (m_fixedPoints[p]) {
+                new_points[j] = p;
+            }
+        }
+
         m_points->clear();
         m_points->insert(new_points.begin(), new_points.end());
 
@@ -209,10 +218,21 @@ void Scene::loadPointCloud () {
 
     std::vector<Point_2> points;
     std::ifstream file(filename.toStdString().c_str());
-    float x, y;
 
-    while (file >> x >> y) {
-        points.push_back(Point_2(x, y));
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream ss(line);
+        float x, y;
+        std::string isFixed;
+        if (ss >> x >> y) {
+            Point_2 p(x, y);
+            points.push_back(p);
+            if (ss >> isFixed) {
+                m_fixedPoints[p] = true;
+            } else {
+                m_fixedPoints[p] = false;
+            }
+        }
     }
 
     m_points->insert(points.begin(), points.end());

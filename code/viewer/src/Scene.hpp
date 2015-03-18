@@ -46,6 +46,7 @@ class Scene : public QGraphicsScene {
 
         double m_timestep;
         double m_radius;
+        std::map<Point_2, bool> m_fixedPoints;
 };
 
 #endif
