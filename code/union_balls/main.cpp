@@ -17,19 +17,25 @@ typedef Eigen::VectorXd VectorXd;
 int main (int argc, const char *argv[]) {
     // Test volume_union_balls_2
     std::vector<Point> points;
-    points.push_back(Point(0, 0));
-    points.push_back(Point(0, 1));
-    points.push_back(Point(1, 0));
-    points.push_back(Point(2, 0));
-    points.push_back(Point(1.5, 0));
-    points.push_back(Point(3, 0));
+    /* points.push_back(Point(0, 0)); */
+    /* points.push_back(Point(0, 1)); */
+    /* points.push_back(Point(1, 0)); */
+    /* points.push_back(Point(2, 0)); */
+    /* points.push_back(Point(1.5, 0)); */
+    /* points.push_back(Point(3, 0)); */
     /* points.push_back(Point(-88.5358, 0.71007)); */
     /* points.push_back(Point(-88.4987, 1.32109)); */
     /* points.push_back(Point(-87.269, 0.793098)); */
     /* points.push_back(Point(-81.3591, 0.859669)); */
     /* points.push_back(Point(-81.3373, 1.31607)); */
+    points.push_back(Point(120, 0));
+    points.push_back(Point(37.082, 114.127));
+    points.push_back(Point(-97.082, 70.5342));
+    points.push_back(Point(-97.082, -70.5342));
+    points.push_back(Point(37.082, -114.127));
+    points.push_back(Point(0, 0));
     double per = 0;
-    double radius = 1;
+    double radius = 100;
     ps_header(std::cerr);
     std::cout << volume_union_balls_2<FT>(points.begin(), points.end(), radius, per) << std::endl;
     ps_footer(std::cerr);

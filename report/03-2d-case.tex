@@ -70,7 +70,7 @@ Then, we loop over the Voronoi edges $ e = pq $ of a vertex $ v $:
         angular sector $ \vec{vp}, \vec{vq} $.
 \end{itemize}
 
-Two special cases need to be handled:
+Some special cases need to be handled:
 \begin{itemize}
     \item the boundary of the Voronoi cell is entirely outside the ball, then we
         add $ \pi r^2 $ to the area of the union (see
@@ -78,16 +78,69 @@ Two special cases need to be handled:
     \item the boundary consists of two intersection points $ p $ and $ q $, then
         we add the triangle $ pvq $ and the angular sector $ \vec{vp}, \vec{vq}
         $ (see \ref{fig:inter_voronoi_ball_2d:c}).
+    \item there is only one point on the boundary (can happen if adjacent balls
+        are tangential), then we add $ \pi r^2 $.
 \end{itemize}
 
-We used the same techniques for computing the perimeter of the intersection
-except that if there are no intersection then the perimeter is null and instead
-of adding triangles areas or angular sectors, we add lengths of line segments
-and arcs.
+We used the same techniques for computing the perimeter of the boundary of the
+intersection except that if there are no intersection then the perimeter is null
+and instead of adding triangles areas or angular sectors, we add lengths of
+circular arcs.
+
+% TODO
+
+\section{Gradient}
+
+Then, we used the automatic differentiation to compute the gradient of the
+previously computed area.
+
+Here are a few examples of such gradients for different input point sets:
+
+\begin{figure}[H]
+    \centering
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{ellipse-200-001-100}
+        \includegraphics[scale=0.32]{ellipse-200-001-100-gradients}
+        \subcaption{200 samples on an ellipse with $ r = 100 $}
+        \label{fig:gradients_2d_ellipse}
+    \end{minipage}
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{circle-120-001-100}
+        \includegraphics[scale=0.32]{circle-120-001-100-gradients}
+        \subcaption{120 samples on a circle with $ r = 100 $}
+        \label{fig:gradients_2d_ellipse}
+    \end{minipage}
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{square-76-001-100}
+        \includegraphics[scale=0.32]{square-76-001-100-gradients}
+        \subcaption{76 samples on a square with $ r = 100 $}
+        \label{fig:gradients_2d_ellipse}
+    \end{minipage}
+
+    \caption{Input point set / Normalized computed gradients}
+    \label{fig:gradients_2d}
+\end{figure}
+
+In the previous screenshots, we can see that the gradients are (if the radius of
+the balls are big enough and if the sampling is uniform) in the same direction
+that the normals to the underlying surface.
 
 % TODO
 
 \section{Gradient descent}
+
+Then, as said in the introduction, we will approximate the mean curvature flow
+by applying a gradient descent algorithm where the considered energy is the area
+(or the perimeter of the boundary) of the union of balls.
+
+This gradient descent will be done using a constant timestep (Euler explicit
+scheme).
 
 We needed to choose "good" weights for the gradient descent. Indeed, in a normal
 mean curvature flow, all the points move with the same distance related to the
@@ -96,35 +149,31 @@ curvature of our restricted region.
 
 One way to avoid this problem is to weight the gradient by the perimeter of the
 visible part of the restricted region. But by doing that, we can divide by $ 0 $
-so we need to choose the time step according to these weights.
+so we need to choose the time step according to these weights in order to avoid
+the case where a point does not see anything.
 
 % TODO
 
 \section{Experiments}
+
 We did some experiments to validate our results. The fist thing we did was to
-apply our flow to a set of points randomly chosen on an ellipse.
+apply our flow to a set of points randomly and/or uniformly sampled on an ellipse.
 
 Then, we added some noise on these points to test the robustness of our
 algorithm.
 
-In the first part of the experiments, we used a constant time step for the
-gradient descent. This is the same as doing an explicit Euler scheme.
-
-We encountered a numerical issue when trying to do the experiments. Indeed,
-there were numerical errors when points were too close. The origin of this
-problem was probably the computation of the area of the angular sector which was
-not robust. One way to fix that is to merge the points who are too close
-(contained in a small ball with a given small radius). That's what we decided to
-implement.
-
 % TODO: figures
+
+We also compare the two gradient flows: using the area or the perimeter of the
+boundary.
+
+We notice that the gradient flow of the area may create holes in the point set
+which is not the case for the gradient flow of the perimeter.
+
+% TODO: explain why
 
 We remark that if the time step is too large then the algorithm does not
 converge ($ 0.1 $ for example).
-
-For the second part, we used the previously described gradient weighting.
-
-% TODO: figures
 
 % Union of balls
 % Intersection with Voronoi cells

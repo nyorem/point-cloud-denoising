@@ -152,12 +152,12 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     // Parameters initialization
     // Ball radius
     double radius = QInputDialog::getDouble(this, "Balls", "Radius",
-                                            100.0, 0, 1000);
+                                            15.0, 0, 1000);
     m_view->m_scene->setBallRadius(radius);
 
     // Timestep for gradient descent
     double timestep = QInputDialog::getDouble(this, "Gradient descent", "Timestep",
-                                              10, 0, 100, 3);
+                                              0.5, 0, 100, 3);
     m_view->m_scene->setTimestep(timestep);
 }
 
