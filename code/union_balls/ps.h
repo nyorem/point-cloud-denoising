@@ -2,9 +2,12 @@
 #define _PS_HPP_
 
 // Scale / translation parameters
-static const int sx = 50;
-static const int sy = 50;
-static const int sr = 50;
+/* static const int sx = 50; */
+/* static const int sy = 50; */
+/* static const int sr = 50; */
+static const double sx = 0.5;
+static const double sy = 0.5;
+static const double sr = 0.5;
 
 static const int tx = 200;
 static const int ty = 200;

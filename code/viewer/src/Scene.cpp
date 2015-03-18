@@ -12,7 +12,6 @@
 #include <fstream>
 #include <QFileDialog>
 #include <QInputDialog>
-#include <QGraphicsView>
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
     init();
@@ -124,15 +123,15 @@ void Scene::oneStep () {
         VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
         // Compute the perimeter of the union and the gradient
-        PerimeterUnion_ad perimeter(m_radius);
-        perimeter(points_vec);
+        FunctionUnion_ad f(m_radius);
+        f(points_vec);
 
         // Update the gradients
         computeGradients();
 
         // New point cloud: gradient descent
         GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-        VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, perimeter, points_vec, m_timestep);
+        VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, f, points_vec, m_timestep);
         Points_2 new_points;
         vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
         m_points->clear();
@@ -158,9 +157,9 @@ void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
     // Compute the perimeter of the union and the gradient
-    PerimeterUnion_ad perimeter(m_radius);
-    perimeter(points_vec);
-    Eigen::VectorXd grad = perimeter.grad();
+    FunctionUnion_ad f(m_radius);
+    f(points_vec);
+    Eigen::VectorXd grad = f.grad();
 
     // Update the gradients
     std::vector<Vector_2> gradients_vectors;
