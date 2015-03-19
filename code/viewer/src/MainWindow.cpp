@@ -98,56 +98,87 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
 
     // Slots
     // Points
-    connect(m_pointsButton, &QPushButton::clicked,
-            this, &MainWindow::togglePoints);
+    /* connect(m_pointsButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::togglePoints); */
+    connect(m_pointsButton, SIGNAL(clicked()),
+            this, SLOT(togglePoints()));
 
     // Balls
-    connect(m_ballsButton, &QPushButton::clicked,
-            this, &MainWindow::toggleBalls);
+    /* connect(m_ballsButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleBalls); */
+    connect(m_ballsButton, SIGNAL(clicked()),
+            this, SLOT(toggleBalls()));
 
     // Reset
-    connect(m_resetButton, &QPushButton::clicked,
-            this, &MainWindow::resetScene);
+    /* connect(m_resetButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::resetScene); */
+    connect(m_resetButton, SIGNAL(clicked()),
+            this, SLOT(resetScene()));
 
     // Save
-    connect(m_saveButton, &QPushButton::clicked,
-            this, &MainWindow::savePointCloud);
+    /* connect(m_saveButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::savePointCloud); */
+    connect(m_saveButton, SIGNAL(clicked()),
+            this, SLOT(savePointCloud()));
 
     // Load
-    connect(m_loadButton, &QPushButton::clicked,
-            this, &MainWindow::loadPointCloud);
+    /* connect(m_loadButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::loadPointCloud); */
+    connect(m_loadButton, SIGNAL(clicked()),
+            this, SLOT(loadPointCloud()));
 
     // Delaunay Triangulation
-    connect(m_delaunayButton, &QPushButton::clicked,
-            this, &MainWindow::toggleDelaunayTriangulation);
+    /* connect(m_delaunayButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleDelaunayTriangulation); */
+    connect(m_delaunayButton, SIGNAL(clicked()),
+            this, SLOT(toggleDelaunayTriangulation()));
 
     // Voronoi vertices
-    connect(m_voronoiVerticesButton, &QPushButton::clicked,
-            this, &MainWindow::toggleVoronoiVertices);
+    /* connect(m_voronoiVerticesButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleVoronoiVertices); */
+    connect(m_voronoiVerticesButton, SIGNAL(clicked()),
+            this, SLOT(toggleVoronoiVertices()));
 
     // Voronoi edges
-    connect(m_voronoiEdgesButton, &QPushButton::clicked,
-            this, &MainWindow::toggleVoronoiEdges);
+    /* connect(m_voronoiEdgesButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleVoronoiEdges); */
+    connect(m_voronoiEdgesButton, SIGNAL(clicked()),
+            this, SLOT(toggleVoronoiEdges()));
 
     // Points on ellipse
-    connect(m_randomEllipseButton, &QPushButton::clicked,
-            this, &MainWindow::randomPointsEllipse);
+    /* connect(m_randomEllipseButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::randomPointsEllipse); */
+    connect(m_randomEllipseButton, SIGNAL(clicked()),
+            this, SLOT(randomPointsEllipse()));
 
     // One step
-    connect(m_oneStepButton, &QPushButton::clicked,
-            this, &MainWindow::oneStep);
+    /* connect(m_oneStepButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::oneStep); */
+    connect(m_oneStepButton, SIGNAL(clicked()),
+            this, SLOT(oneStep()));
 
     // Gradients
-    connect(m_gradientsButton, &QPushButton::clicked,
-            this, &MainWindow::toggleGradients);
+    /* connect(m_gradientsButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleGradients); */
+    connect(m_gradientsButton, SIGNAL(clicked()),
+            this, SLOT(toggleGradients()));
 
     // Compute Gradients
-    connect(m_computeGradientsButton, &QPushButton::clicked,
-            this, &MainWindow::computeGradients);
+    /* connect(m_computeGradientsButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::computeGradients); */
+    connect(m_computeGradientsButton, SIGNAL(clicked()),
+            this, SLOT(computeGradients()));
 
     // Decomposition
-    connect(m_decompositionButton, &QPushButton::clicked,
-            this, &MainWindow::toggleDecomposition);
+    /* connect(m_decompositionButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::toggleDecomposition); */
+    connect(m_decompositionButton, SIGNAL(clicked()),
+            this, SLOT(toggleDecomposition()));
+
+    // Hack to bring the window to the front
+    show();
+    raise();
+    activateWindow();
 
     // Parameters initialization
     // Ball radius
@@ -259,14 +290,19 @@ void MainWindow::randomPointsEllipse () {
     formLayout.addRow("Noise variance:", noiseVariance);
     formLayout.addRow(uniform);
 
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                               Qt::Horizontal, &dialog);
-    formLayout.addRow(&buttonBox);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                       Qt::Horizontal, &dialog);
+    formLayout.addRow(buttonBox);
 
-    connect(&buttonBox, &QDialogButtonBox::accepted,
-            &dialog, &QDialog::accept);
-    connect(&buttonBox, &QDialogButtonBox::rejected,
-            &dialog, &QDialog::reject);
+    /* connect(&buttonBox, &QDialogButtonBox::accepted, */
+    /*         &dialog, &QDialog::accept); */
+    connect(buttonBox, SIGNAL(accepted()),
+            &dialog, SLOT(accept()));
+
+    /* connect(&buttonBox, &QDialogButtonBox::rejected, */
+    /*         &dialog, &QDialog::reject); */
+    connect(buttonBox, SIGNAL(rejected()),
+            &dialog, SLOT(reject()));
 
     if (dialog.exec() == QDialog::Accepted) {
         m_view->m_scene->randomPointsEllipse(numberPoints->value(),

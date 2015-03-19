@@ -1,21 +1,23 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
 
-project(viewer)
+project(cgviewer)
 
 set (EXECUTABLE_NAME "main")
 set (SOURCE_DIR "src")
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
 # Compilation flags
 add_definitions (-std=c++11 -Wall)
 
-# Qt4
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+# Qt5
+set (CMAKE_PREFIX_PATH "/usr/local/Cellar/qt5/5.4.0/")
 # For automoc to work headers and source files must be in the same directory
 set (CMAKE_AUTOMOC ON)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
+
+## Components
+find_package(Qt5Widgets REQUIRED)
 
 # CGAL
 find_package(CGAL REQUIRED)
@@ -30,6 +32,13 @@ find_package (Eigen3 REQUIRED)
 # Include directories
 include_directories(${INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR})
 
+# run
+ADD_CUSTOM_TARGET(run
+    COMMAND ${EXECUTABLE_NAME}
+    DEPENDS ${EXECUTABLE_NAME}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+)
+
 # Source files
 FILE(
   GLOB_RECURSE
@@ -37,20 +46,10 @@ FILE(
   ${SOURCE_DIR}/**.cpp
   )
 
-# Header files
-FILE(
-  GLOB_RECURSE
-  ${EXECUTABLE_NAME}_HEADERS
-  ${SOURCE_DIR}/**.hpp
-  )
-
 # Executable
-ADD_EXECUTABLE(${EXECUTABLE_NAME}
-  ${${EXECUTABLE_NAME}_SOURCES}
-  ${${EXECUTABLE_NAME}_HEADERS}
-  )
+ADD_EXECUTABLE(${EXECUTABLE_NAME} ${${EXECUTABLE_NAME}_SOURCES})
 
 # Libraries
 target_link_libraries(${EXECUTABLE_NAME}
-    ${QT_LIBRARIES})
-
+    Qt5::Widgets
+)
