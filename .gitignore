@@ -51,3 +51,6 @@ snippets
 books/
 papers/
 others/
+
+code/python/examples/*.png
+code/python/examples/*.gif
