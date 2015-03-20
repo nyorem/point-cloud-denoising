@@ -282,12 +282,19 @@ void MainWindow::randomPointsEllipse () {
     noiseVariance->setSingleStep(1);
     noiseVariance->setValue(0);
 
+    QDoubleSpinBox *oscMagnitude = new QDoubleSpinBox();
+    oscMagnitude->setMinimum(0);
+    oscMagnitude->setMaximum(200);
+    oscMagnitude->setSingleStep(5);
+    oscMagnitude->setValue(0);
+
     QCheckBox *uniform = new QCheckBox("Uniform");
     uniform->setChecked(true);
 
     formLayout.addRow("Major axis:", majorAxis);
     formLayout.addRow("Minor axis:", minorAxis);
     formLayout.addRow("Noise variance:", noiseVariance);
+    formLayout.addRow("Oscillation magnitude", oscMagnitude);
     formLayout.addRow(uniform);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -309,6 +316,7 @@ void MainWindow::randomPointsEllipse () {
                                              majorAxis->value() * 120,
                                              minorAxis->value() * 120,
                                              noiseVariance->value() * 10,
+                                             oscMagnitude->value(),
                                              uniform->isChecked());
     }
 }

@@ -34,7 +34,7 @@ void random_on_circle_2 (int N,
 
 // Generate N points uniformly distributed (or not) on an ellipse
 // with minor / major axes of a / b.
-// Noise can also be added.
+// Noise and oscillatins can be added.
 // Pre-condition:
 // -> OutputIterator::value_type = Point_2
 template <typename OutputIterator>
@@ -42,6 +42,7 @@ void random_on_ellipse_2 (int N,
                           float a,
                           float b,
                           float noiseVariance,
+                          float oscMagnitude,
                           bool uniform,
                           OutputIterator out) {
     consts::g_eng.seed(static_cast<unsigned int>(std::time(0)));
@@ -51,11 +52,17 @@ void random_on_ellipse_2 (int N,
     Points_2 points;
     random_on_circle_2(N, 1.0, uniform, std::back_inserter(points));
 
+    double Amax = oscMagnitude, T = 10;
     for (size_t i = 0; i < points.size(); ++i) {
+        Vector_2 v(points[i].x() / a, points[i].y() / b);
+        v = v / CGAL::sqrt(v.squared_length());
+
         double noise = gen();
 
-        Point_2 p(a * points[i].x() + noise, b * points[i].y() + noise);
-        *(out++) = p;
+        Point_2 p(a * points[i].x() + noise,
+                  b * points[i].y() + noise);
+        /* *(out++) = p + v * Amax * sin(2 * i * M_PI / (2 * T)) * sin(2 * i * M_PI / T); */
+        *(out++) = p + v * Amax * sin(2 * i * M_PI / T);
     }
 }
 

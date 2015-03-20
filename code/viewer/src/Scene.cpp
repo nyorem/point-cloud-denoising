@@ -18,6 +18,8 @@ Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
 }
 
 void Scene::init () {
+    m_currentIter = 0;
+
     // Points
     m_points = new QPointListItem(Graphics::solidBlack);
     addItem(m_points);
@@ -106,9 +108,12 @@ void Scene::toggleVoronoiEdges () {
 }
 
 void Scene::randomPointsEllipse (int N, float a, float b,
-                                 float noiseVariance, bool uniform) {
+                                 float noiseVariance,
+                                 float oscMagnitude,
+                                 bool uniform) {
     Points_2 points;
-    random_on_ellipse_2(N, a, b, noiseVariance, uniform, std::back_inserter(points));
+    random_on_ellipse_2(N, a, b, noiseVariance, oscMagnitude, uniform,
+                        std::back_inserter(points));
 
     m_points->insert(points.begin(), points.end());
     m_balls->insert(points.begin(), points.end());
@@ -121,6 +126,17 @@ void Scene::oneStep () {
 
     for (int i = 0; i <= N; ++i) {
         VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
+
+        // TODO: remove (use python bindings)
+        // Output centers positions
+        std::stringstream filename_centers;
+        filename_centers << "centers" << m_currentIter++ << ".txt";
+        std::ofstream centers(filename_centers.str());
+        for (std::vector<Point_2>::iterator pit = m_points->begin();
+             pit != m_points->end();
+             ++pit) {
+            centers << *pit << std::endl;
+        }
 
         // Compute the perimeter of the union and the gradient
         FunctionUnion_ad f(m_radius);
@@ -212,6 +228,8 @@ void Scene::savePointCloud () {
 }
 
 void Scene::loadPointCloud () {
+    m_currentIter = 0;
+
     QString filename = QFileDialog::getOpenFileName(0, tr("Open Point Cloud"),
                                                     QDir::currentPath(),
                                                     tr("Point Clouds (*.xy)"));

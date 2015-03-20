@@ -26,7 +26,8 @@ class Scene : public QGraphicsScene {
         void toggleVoronoiVertices ();
         void toggleVoronoiEdges ();
         void randomPointsEllipse (int N, float a, float b,
-                                  float noiseVariance, bool uniform);
+                                  float noiseVariance,
+                                  float oscMagnitude, bool uniform);
         void oneStep ();
         void computeGradients ();
         void toggleGradients ();
@@ -46,6 +47,7 @@ class Scene : public QGraphicsScene {
 
         double m_timestep;
         double m_radius;
+        int m_currentIter;
         std::map<Point_2, bool> m_fixedPoints;
 };
 

@@ -23,19 +23,19 @@ Voronoi cell and a ball in 2D:
     \centering
     \begin{minipage}{0.32\linewidth}
         \centering
-        \includegraphics[scale=0.4]{inter_voronoi_ball_2d}
+        \includegraphics[scale=0.4]{2d/inter_voronoi_ball_2d}
         \subcaption{General case}
         \label{fig:inter_voronoi_ball_2d:a}
     \end{minipage}
     \begin{minipage}{0.32\linewidth}
         \centering
-        \includegraphics[scale=0.4]{inter_voronoi_ball_2d_no_inter}
+        \includegraphics[scale=0.4]{2d/inter_voronoi_ball_2d_no_inter}
         \subcaption{No intersections}
         \label{fig:inter_voronoi_ball_2d:b}
     \end{minipage}
     \begin{minipage}{0.32\linewidth}
         \centering
-        \includegraphics[scale=0.4]{inter_voronoi_ball_2d_2_inter}
+        \includegraphics[scale=0.4]{2d/inter_voronoi_ball_2d_2_inter}
         \subcaption{2 intersections}
         \label{fig:inter_voronoi_ball_2d:c}
     \end{minipage}
@@ -89,10 +89,36 @@ circular arcs.
 
 % TODO
 
+\section{Automatic differentiation}
+
+The automatic differentiation is a technique used for computing the derivatives,
+gradient of expressions. It is not the same as the symbolic or the numerical
+differentiation.
+
+Indeed, automatic differentiation can be used to compute derivatives of programs
+and not only mathematical functions without using approximations like with
+numerical differentiation.
+
+Let us suppose that we want to compute the derivative of a function $ f $ with a
+single one dimensional argument $ x $. To do that, we will replace the number
+type that is to say that we will replace $ x $ by $ x + \epsilon y $ where $
+\epsilon $ with the property $ \epsilon^2 = 0 $. Then, we overload all the
+arithmetical operations: addition, subtraction, multiplication, division.
+
+Then we call $ f $ with this variable: $ f(x + \epsilon y) = x' + \epsilon y'
+$. We conclude that $ x' = f(x) $ and $ y' = y f'(x) $ . Indeed for small values
+of $ \epsilon $, we have the first order Taylor expansion: $ f(x + \epsilon y) =
+f(x) + \epsilon y f'(x) + ... $.
+
+This technique is interesting because it is easy to implement because by nature
+we can change the number type in \texttt{CGAL} by simply changing the Kernel.
+
+% TODO
+
 \section{Gradient}
 
-Then, we used the automatic differentiation to compute the gradient of the
-previously computed area.
+Then, we used the previously described automatic differentiation technique to
+compute the gradient of the previously computed area.
 
 Here are a few examples of such gradients for different input point sets:
 
@@ -101,35 +127,79 @@ Here are a few examples of such gradients for different input point sets:
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{ellipse-200-001-100}
-        \includegraphics[scale=0.32]{ellipse-200-001-100-gradients}
-        \subcaption{200 samples on an ellipse with $ r = 100 $}
-        \label{fig:gradients_2d_ellipse}
+        \includegraphics[scale=0.32]{2d/area/ellipse-100-01-15}
+        \includegraphics[scale=0.32]{2d/area/ellipse-100-01-15-gradients}
+        \subcaption{100 samples on an ellipse with $ r = 15 $}
+        \label{fig:gradients_area_2d_ellipse}
     \end{minipage}
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{circle-120-001-100}
-        \includegraphics[scale=0.32]{circle-120-001-100-gradients}
-        \subcaption{120 samples on a circle with $ r = 100 $}
-        \label{fig:gradients_2d_ellipse}
+        \includegraphics[scale=0.32]{2d/area/circle-100-01-15}
+        \includegraphics[scale=0.32]{2d/area/circle-100-01-15-gradients}
+        \subcaption{100 samples on a circle with $ r = 15 $}
+        \label{fig:gradients_area_2d_circle}
     \end{minipage}
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{square-76-001-100}
-        \includegraphics[scale=0.32]{square-76-001-100-gradients}
+        \includegraphics[scale=0.32]{2d/area/square-76-001-100}
+        \includegraphics[scale=0.32]{2d/area/square-76-001-100-gradients}
         \subcaption{76 samples on a square with $ r = 100 $}
-        \label{fig:gradients_2d_ellipse}
+        \label{fig:gradients_area_2d_square}
     \end{minipage}
 
-    \caption{Input point set / Normalized computed gradients}
-    \label{fig:gradients_2d}
+    \caption{Input point set / Computed gradients}
+    \label{fig:gradients_area_2d}
+\end{figure}
+
+We did the same thing using the gradient of the perimeter of the boundary on the
+same point clouds.
+
+\begin{figure}[H]
+    \centering
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{2d/perimeter/ellipse-100-01-15}
+        \includegraphics[scale=0.32]{2d/perimeter/ellipse-100-01-15-gradients}
+        \subcaption{100 samples on an ellipse with $ r = 15 $}
+        \label{fig:gradients_perimeter_2d_ellipse}
+    \end{minipage}
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{2d/perimeter/circle-100-01-15}
+        \includegraphics[scale=0.32]{2d/perimeter/circle-100-01-15-gradients}
+        \subcaption{100 samples on a circle with $ r = 15 $}
+        \label{fig:gradients_perimeter_2d_circle}
+    \end{minipage}
+
+    \begin{minipage}{0.8\linewidth}
+        \centering
+        \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100}
+        \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100-gradients}
+        \subcaption{76 samples on a square with $ r = 100 $}
+        \label{fig:gradients_perimeter_2d_square}
+    \end{minipage}
+
+    \caption{Input point set / Computed gradients}
+    \label{fig:gradients_perimeter_2d}
 \end{figure}
 
 In the previous screenshots, we can see that the gradients are (if the radius of
-the balls are big enough and if the sampling is uniform) in the same direction
-that the normals to the underlying surface.
+the balls are big enough and if the sampling is sufficiently uniform) in the
+same direction that the normals to the underlying surface.
+
+% TODO
+
+\section{Relation with the mean curvature flow}
+
+The flow we will obtain by considering the previously computed gradients will be
+an approximation of the classical mean curvature flow.
+
+Indeed, we will show that the norm of these gradients are estimations of the
+mean curvature of the underlying surface.
 
 % TODO
 
@@ -156,24 +226,90 @@ the case where a point does not see anything.
 
 \section{Experiments}
 
-We did some experiments to validate our results. The fist thing we did was to
-apply our flow to a set of points randomly and/or uniformly sampled on an ellipse.
+We did some experiments to validate our results: we first compared the two
+gradient flows (area and perimeter of the boundary) to a set of points uniformly
+sampled on an ellipse.
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.3]{2d/ellipse-balls-15}
+    \subcaption{Minkowski sum of an ellipse and balls of radius $ 15 $}
+
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15}
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15-100}
+    \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 0.5 $}
+    \label{fig:ellipse_area_flow}
+
+    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15}
+    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-100}
+    \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
+    \label{fig:ellipse_perimeter_flow}
+\end{figure}
+
+Next, we add some outliers around the ellipse and observe the effects of the two
+flows.
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-1-15-outliers}
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-1-15-outliers-100}
+    \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 1 $}
+    \label{fig:ellipse_area_flow}
+
+    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-outliers}
+    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-outliers-40}
+    \subcaption{Area flow : 0 / 40 iterations with a timestep of $ 0.1 $}
+    \label{fig:ellipse_perimeter_flow}
+\end{figure}
 
 Then, we added some noise on these points to test the robustness of our
 algorithm.
 
 % TODO: figures
+\begin{figure}[H]
+    \centering
 
-We also compare the two gradient flows: using the area or the perimeter of the
-boundary.
+    \includegraphics[scale=0.4]{2d/ellipse-noise-5-0}
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-noise-5-75}
+    \subcaption{Perimeter flow : 0 / 75 iterations with a timestep of $ 0.5 $}
+    \label{fig:ellipse_area_flow}
+
+    \includegraphics[scale=0.4]{2d/ellipse-noise-5-0}
+    \includegraphics[scale=0.4]{2d/area/ellipse-noise-5-75}
+    \subcaption{Area flow : 0 / 75 iterations with a timestep of $ 0.05 $}
+    \label{fig:ellipse_perimeter_flow}
+\end{figure}
 
 We notice that the gradient flow of the area may create holes in the point set
 which is not the case for the gradient flow of the perimeter.
 
+On the contrary, the gradient flow of the perimeter of the boundary will smooth
+the point set while redistributing the points in an uniform way.
+
 % TODO: explain why
 
-We remark that if the time step is too large then the algorithm does not
-converge ($ 0.1 $ for example).
+An other experiment we did is to take points on a line segment and to fix its
+endpoints. Then, we apply our flow on this point set. We expect the flow to
+smooth the point set: points should get closer and closer to an uniformly
+sampled set of points.
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-0}
+    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-50}
+    \subcaption{Perimeter flow : 0 / 50 iterations with a timestep of $ 0.5 $}
+    \label{fig:line_fixed_perimeter}
+
+    \includegraphics[scale=0.5]{2d/area/line-01-15-0}
+    \includegraphics[scale=0.5]{2d/area/line-01-15-50}
+    \subcaption{Area flow : 0 / 50 iterations with a timestep of $ 0.1 $}
+    \label{fig:line_fixed_area}
+\end{figure}
+
+% TODO: explain why
 
 % Union of balls
 % Intersection with Voronoi cells

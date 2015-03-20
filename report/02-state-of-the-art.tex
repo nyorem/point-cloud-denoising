@@ -9,4 +9,28 @@ following:
     \item Laplacian smoothing
 \end{itemize}
 
+In this internship, we chose to use a Mean Curvature Flow based technique.
+
+Let's recall the more important results related to the MCF.
+First the definition of this flow, given a surface. We want to move each point f
+this surface in the direction of its inward normal by an amount related to the
+mean curvature at this point.
+
+Multiple approaches exist:
+\begin{itemize}
+    \item Level-set approach: the moving surface is represented by : $ \{ x |
+        \phi(x, t) = 0 \} $. Then $ \phi $ satisfies the following equation: $
+        \frac{\partial \phi}{\partial t} = |\nabla \phi| div(\frac{\nabla
+            \phi}{| \nabla \phi |}) $.
+    \item Graph approach: the surface is a graph of a function $ f : U
+        \rightarrow \R $. Then $ f $ satisfies the following equation: $
+        \frac{\partial f}{\partial t} = \sqrt{|\nabla f|^2 + 1} ~div(\frac{\nabla
+        f}{\sqrt{|\nabla f|^2 + 1}}) $.
+\end{itemize}
+
+The MCF is well known for its smoothing properties used for example in image
+processing (see \cite{ciomaga2010level}).
+
+We can also relate the MCF to the gradient flow of the surface area functional.
+
 % vim: set spelllang=en :

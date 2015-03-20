@@ -1,5 +1,12 @@
 \chapter{3D case}
 
+In this part, we will be interested in doing the same job as in 2D except that
+we will use a convex polyhedron instead of an euclidean ball in the Minkowski
+sum.
+
+This choice will raise a number of issues such as the construction of the
+Voronoi diagram of a point set under a polyhedral norm.
+
 \section{Polyhedral norm}
 A polyhedral norm is a norm $ N $ defined as the following:
 
@@ -23,7 +30,8 @@ The main problem of a polyhedral norm is that the underlying Voronoi diagram is
 not a partition of the space anymore.
 
 For example, if we consider the $ L_\infty $ norm in the plane and two aligned
-points, we have the following Voronoi region:
+points, we have the following Voronoi diagram:
+
 % TODO: insert figure
 
 \subsection{Symbolic perturbation}
@@ -92,18 +100,15 @@ We can define it in two ways:
 
 \subsection{Construction of a Voronoi cell}
 
-The goal of this part will be to provide an incremental algorithm for
-constructing the Voronoi cell $ V_{N'}(x, X)) $ in 3D using a 2D triangulation
-on a sphere.
+The construction of the Voronoi diagram under a polyhedral norm is a complex
+topic and had been studied thoroughly in \cite{ma2000bisectors}.
 
-If we project the Voronoi cell onto the unit sphere, we will obtain a mesh.
-
-% TODO: normal cone
-
-We will need some definitions:
-\begin{itemize}
-    \item normal cone to a convex set $ K $
-\end{itemize}
+For the duration of this internship, we had the choice between three paths:
+\begin{enumerate}
+    \item Construction of $ V(p, P) \cap B(p, r) $
+    \item Construction of $ V(p, P) \cap B_N(p, r) $
+    \item Construction of $ V_N(p, P) \cap B_N(p, r) $
+\end{enumerate}
 
 \section{Experiments}
 

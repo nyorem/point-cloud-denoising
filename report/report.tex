@@ -20,8 +20,19 @@
 \usepackage{accents}
 \usepackage{subcaption}
 
+% Clickable links in the toc
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
 % Custom commands
 \newcommand{\ocirc}[1]{\accentset{\circ}{#1}}
+\newcommand{\R}{\mathbb{R}}
 
 % Graphics path
 \graphicspath{{img/}}
@@ -109,6 +120,7 @@ $[$Prof/Dr/Mrs/Mr$]$ $<$first-name last-name$>$\\
 \input{02-state-of-the-art.tex}
 \input{03-2d-case.tex}
 \input{04-3d-case.tex}
+\input{05-conclusion.tex}
 
 \backmatter
 % \appendix
