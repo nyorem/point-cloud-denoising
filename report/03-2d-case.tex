@@ -101,17 +101,27 @@ numerical differentiation.
 
 Let us suppose that we want to compute the derivative of a function $ f $ with a
 single one dimensional argument $ x $. To do that, we will replace the number
-type that is to say that we will replace $ x $ by $ x + \epsilon y $ where $
+type that is to say that we will replace $ x $ by $ x + \epsilon x' $ where $
 \epsilon $ with the property $ \epsilon^2 = 0 $. Then, we overload all the
 arithmetical operations: addition, subtraction, multiplication, division.
 
-Then we call $ f $ with this variable: $ f(x + \epsilon y) = x' + \epsilon y'
-$. We conclude that $ x' = f(x) $ and $ y' = y f'(x) $ . Indeed for small values
-of $ \epsilon $, we have the first order Taylor expansion: $ f(x + \epsilon y) =
-f(x) + \epsilon y f'(x) + ... $.
+Then we call $ f $ with this variable: $ f(x + \epsilon x') = y + \epsilon y'
+$. We conclude that $ y = f(x) $ and $ y' = x' f'(x) $ . Indeed for small values
+of $ \epsilon $, we have the first order Taylor expansion: $ f(x + \epsilon x') =
+f(x) + \epsilon x' f'(x) + ... $. $ x' $ is called a seed and can be chosen
+arbitrarily, we can for instance choose $ x ' = 1 $ and so $ y' = f'(x) $.
 
-This technique is interesting because it is easy to implement because by nature
-we can change the number type in \texttt{CGAL} by simply changing the Kernel.
+This process can be easily extended to handle functions like $ f : \R^n
+\rightarrow \R $ in order to compute gradients of such functions. This is what
+we did: we considered a function over $ n $ points as $ f : \R^{2n} \rightarrow
+\R $.
+
+This technique is interesting because it allows us to compute accurate
+derivatives of functions very easily and efficiently. Indeed, we only have to
+change the number type and write the good implementations of the basic
+arithmetic operations.
+In \texttt{CGAL}, this is easy to do since the library is already parametrized
+by the number type.
 
 % TODO
 
@@ -127,8 +137,8 @@ Here are a few examples of such gradients for different input point sets:
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{2d/area/ellipse-100-01-15}
-        \includegraphics[scale=0.32]{2d/area/ellipse-100-01-15-gradients}
+        \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15}
+        \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-gradients}
         \subcaption{100 samples on an ellipse with $ r = 15 $}
         \label{fig:gradients_area_2d_ellipse}
     \end{minipage}
@@ -161,8 +171,8 @@ same point clouds.
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{2d/perimeter/ellipse-100-01-15}
-        \includegraphics[scale=0.32]{2d/perimeter/ellipse-100-01-15-gradients}
+        \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15}
+        \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15-gradients}
         \subcaption{100 samples on an ellipse with $ r = 15 $}
         \label{fig:gradients_perimeter_2d_ellipse}
     \end{minipage}
@@ -199,7 +209,7 @@ The flow we will obtain by considering the previously computed gradients will be
 an approximation of the classical mean curvature flow.
 
 Indeed, we will show that the norm of these gradients are estimations of the
-mean curvature of the underlying surface.
+mean curvature of the underlying sampled surface.
 
 % TODO
 
@@ -239,12 +249,12 @@ sampled on an ellipse.
     \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15}
     \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15-100}
     \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_area_flow}
+    \label{fig:ellipse_perimeter_flow}
 
     \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15}
     \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-100}
     \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
-    \label{fig:ellipse_perimeter_flow}
+    \label{fig:ellipse_area_flow}
 \end{figure}
 
 Next, we add some outliers around the ellipse and observe the effects of the two
@@ -253,33 +263,32 @@ flows.
 \begin{figure}[H]
     \centering
 
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-1-15-outliers}
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-1-15-outliers-100}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers-100}
     \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 1 $}
-    \label{fig:ellipse_area_flow}
+    \label{fig:ellipse_outliers_perimeter_flow}
 
-    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-outliers}
-    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-outliers-40}
+    \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers}
+    \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers-40}
     \subcaption{Area flow : 0 / 40 iterations with a timestep of $ 0.1 $}
-    \label{fig:ellipse_perimeter_flow}
+    \label{fig:ellipse_outliers_area_flow}
 \end{figure}
 
-Then, we added some noise on these points to test the robustness of our
+Then, we added some Gaussian noise on these points to test the robustness of our
 algorithm.
 
-% TODO: figures
 \begin{figure}[H]
     \centering
 
-    \includegraphics[scale=0.4]{2d/ellipse-noise-5-0}
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-noise-5-75}
+    \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-noise-5-75}
     \subcaption{Perimeter flow : 0 / 75 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_area_flow}
+    \label{fig:ellipse_noise_perimeter_flow}
 
-    \includegraphics[scale=0.4]{2d/ellipse-noise-5-0}
-    \includegraphics[scale=0.4]{2d/area/ellipse-noise-5-75}
+    \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
+    \includegraphics[scale=0.3]{2d/area/ellipse-noise-5-75}
     \subcaption{Area flow : 0 / 75 iterations with a timestep of $ 0.05 $}
-    \label{fig:ellipse_perimeter_flow}
+    \label{fig:ellipse_noise_area_flow}
 \end{figure}
 
 We notice that the gradient flow of the area may create holes in the point set
@@ -287,6 +296,64 @@ which is not the case for the gradient flow of the perimeter.
 
 On the contrary, the gradient flow of the perimeter of the boundary will smooth
 the point set while redistributing the points in an uniform way.
+
+% TODO: explain why
+This can be explained by looking on a simple case with two intersecting balls:
+\begin{itemize}
+    \item for the area: TODO
+    \item for the perimeter: the gradients are directed towards the outside
+        and so the balls will be merged because we can say, using the triangle
+        inequality, that in order to minimize the perimeter the balls must come
+        closer.
+\end{itemize}
+
+The chosen radius will also influence the smoothing: points which are too far
+away from other points (at distance greater than the radius) will not move. The
+more the radius is big, the more points will move in big groups. Indeed, the
+radius indicates how to take the neighbours of a point into account, the more
+neighbours we take into account the more "global" the movement will be.
+
+We also tried to add varying oscillations to our ellipse in order to see the
+adaptive part of the algorithm. We generate oscillations with one or two
+amplitudes.
+
+For one constant amplitude:
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc-25-15-50}
+    \subcaption{Perimeter flow : 0 / 55 iterations with a timestep of $ 0.5 $
+        and a radius of $ 15 $}
+    \label{fig:ellipse_osc_perimeter_flow}
+
+    \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
+    \includegraphics[scale=0.3]{2d/area/ellipse-osc-25-15-25}
+    \subcaption{Area flow : 0 / 25 iterations with a timestep of $ 0.05 $ and a
+        radius of $ 15 $}
+    \label{fig:ellipse_osc_area_flow}
+\end{figure}
+% TODO: remove extra space
+
+For two different amplitudes:
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc2-20-15-55}
+    \subcaption{Perimeter flow : 0 / 55 iterations with a timestep of $ 0.5 $
+        and a radius of $ 15 $}
+    \label{fig:ellipse_osc2_perimeter_flow}
+
+    \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
+    \includegraphics[scale=0.3]{2d/area/ellipse-osc2-20-15-25}
+    \subcaption{Area flow : 0 / 25 iterations with a timestep of $ 0.05 $ and a
+    radius of $ 15 $}
+    \label{fig:ellipse_osc2_area_flow}
+\end{figure}
+% TODO: remove extra space
 
 % TODO: explain why
 

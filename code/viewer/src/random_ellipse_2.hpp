@@ -32,9 +32,16 @@ void random_on_circle_2 (int N,
     }
 }
 
+// Random float between 'a' and 'b'
+float rr (float a, float b) {
+    float random = ((float) rand()) / (float) RAND_MAX;
+
+    return a + random * (b - a);
+}
+
 // Generate N points uniformly distributed (or not) on an ellipse
 // with minor / major axes of a / b.
-// Noise and oscillatins can be added.
+// Noise and oscillations can be added.
 // Pre-condition:
 // -> OutputIterator::value_type = Point_2
 template <typename OutputIterator>
@@ -61,8 +68,16 @@ void random_on_ellipse_2 (int N,
 
         Point_2 p(a * points[i].x() + noise,
                   b * points[i].y() + noise);
-        /* *(out++) = p + v * Amax * sin(2 * i * M_PI / (2 * T)) * sin(2 * i * M_PI / T); */
-        *(out++) = p + v * Amax * sin(2 * i * M_PI / T);
+
+        int k = T * i / N;
+        double A;
+        if (k % 2 == 0) {
+            A = Amax;
+        } else {
+            A = Amax * 2;
+        }
+
+        *(out++) = p + v * A * sin(2 * i * M_PI / T);
     }
 }
 
