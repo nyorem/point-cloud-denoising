@@ -14,7 +14,8 @@ template < typename Kernel,
            typename FTri,
            typename FArc,
            typename DT,
-           typename Vertex_handle>
+           typename Vertex_handle
+         >
 void intersection_sphere_voronoi_cell_2 (FTri &ftri, FArc &farc,
                                          DT const& dt,
                                          Vertex_handle const& v,
@@ -380,9 +381,10 @@ struct WeightedUnionBalls {
         // Coefficent wise division
         Eigen::VectorXd w = Eigen::VectorXd::Zero(2 * m_values.rows());
         for (int i = 0; i < m_weights.rows(); ++i) {
-            w[i] = m_weights[i].value();
+            w[2 * i] = m_weights[i].value();
+            w[2 * i + 1] = m_weights[i].value();
         }
-        g.cwiseQuotient(w);
+        g = g.cwiseQuotient(w);
 
         return g;
     }

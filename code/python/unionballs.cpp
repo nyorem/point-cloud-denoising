@@ -74,8 +74,9 @@ double perimeter_union_balls_2 (const np::ndarray &points,
 // Compute the gradient of the perimeter of the boundary of a union of balls in 2D.
 // Input: 2 * N vector of points
 np::ndarray gradient_perimeter_union_balls_2 (const np::ndarray &points,
-                                              double radius) {
-    PerimeterUnion per(radius);
+                                              double radius,
+                                              bool weighting = false) {
+    PerimeterUnion per(radius, weighting);
 
     // Convert numpy array to Eigen vector
     Eigen::VectorXd P = python_to_vector<double>(points);
@@ -125,8 +126,9 @@ double volume_union_balls_2 (const np::ndarray &points,
 // Compute the gradient of the volume of a union of balls in 2D.
 // Input: 2 * N vector of points
 np::ndarray gradient_volume_union_balls_2 (const np::ndarray &points,
-                                           double radius) {
-    VolumeUnion vol(radius);
+                                           double radius,
+                                           bool weighting = false) {
+    VolumeUnion vol(radius, weighting);
 
     // Convert numpy array to Eigen vector
     Eigen::VectorXd P = python_to_vector<double>(points);
