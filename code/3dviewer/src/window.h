@@ -46,13 +46,16 @@ class MainWindow : public CGAL::Qt::DemosMainWindow {
         void open (QString filename);
 
         // view menu
+        void on_actionView_ball_toggled ();
         void on_actionView_edges_toggled ();
         void on_actionView_facets_toggled ();
         void on_actionView_smooth_toggled ();
         void on_actionView_clouds_toggled ();
+        void on_actionView_field_toggled ();
 
         // algorithms menu
-        void on_actionCopy_triggered ();
+        void on_actionVectorField_triggered ();
+        void on_actionNsteps_triggered ();
 };
 
 #endif // ifndef MAINWINDOW_H

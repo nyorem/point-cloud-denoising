@@ -38,6 +38,16 @@ class CPoint_cloud {
             points.clear();
         }
 
+        // ITERATORS =============================================
+
+        typename std::vector<Point>::iterator begin () {
+            return points.begin();
+        }
+
+        typename std::vector<Point>::iterator end () {
+            return points.end();
+        }
+
         // RENDERING =============================================
 
         // draw point cloud
@@ -72,7 +82,7 @@ std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
 
     while (std::getline(in, str)) {
         std::vector<std::string> vec = misc::split(str, ' ');
-        assert(vec.size() == 3);
+        /* assert(vec.size() == 3); */
         Point p(misc::strTo<double>(vec[0]),
                 misc::strTo<double>(vec[1]),
                 misc::strTo<double>(vec[2]));

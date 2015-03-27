@@ -38,14 +38,19 @@ if( QT4_FOUND )
     find_package(QGLViewer)
 endif()
 
+# Eigen
+find_package (Eigen3 REQUIRED)
+
 if(WIN32)
 	add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4503 /nologo" )
 endif(WIN32)
 
-set( HDRS polyhedron.h pointcloud.h viewer.h scene.h window.h misc.h )
-set( SRCS viewer.cpp main.cpp scene.cpp window.cpp)
+set( HDRS src/polyhedron.h src/pointcloud.h src/vectorfield.h src/viewer.h src/scene.h src/window.h src/misc.h )
+set( SRCS src/viewer.cpp src/main.cpp src/scene.cpp src/window.cpp)
 set( MOCS moc_window.cxx
           moc_viewer.cxx )
+
+include_directories( src )
 
 if( CGAL_Qt4_FOUND AND QT4_FOUND AND OPENGL_FOUND AND QGLVIEWER_FOUND )
     # Hack because QGLVIEWER_INCLUDE_DIR is wrong on my system
@@ -60,8 +65,11 @@ if( CGAL_Qt4_FOUND AND QT4_FOUND AND OPENGL_FOUND AND QGLVIEWER_FOUND )
     qt4_add_resources( DT_RESOURCE_FILES polyhedron.qrc )
 
     # use the Qt MOC preprocessor on classes that derives from QObject
-    qt4_generate_moc( window.h moc_window.cxx )
-    qt4_generate_moc( viewer.h moc_viewer.cxx )
+    qt4_generate_moc( src/window.h moc_window.cxx )
+    qt4_generate_moc( src/viewer.h moc_viewer.cxx )
+
+    # Eigen
+    include_directories(${EIGEN3_INCLUDE_DIR})
 
     # The executable itself.
     add_executable( main ${SRCS} ${MOCS} ${DT_UI_FILES} ${DT_RESOURCE_FILES} )

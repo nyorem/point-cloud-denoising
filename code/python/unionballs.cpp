@@ -72,6 +72,7 @@ double perimeter_union_balls_2 (const np::ndarray &points,
 }
 
 // Compute the gradient of the perimeter of the boundary of a union of balls in 2D.
+// Can be weighted.
 // Input: 2 * N vector of points
 np::ndarray gradient_perimeter_union_balls_2 (const np::ndarray &points,
                                               double radius,
@@ -124,6 +125,7 @@ double volume_union_balls_2 (const np::ndarray &points,
 }
 
 // Compute the gradient of the volume of a union of balls in 2D.
+// Can be weighted.
 // Input: 2 * N vector of points
 np::ndarray gradient_volume_union_balls_2 (const np::ndarray &points,
                                            double radius,

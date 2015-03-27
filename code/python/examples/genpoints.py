@@ -10,9 +10,9 @@ def on_circle (r, N):
 # at the origin.
 # Gaussian noise can be added.
 def on_ellipse (a, b, N, sigma = 0):
-    points = np.array(map(lambda (x, y): (a * x, b * y), on_circle(1, N)))
+    points = map(lambda (x, y): (a * x, b * y), on_circle(1, N))
     if sigma == 0:
         return points
     else:
-        return points + np.random.normal(0, sigma, (N, 2))
+        return points + list(np.random.normal(0, sigma, (N, 2)))
 

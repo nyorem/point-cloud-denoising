@@ -105,6 +105,11 @@ void MainWindow::updateViewerBBox () {
     m_pViewer->camera()->showEntireScene();
 }
 
+void MainWindow::on_actionView_ball_toggled () {
+    m_pScene->toggle_view_ball();
+    m_pViewer->update();
+}
+
 void MainWindow::on_actionView_edges_toggled () {
     m_pScene->toggle_view_edges();
     m_pViewer->update();
@@ -115,13 +120,18 @@ void MainWindow::on_actionView_facets_toggled () {
     m_pViewer->update();
 }
 
+void MainWindow::on_actionView_smooth_toggled () {
+    m_pScene->toggle_view_smooth();
+    m_pViewer->update();
+}
+
 void MainWindow::on_actionView_clouds_toggled () {
     m_pScene->toggle_view_pointcloud();
     m_pViewer->update();
 }
 
-void MainWindow::on_actionView_smooth_toggled () {
-    m_pScene->toggle_view_smooth();
+void MainWindow::on_actionView_field_toggled () {
+    m_pScene->toggle_view_vectorfield();
     m_pViewer->update();
 }
 
@@ -163,10 +173,10 @@ void MainWindow::on_actionOpen_triggered () {
 }
 
 void MainWindow::on_actionReset_triggered () {
-    if (m_pScene->is_visible_pointcloud()) {
-        m_pScene->toggle_view_pointcloud();
+    if(m_pScene->is_visible_ball()) {
+        m_pScene->toggle_view_ball();
     }
-    m_pScene->clear_pointcloud();
+    m_pScene->clear_ball();
 
     if (m_pScene->is_visible_edges()) {
         m_pScene->toggle_view_edges();
@@ -174,13 +184,28 @@ void MainWindow::on_actionReset_triggered () {
     if (m_pScene->is_visible_facets()) {
         m_pScene->toggle_view_facets();
     }
-    m_pScene->clear_polyhedron();
+    m_pScene->clear_balls();
+
+    if (m_pScene->is_visible_pointcloud()) {
+        m_pScene->toggle_view_pointcloud();
+    }
+    m_pScene->clear_pointcloud();
+
+    if (m_pScene->is_visible_vectorfield()) {
+        m_pScene->toggle_view_vectorfield();
+    }
+    m_pScene->clear_vectorfield();
 
     m_pViewer->update();
 }
 
-void MainWindow::on_actionCopy_triggered () {
-    m_pScene->copy();
+void MainWindow::on_actionVectorField_triggered () {
+    m_pScene->vector_field();
+    m_pViewer->update();
+}
+
+void MainWindow::on_actionNsteps_triggered () {
+    m_pScene->nsteps();
     m_pViewer->update();
 }
 

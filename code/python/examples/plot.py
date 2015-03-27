@@ -13,7 +13,7 @@ def to_list_points (lst):
 
 # points = np.array([0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.2, 0.2])
 # points = np.array(to_list_points(genpoints.on_circle(10, 100)))
-points = np.array(to_list_points(list(genpoints.on_ellipse(10, 20, 100))))
+points = np.array(to_list_points(genpoints.on_ellipse(10, 20, 100)))
 
 # Parameters
 radius = 1
@@ -51,7 +51,6 @@ def plot_points (points, filename, iter):
     str = "i = " + `iter`
     print(str)
     plt.text((xmax - xmin)/ 2 - var, -(ymax - ymin) / 2 + var, str)
-    # plt.text(0, 0, str)
     plt.savefig(filename)
     plt.close()
 

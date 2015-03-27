@@ -53,16 +53,19 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="actionView_ball"/>
     <addaction name="actionView_edges"/>
     <addaction name="actionView_facets"/>
     <addaction name="actionView_clouds"/>
     <addaction name="actionView_smooth"/>
+    <addaction name="actionView_field"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithms">
     <property name="title">
      <string>Algorithms</string>
     </property>
-    <addaction name="actionCopy"/>
+    <addaction name="actionVectorField"/>
+    <addaction name="actionNsteps"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithms"/>
@@ -84,7 +87,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Polyhedron edges</string>
+    <string>Balls edges</string>
    </property>
    <property name="shortcut">
     <string>E</string>
@@ -100,7 +103,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Smooth</string>
@@ -109,9 +112,9 @@
     <string>S</string>
    </property>
   </action>
-  <action name="actionCopy">
+  <action name="actionVectorField">
    <property name="text">
-    <string>Copy</string>
+    <string>Compute gradients</string>
    </property>
   </action>
   <action name="actionDualize">
@@ -149,10 +152,49 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Polyhedron facets</string>
+    <string>Balls edges</string>
    </property>
    <property name="shortcut">
     <string>F</string>
+   </property>
+  </action>
+  <action name="actionView_field">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vector field</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
+   </property>
+  </action>
+  <action name="actionNsteps">
+   <property name="text">
+    <string>N steps</string>
+   </property>
+  </action>
+  <action name="actionView_ball">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ball</string>
+   </property>
+   <property name="iconText">
+    <string>ss</string>
+   </property>
+   <property name="statusTip">
+    <string/>
+   </property>
+   <property name="shortcut">
+    <string>B</string>
    </property>
   </action>
  </widget>
