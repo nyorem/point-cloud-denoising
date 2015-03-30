@@ -25,6 +25,7 @@ class Scene {
         // Polyhedral balls
         Polyhedron m_ball; // model
         std::vector<Vector_3> m_normalsBall;
+        std::vector<Vector_ad> m_normalsBall_ad;
         std::vector<Polyhedron> m_balls; // translated balls
 
         // Point cloud
@@ -65,15 +66,23 @@ class Scene {
         void toggle_view_pointcloud ()   { m_view_pointcloud = !m_view_pointcloud; }
         void toggle_view_vectorfield () { m_view_vectorfield = !m_view_vectorfield; }
 
-        // disable rendering options
-        bool is_visible_ball () const { return m_view_ball; }
-        bool is_visible_edges () const { return m_view_edges; }
-        bool is_visible_facets () const { return m_view_facets; }
-        bool is_visible_pointcloud () const { return m_view_pointcloud; }
-        bool is_visible_vectorfield () const { return m_view_vectorfield; }
+        // set visibility
+        void set_visible_ball (bool visibility) { m_view_ball = visibility; }
+        void set_visible_edges (bool visibility) { m_view_edges = visibility; }
+        void set_visible_facets (bool visibility) { m_view_facets = visibility; }
+        void set_visible_pointcloud (bool visibility) {
+            m_view_pointcloud = visibility;
+        }
+        void set_visible_vectorfield (bool visibility) {
+            m_view_vectorfield = visibility;
+        }
 
         // clear scene options
-        void clear_ball () { m_ball.clear(); }
+        void clear_ball () {
+            m_ball.clear();
+            m_normalsBall.clear();
+            m_normalsBall_ad.clear();
+        }
         void clear_pointcloud () { m_pointcloud.clear(); }
         void clear_balls () { m_balls.clear(); }
         void clear_vectorfield () { m_vectorfield.clear(); }

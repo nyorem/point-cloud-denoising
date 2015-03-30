@@ -125,12 +125,12 @@ void MainWindow::on_actionView_smooth_toggled () {
     m_pViewer->update();
 }
 
-void MainWindow::on_actionView_clouds_toggled () {
+void MainWindow::on_actionView_pointcloud_toggled () {
     m_pScene->toggle_view_pointcloud();
     m_pViewer->update();
 }
 
-void MainWindow::on_actionView_field_toggled () {
+void MainWindow::on_actionView_vectorfield_toggled () {
     m_pScene->toggle_view_vectorfield();
     m_pViewer->update();
 }
@@ -173,28 +173,22 @@ void MainWindow::on_actionOpen_triggered () {
 }
 
 void MainWindow::on_actionReset_triggered () {
-    if(m_pScene->is_visible_ball()) {
-        m_pScene->toggle_view_ball();
-    }
     m_pScene->clear_ball();
-
-    if (m_pScene->is_visible_edges()) {
-        m_pScene->toggle_view_edges();
-    }
-    if (m_pScene->is_visible_facets()) {
-        m_pScene->toggle_view_facets();
-    }
     m_pScene->clear_balls();
-
-    if (m_pScene->is_visible_pointcloud()) {
-        m_pScene->toggle_view_pointcloud();
-    }
     m_pScene->clear_pointcloud();
-
-    if (m_pScene->is_visible_vectorfield()) {
-        m_pScene->toggle_view_vectorfield();
-    }
     m_pScene->clear_vectorfield();
+
+    m_pScene->set_visible_ball(false);
+    m_pScene->set_visible_edges(true);
+    m_pScene->set_visible_facets(false);
+    m_pScene->set_visible_pointcloud(true);
+    m_pScene->set_visible_vectorfield(true);
+
+    ui->actionView_ball->setChecked(false);
+    ui->actionView_edges->setChecked(true);
+    ui->actionView_facets->setChecked(false);
+    ui->actionView_pointcloud->setChecked(true);
+    ui->actionView_vectorfield->setChecked(true);
 
     m_pViewer->update();
 }

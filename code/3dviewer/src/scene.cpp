@@ -16,11 +16,11 @@
 Scene::Scene () {
     // view options
     // ball
-    m_view_ball = true;
+    m_view_ball = false;
 
     // balls
     m_view_edges = true;
-    m_view_facets = true;
+    m_view_facets = false;
     m_smooth = false;
 
     // point cloud
@@ -30,8 +30,14 @@ Scene::Scene () {
     m_view_vectorfield = true;
 
     // parameters
-    m_radius = QInputDialog::getDouble(NULL, "Balls", "Radius",
-                                       2.0, 0, 10);
+    // radius
+    bool ok = false;
+    double r;
+    while (!ok) {
+        r = QInputDialog::getDouble(NULL, "Balls", "Radius",
+                                    2.0, 0, 10, 2, &ok);
+    }
+    m_radius = r;
 }
 
 Scene::~Scene () {
@@ -103,7 +109,9 @@ int Scene::open (QString filename) {
         for (Polyhedron::Facet_iterator fit = m_ball.facets_begin();
              fit != m_ball.facets_end();
              ++fit) {
-            m_normalsBall.push_back(fit->normal());
+            Vector_3 v = fit->normal();
+            m_normalsBall.push_back(v);
+            m_normalsBall_ad.push_back(Vector_ad(v.x(), v.y(), v.z()));
         }
     } else if (ext == "xyz") {
         // read point cloud
@@ -142,19 +150,9 @@ void Scene::vector_field () {
     // TODO
     std::cout << "algorithms - vector_field" << std::endl;
 
-    // Polyhedral norm: cube (L_{\infty})
-    std::vector<Vector_ad> vectors_ad;
-    vectors_ad.push_back(Vector_ad(+1, 0, 0));
-    vectors_ad.push_back(Vector_ad(-1, 0, 0));
-    vectors_ad.push_back(Vector_ad(0, +1, 0));
-    vectors_ad.push_back(Vector_ad(0, -1, 0));
-    vectors_ad.push_back(Vector_ad(0, 0, +1));
-    vectors_ad.push_back(Vector_ad(0, 0, -1));
-
-    // TODO: add radius
     FunctionUnion_ad f(m_radius);
     FT_ad vol_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
-                     vectors_ad.begin(), vectors_ad.end());
+                     m_normalsBall_ad.begin(), m_normalsBall_ad.end());
 
     std::cout << "volume: " << vol_ad << std::endl;
 
@@ -166,8 +164,12 @@ void Scene::vector_field () {
 }
 
 void Scene::nsteps () {
-    int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
-                                 1, 0, 100, 10);
+    bool ok = false;
+    int N;
+    while (!ok) {
+        N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
+                                 1, 0, 100, 1, &ok);
+    }
 
     std::cout << "algorithms nsteps" << std::endl;
     for (int i = 1; i <= N; ++i) {

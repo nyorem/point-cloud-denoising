@@ -56,9 +56,9 @@
     <addaction name="actionView_ball"/>
     <addaction name="actionView_edges"/>
     <addaction name="actionView_facets"/>
-    <addaction name="actionView_clouds"/>
+    <addaction name="actionView_pointcloud"/>
     <addaction name="actionView_smooth"/>
-    <addaction name="actionView_field"/>
+    <addaction name="actionView_vectorfield"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithms">
     <property name="title">
@@ -122,7 +122,7 @@
     <string>Dualize</string>
    </property>
   </action>
-  <action name="actionView_clouds">
+  <action name="actionView_pointcloud">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -149,16 +149,19 @@
     <bool>true</bool>
    </property>
    <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Balls edges</string>
+    <string>Balls facets</string>
    </property>
    <property name="shortcut">
     <string>F</string>
    </property>
   </action>
-  <action name="actionView_field">
+  <action name="actionView_vectorfield">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -182,7 +185,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Ball</string>
