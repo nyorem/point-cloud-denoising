@@ -60,8 +60,7 @@ FT accumulate_polyhedron_3 (Accum &acc, Polyhedron& P) {
                     b = hf->vertex()->point(),
                     c = hs->vertex()->point();
 
-            // TODO: if tag of the facet is true
-            acc(a, b, c);
+            acc(a, b, c, fit->tag);
 
             if (hs == h0)
                 break;
@@ -76,8 +75,7 @@ FT accumulate_polyhedron_3 (Accum &acc, Polyhedron& P) {
 }
 
 // Accumulator for computing the volume of a polyhedron.
-template < typename FT,
-           typename Point
+template < typename FT
          >
 class VolumeAccumulator {
     public:
@@ -87,8 +85,12 @@ class VolumeAccumulator {
             return val;
         }
 
-        void operator() (Point a, Point b, Point c) {
-            val += CGAL::cross_product(b - a, c - a) * (CGAL::ORIGIN - a);
+        template <typename Point>
+        void operator() (Point a, Point b, Point c, bool tag) {
+            FT cross = CGAL::cross_product(b - a, c - a) * (CGAL::ORIGIN - a);
+            if (cross != 0) {
+                val += cross;
+            }
         }
 
         void end () {
@@ -106,9 +108,7 @@ class Signed_volume_polyhedron_3 {
     public:
         template <typename Polyhedron>
         void operator() (Polyhedron& P) {
-            typedef typename Polyhedron::Point_3 Point_3;
-            VolumeAccumulator<FT, Point_3> vacc;
-
+            VolumeAccumulator<FT> vacc;
             m_val = accumulate_polyhedron_3<FT>(vacc, P);
         }
 
@@ -126,8 +126,7 @@ class Signed_volume_polyhedron_3 {
 
 // Accumulator for computing the are of the boundary
 // of a polyhedron.
-template < typename FT,
-           typename Point
+template < typename FT
          >
 class AreaBoundaryAccumulator {
     public:
@@ -137,10 +136,14 @@ class AreaBoundaryAccumulator {
             return val;
         }
 
-        void operator() (Point a, Point b, Point c) {
-            val += CGAL::sqrt(CGAL::cross_product(b - a, c - a).squared_length());
-            // For AD
-            /* val += sqrt(CGAL::cross_product(b - a, c - a).squared_length()); */
+        template <typename Point>
+        void operator() (Point a, Point b, Point c, bool tag) {
+            if (tag) {
+                FT cross = CGAL::cross_product(b - a, c - a).squared_length();
+                if (cross != 0) {
+                    val += cross;
+                }
+            }
         }
 
         void end () {
@@ -158,9 +161,7 @@ class Area_boundary_polyhedron_3 {
     public:
         template <typename Polyhedron>
         void operator() (Polyhedron& P) {
-            typedef typename Polyhedron::Point_3 Point_3;
-            AreaBoundaryAccumulator<FT, Point_3> aacc;
-
+            AreaBoundaryAccumulator<FT> aacc;
             m_val = accumulate_polyhedron_3<FT>(aacc, P);
         }
 

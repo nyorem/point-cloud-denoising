@@ -45,7 +45,7 @@ if(WIN32)
 	add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4503 /nologo" )
 endif(WIN32)
 
-set( HDRS src/polyhedron.h src/pointcloud.h src/vectorfield.h src/viewer.h src/scene.h src/window.h src/misc.h )
+set( HDRS src/polyhedron.h src/pointcloud.h src/vectorfield.h src/polyhedron_face_tag.h src/viewer.h src/scene.h src/window.h src/misc.h )
 set( SRCS src/viewer.cpp src/main.cpp src/scene.cpp src/window.cpp)
 set( MOCS moc_window.cxx
           moc_viewer.cxx )

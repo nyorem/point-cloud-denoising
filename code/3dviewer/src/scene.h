@@ -9,6 +9,7 @@
 #include <CGAL/basic.h>
 #include <CGAL/Simple_cartesian.h>
 #include "polyhedron.h"
+#include "polyhedron_face_tag.h"
 #include "pointcloud.h"
 #include "vectorfield.h"
 #include <CGAL/IO/Polyhedron_iostream.h>

@@ -27,8 +27,12 @@ typedef Eigen::VectorXd VectorXd;
 #include "minkowski_sum_pointcloud_convex_polyhedron_3.h"
 
 typedef Signed_volume_polyhedron_3<FT_ad> Volume_polyhedron_ad;
+typedef Area_boundary_polyhedron_3<FT_ad> Area_boundary_polyhedron_ad;
+
 typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad,
                        Volume_polyhedron_ad> FunctionUnion_ad;
+/* typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad, */
+/*                        Area_boundary_polyhedron_ad> FunctionUnion_ad; */
 
 #endif // TYPES_H
 

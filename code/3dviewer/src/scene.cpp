@@ -148,8 +148,6 @@ int Scene::open (QString filename) {
 
 void Scene::vector_field () {
     // TODO
-    std::cout << "algorithms - vector_field" << std::endl;
-
     FunctionUnion_ad f(m_radius);
     FT_ad vol_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
                      m_normalsBall_ad.begin(), m_normalsBall_ad.end());
@@ -157,6 +155,7 @@ void Scene::vector_field () {
     std::cout << "volume: " << vol_ad << std::endl;
 
     VectorXd g = f.grad();
+    std::cout << g << std::endl;
     std::vector<Vector_3> grads;
     vector_to_container<Vector_3>(g, std::back_inserter(grads));
     m_vectorfield.addVectors(m_pointcloud.begin(), m_pointcloud.end(),

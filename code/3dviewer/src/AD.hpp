@@ -239,31 +239,28 @@ class AD
   }
 };
 
-// TODO: fix symbol duplication
-/* namespace ad { */
-/*     AD sqrt(const AD &x) */
-/*     { */
-/*         using std::sqrt; */
-/*         double sqrtx = sqrt(x.value()); */
-/*         return AD(sqrtx,x.derivatives() * (double(0.5) / sqrtx)); */
-/*     } */
+static AD sqrt(const AD &x)
+{
+    using std::sqrt;
+    double sqrtx = sqrt(x.value());
+    return AD(sqrtx,x.derivatives() * (double(0.5) / sqrtx));
+}
 
-/*     AD atan2(const AD &y, const AD& x) */
-/*     { */
-/*         using std::atan2; */
-/*         double atan2yx = atan2(y.value(), x.value()); */
+static AD atan2(const AD &y, const AD& x)
+{
+    using std::atan2;
+    double atan2yx = atan2(y.value(), x.value());
 
-/*         double tmp2 = y.value() * y.value(); */
-/*         double tmp3 = x.value() * x.value(); */
-/*         double tmp4 = tmp3/(tmp2+tmp3); */
+    double tmp2 = y.value() * y.value();
+    double tmp3 = x.value() * x.value();
+    double tmp4 = tmp3/(tmp2+tmp3);
 
-/*         /1* if (tmp4 != 0) { *1/ */
-/*         return AD(atan2yx, */
-/*                   (y.derivatives() * x.value() - y.value() * x.derivatives()) / (tmp2+tmp3)); */
-/*         /1* } *1/ */
+    /* if (tmp4 != 0) { */
+    return AD(atan2yx,
+              (y.derivatives() * x.value() - y.value() * x.derivatives()) / (tmp2+tmp3));
+    /* } */
 
-/*         /1* return AD(atan2yx); *1/ */
-/*     } */
-/* } */
+    /* return AD(atan2yx); */
+}
 
 #endif // EIGEN_AUTODIFF_SCALAR_H
