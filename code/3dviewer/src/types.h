@@ -24,9 +24,11 @@ typedef CGAL::Vector_3<Kernel_ad> Vector_ad;
 typedef Eigen::Matrix<FT_ad, Eigen::Dynamic, 1> VectorXd_ad;
 typedef Eigen::VectorXd VectorXd;
 
-#include "volume_minkowski_convex_polyhedron_3.h"
+#include "minkowski_sum_pointcloud_convex_polyhedron_3.h"
 
-typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad> FunctionUnion_ad;
+typedef Signed_volume_polyhedron_3<FT_ad> Volume_polyhedron_ad;
+typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad,
+                       Volume_polyhedron_ad> FunctionUnion_ad;
 
 #endif // TYPES_H
 
