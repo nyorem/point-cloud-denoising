@@ -62,10 +62,12 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     // Intersection
     Polyhedron_face_tag P;
+    /* std::cout << "before inter" << std::endl; */
     CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
                                                       boundary.end(),
                                                       P,
                                                       v->point());
+    /* std::cout << "after inter" << std::endl; */
 
     // Tag faces with true if they belong to the convex polyhedron
     // and false otherwise
@@ -280,6 +282,7 @@ struct UnionPolyhedra {
 
         FTAD val = 0;
         for (int i = 0; i < m_values.rows(); ++i) {
+            /* std::cout << m_values(i).derivatives() << std::endl; */
             val += m_values(i);
         }
 

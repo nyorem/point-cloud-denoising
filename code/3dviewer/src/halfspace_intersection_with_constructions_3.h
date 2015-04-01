@@ -61,7 +61,7 @@ namespace CGAL
                 typedef typename Polyhedron::Facet_const_handle Facet_const_handle;
                 typedef typename Polyhedron::Facet_const_iterator Facet_const_iterator;
                 typedef typename Polyhedron::Vertex_const_iterator Vertex_const_iterator;
-                typename CGAL::Polyhedron_incremental_builder_3<HDS> B( hds, true);
+                typename CGAL::Polyhedron_incremental_builder_3<HDS> B(hds, true);
 
                 B.begin_surface(_primal.size_of_facets(),
                                 _primal.size_of_vertices(),
@@ -80,6 +80,7 @@ namespace CGAL
                                 h->next()->vertex()->point(),
                                 h->next()->next()->vertex()->point());
                     // translate extreme vertex
+                    /* std::cout << "inside halfspace" << p.d() << std::endl; */
                     Point_3 extreme_p = CGAL::ORIGIN + p.orthogonal_vector () / (-p.d());
                     Point_3 translated_extreme_p(extreme_p.x() + origin.x(),
                                                  extreme_p.y() + origin.y(),

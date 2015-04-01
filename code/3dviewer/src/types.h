@@ -30,9 +30,9 @@ typedef Signed_volume_polyhedron_3<FT_ad> Volume_polyhedron_ad;
 typedef Area_boundary_polyhedron_3<FT_ad> Area_boundary_polyhedron_ad;
 
 typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad,
-                       Volume_polyhedron_ad> FunctionUnion_ad;
-/* typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad, */
-/*                        Area_boundary_polyhedron_ad> FunctionUnion_ad; */
+                       Volume_polyhedron_ad> VolumeUnion_ad;
+typedef UnionPolyhedra<Point_ad, FT_ad, VectorXd_ad,
+                       Area_boundary_polyhedron_ad> AreaBoundaryUnion_ad;
 
 #endif // TYPES_H
 

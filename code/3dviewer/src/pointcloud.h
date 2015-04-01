@@ -34,6 +34,10 @@ class CPoint_cloud {
             points.insert(points.end(), begin, beyond);
         }
 
+        size_t size () const {
+            return points.size();
+        }
+
         void clear () {
             points.clear();
         }

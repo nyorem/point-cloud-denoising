@@ -31,6 +31,7 @@ class Scene {
 
         // Point cloud
         Point_cloud m_pointcloud;
+        std::vector<Point_ad> m_pointsAD;
 
         // Vector field
         Vector_field m_vectorfield;
@@ -84,7 +85,10 @@ class Scene {
             m_normalsBall.clear();
             m_normalsBall_ad.clear();
         }
-        void clear_pointcloud () { m_pointcloud.clear(); }
+        void clear_pointcloud () {
+            m_pointcloud.clear();
+            m_pointsAD.clear();
+        }
         void clear_balls () { m_balls.clear(); }
         void clear_vectorfield () { m_vectorfield.clear(); }
 

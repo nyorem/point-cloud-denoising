@@ -189,11 +189,15 @@ class AD
 
   AD operator/(const Scalar& other) const
   {
+      /* std::cout << "operator/ scalar" << std::endl; */
+      /* std::cout << other << std::endl; */
     return AD(m_value / other, (m_derivatives * (Scalar(1)/other)));
   }
 
   friend inline AD operator/(const Scalar& other, const AD& a)
   {
+      /* std::cout << "operator/ friend" << std::endl; */
+      /* std::cout << a.value() << std::endl; */
     return AD(other / a.value(),
 	      a.derivatives() *
 	      (Scalar(-other) / (a.value()*a.value())));
@@ -201,6 +205,8 @@ class AD
 
   AD operator/(const AD& other) const
   {
+      /* std::cout << "operator/" << std::endl; */
+      /* std::cout << other.value() << std::endl; */
     return AD(m_value / other.value(),
 	      ((m_derivatives * other.value()) - 
 	       (m_value * other.derivatives())) * 
