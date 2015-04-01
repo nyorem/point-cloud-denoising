@@ -11,14 +11,17 @@ def to_list_points (lst):
     tmp = map(lambda (x, y): [x, y], lst)
     return [item for sublist in tmp for item in sublist]
 
-# points = np.array([0.0, 0.0, 0.5, 0.0, 0.0, 0.5, 0.2, 0.2])
-# points = np.array(to_list_points(genpoints.on_circle(10, 100)))
-points = np.array(to_list_points(genpoints.on_ellipse(10, 20, 100)))
+# List of points to consider
+points = np.array(to_list_points(genpoints.on_ellipse(10, 20, 100, 0.5)))
 
 # Parameters
-radius = 1
-iter = 10
-timestep = 0.1
+radius = 15
+iter = 50
+
+timestep_per = 0.5
+timestep_weighted_per = 0.0001
+timestep_vol = 0.005
+timestep_weighted_vol = 0.05
 
 def find_min_max (points):
     i = 0
@@ -76,8 +79,8 @@ def gradient_descent_volume (points, radius, timestep, fname, weighted = False):
     l = len(fname) + 1
     os.system("convert -delay 50 -loop 0 `ls " + fname + "*.png | sort -k1." + `l` + "n` " + fname + ".gif")
 
-gradient_descent_perimeter(points, radius, timestep, "perimeter")
-gradient_descent_perimeter(points, radius, timestep, "perimeter-weighted", True)
-gradient_descent_volume(points, radius, timestep, "volume")
-gradient_descent_volume(points, radius, timestep, "volume-weighted", True)
+# gradient_descent_perimeter(points, radius, timestep_per, "perimeter")
+gradient_descent_perimeter(points, radius, timestep_weighted_per, "perimeter-weighted", True)
+# gradient_descent_volume(points, radius, timestep_vol, "volume")
+# gradient_descent_volume(points, radius, timestep_weighted_vol, "volume-weighted", True)
 
