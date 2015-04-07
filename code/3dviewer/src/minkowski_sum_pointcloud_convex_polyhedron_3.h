@@ -121,14 +121,15 @@ void minkowski_sum_pointcloud_convex_polyhedron_3 (PointIterator pbegin,
 
     // Bounding box: make Voronoi cells bounded
     CGAL::Bbox_3 bb = CGAL::bbox_3(pbegin, pbeyond);
-    Point_3 a(bb.xmin() - 2 * radius, bb.ymin() - 2 * radius, bb.zmin() - 2 * radius),
-            b(bb.xmin() - 2 * radius, bb.ymax() + 2 * radius, bb.zmin() - 2 * radius),
-            c(bb.xmax() + 2 * radius, bb.ymax() + 2 * radius, bb.zmin() - 2 * radius),
-            d(bb.xmax() + 2 * radius, bb.ymin() - 2 * radius, bb.zmin() - 2 * radius),
-            e(bb.xmin() - 2 * radius, bb.ymin() - 2 * radius, bb.zmax() + 2 * radius),
-            f(bb.xmin() - 2 * radius, bb.ymax() + 2 * radius, bb.zmax() + 2 * radius),
-            g(bb.xmax() + 2 * radius, bb.ymax() + 2 * radius, bb.zmax() + 2 * radius),
-            h(bb.xmax() + 2 * radius, bb.ymin() - 2 * radius, bb.zmax() + 2 * radius);
+    double coeff = 3;
+    Point_3 a(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
+            b(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
+            c(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
+            d(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
+            e(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius),
+            f(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
+            g(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
+            h(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius);
     dt.insert(a); dt.insert(b); dt.insert(c); dt.insert(d);
     dt.insert(e); dt.insert(f); dt.insert(g); dt.insert(h);
 
@@ -181,14 +182,15 @@ Vector minkowski_sum_pointcloud_convex_polyhedron_vector_out_3 (PointIterator pb
 
     // Bounding box: make Voronoi cells bounded
     CGAL::Bbox_3 bb = CGAL::bbox_3(pbegin, pbeyond);
-    Point_3 a(bb.xmin() - 2 * radius, bb.ymin() - 2 * radius, bb.zmin() - 2 * radius),
-            b(bb.xmin() - 2 * radius, bb.ymax() + 2 * radius, bb.zmin() - 2 * radius),
-            c(bb.xmax() + 2 * radius, bb.ymax() + 2 * radius, bb.zmin() - 2 * radius),
-            d(bb.xmax() + 2 * radius, bb.ymin() - 2 * radius, bb.zmin() - 2 * radius),
-            e(bb.xmin() - 2 * radius, bb.ymin() - 2 * radius, bb.zmax() + 2 * radius),
-            f(bb.xmin() - 2 * radius, bb.ymax() + 2 * radius, bb.zmax() + 2 * radius),
-            g(bb.xmax() + 2 * radius, bb.ymax() + 2 * radius, bb.zmax() + 2 * radius),
-            h(bb.xmax() + 2 * radius, bb.ymin() - 2 * radius, bb.zmax() + 2 * radius);
+    double coeff = 3;
+    Point_3 a(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
+            b(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
+            c(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
+            d(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
+            e(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius),
+            f(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
+            g(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
+            h(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius);
     dt.insert(a); dt.insert(b); dt.insert(c); dt.insert(d);
     dt.insert(e); dt.insert(f); dt.insert(g); dt.insert(h);
 

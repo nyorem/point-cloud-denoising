@@ -296,7 +296,7 @@ template < typename PointAD,
            typename FArc
          >
 struct UnionBalls {
-    UnionBalls (double radius) : m_radius(radius), ftri(), farc() {
+    UnionBalls (double radius, bool weighting = false) : m_weighting(weighting), m_radius(radius), ftri(), farc() {
     }
 
     FTAD operator() (VectorAD const& v) {
@@ -315,18 +315,27 @@ struct UnionBalls {
     }
 
     Eigen::VectorXd grad () const {
-        Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_values.rows());
+        Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_values.rows()),
+                        w = Eigen::VectorXd::Zero(2 * m_values.rows());
 
         for (int i = 0; i < m_values.rows(); ++i) {
             if (m_values(i).derivatives().rows() != 0) {
                 g += m_values(i).derivatives();
             }
+            w[2 * i] = m_values(i).value();
+            w[2 * i + 1] = m_values(i).value();
+        }
+
+        // Weighting by the corresponding value
+        if (m_weighting) {
+            g = g.cwiseQuotient(w);
         }
 
         return g;
     }
 
     private:
+        bool m_weighting;
         double m_radius;
         VectorAD m_values;
 

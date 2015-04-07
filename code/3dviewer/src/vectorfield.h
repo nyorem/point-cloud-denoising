@@ -47,6 +47,11 @@ class CVector_field {
             vector_field.clear();
         }
 
+        // ACCESS VECTORS ==================================
+        Vector& operator[] (Point const& p) {
+            return vector_field[p];
+        }
+
         // RENDERING =============================================
         // draw vecor field
         void gl_draw_field (const float line_width,

@@ -196,9 +196,10 @@ class Enriched_polyhedron : public CGAL::Polyhedron_3<kernel, items> {
                             const unsigned char r,
                             const unsigned char g,
                             const unsigned char b) {
+            ::glLineWidth(line_width);
+
             ::glBegin(GL_LINES);
 
-            ::glLineWidth(line_width);
             ::glColor3ub(r, g, b);
 
             typename Base::Halfedge_iterator it;

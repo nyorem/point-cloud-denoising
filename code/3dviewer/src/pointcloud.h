@@ -42,6 +42,12 @@ class CPoint_cloud {
             points.clear();
         }
 
+        // ACCESS POINTS ===================================
+
+        Point& operator[] (int i) {
+            return points[i];
+        }
+
         // ITERATORS =============================================
 
         typename std::vector<Point>::iterator begin () {
@@ -59,9 +65,10 @@ class CPoint_cloud {
                              const unsigned char r,
                              const unsigned char g,
                              const unsigned char b) {
+            ::glPointSize(point_size);
+
             ::glBegin(GL_POINTS);
 
-            ::glPointSize(point_size);
             ::glColor3ub(r, g, b);
 
             for (size_t i = 0; i < points.size(); ++i) {
@@ -86,7 +93,6 @@ std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
 
     while (std::getline(in, str)) {
         std::vector<std::string> vec = misc::split(str, ' ');
-        /* assert(vec.size() == 3); */
         Point p(misc::strTo<double>(vec[0]),
                 misc::strTo<double>(vec[1]),
                 misc::strTo<double>(vec[2]));

@@ -139,7 +139,7 @@ void Scene::oneStep () {
         }
 
         // Compute the perimeter of the union and the gradient
-        FunctionUnion_ad f(m_radius);
+        FunctionUnion_ad f(m_radius, true);
         f(points_vec);
 
         // Update the gradients
@@ -182,7 +182,7 @@ void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
     // Compute the perimeter of the union and the gradient
-    FunctionUnion_ad f(m_radius);
+    FunctionUnion_ad f(m_radius, true);
     f(points_vec);
     Eigen::VectorXd grad = f.grad();
 

@@ -59,7 +59,7 @@ void Scene::render () {
     // polyhedrons edges
     if (m_view_edges) {
         for (size_t i = 0; i < m_balls.size(); ++i) {
-            m_balls[i].gl_draw_edges(1.0f, 128, 128, 128);
+            m_balls[i].gl_draw_edges(1.0f, 0, 0, 0);
         }
     }
 
@@ -72,7 +72,7 @@ void Scene::render () {
 
     // point cloud
     if (m_view_pointcloud) {
-        m_pointcloud.gl_draw_points(1.0f, 128, 128, 128);
+        m_pointcloud.gl_draw_points(2.0f, 0, 0, 0);
     }
 
     // vector field
@@ -159,7 +159,46 @@ int Scene::open (QString filename) {
     return 0;
 }
 
-void Scene::vector_field () {
+void Scene::compute_gradients (int method) {
+    FT_ad val_ad;
+    VectorXd g = Eigen::VectorXd::Zero(3 * m_pointcloud.size());
+
+    if (method == 0) { // Volume
+        std::cout << "Volume" << std::endl;
+        VolumeUnion_ad f(m_radius);
+        val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
+                   m_normalsBall_ad.begin(), m_normalsBall_ad.end());
+        g = f.grad();
+    } else if (method == 1) { // Area of the boundary 1
+        std::cout << "Area of the boundary 1" << std::endl;
+        AreaBoundaryUnion_ad f(m_radius);
+        val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
+                   m_normalsBall_ad.begin(), m_normalsBall_ad.end());
+        g = f.grad();
+    } else if (method == 2) { // Area of the boundary 2: exclusion-inclusion
+        std::cout << "Area of the boundary 2" << std::endl;
+        val_ad = area_boundary_minkowski_sum_pointcloud_convex_polyhedron<FT_ad>(m_pointsAD.begin(),
+                                                                                 m_pointsAD.end(),
+                                                                                 m_normalsBall_ad.begin(),
+                                                                                 m_normalsBall_ad.end(),
+                                                                                 m_radius);
+        // TODO: do better
+        for (int i = 0; i < g.rows(); ++i) {
+            g(i) = val_ad.derivatives().coeffRef(i);
+        }
+    }
+
+    std::cout << "value: " << val_ad << std::endl;
+    std::cout << g << std::endl;
+
+    std::vector<Vector_3> grads;
+    vector_to_container<Vector_3>(g, std::back_inserter(grads));
+    m_vectorfield.clear();
+    m_vectorfield.addVectors(m_pointcloud.begin(), m_pointcloud.end(),
+                             grads.begin(), grads.end());
+}
+
+bool Scene::ask_method (int& method) {
     // Choose the method of the computation of the gradients
     QDialog dialog(NULL);
     dialog.setWindowTitle("Gradient method");
@@ -180,59 +219,60 @@ void Scene::vector_field () {
     QObject::connect(buttonBox, SIGNAL(rejected()),
                      &dialog, SLOT(reject()));
 
-    FT_ad val_ad;
-    VectorXd g = Eigen::VectorXd::Zero(3 * m_pointcloud.size());
-
     if (dialog.exec() == QDialog::Accepted) {
-        int i = gradientMethod->currentIndex();
-        if (i == 0) { // Volume
-            std::cout << "Volume" << std::endl;
-            VolumeUnion_ad f(m_radius);
-            val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
-                       m_normalsBall_ad.begin(), m_normalsBall_ad.end());
-            g = f.grad();
-        } else if (i == 1) { // Area of the boundary 1
-            std::cout << "Area of the boundary 1" << std::endl;
-            AreaBoundaryUnion_ad f(m_radius);
-            val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
-                       m_normalsBall_ad.begin(), m_normalsBall_ad.end());
-            g = f.grad();
-        } else if (i == 2) { // Area of the boundary 2: exclusion-inclusion
-            std::cout << "Area of the boundary 2" << std::endl;
-            val_ad = area_boundary_minkowski_sum_pointcloud_convex_polyhedron<FT_ad>(m_pointsAD.begin(),
-                                                                                     m_pointsAD.end(),
-                                                                                     m_normalsBall_ad.begin(),
-                                                                                     m_normalsBall_ad.end(),
-                                                                                     m_radius);
-            // TODO: do better
-            for (int i = 0; i < g.rows(); ++i) {
-                g(i) = val_ad.derivatives().coeffRef(i);
-            }
-        }
-    } else {
-        return;
+        method = gradientMethod->currentIndex();
+
+        return true;
     }
 
-    std::cout << "value: " << val_ad << std::endl;
-    std::cout << g << std::endl;
+    return false;
+}
 
-    std::vector<Vector_3> grads;
-    vector_to_container<Vector_3>(g, std::back_inserter(grads));
-    m_vectorfield.addVectors(m_pointcloud.begin(), m_pointcloud.end(),
-                             grads.begin(), grads.end());
+void Scene::vector_field () {
+    int method = 0;
+
+    if (ask_method(method)) {
+        compute_gradients(method);
+    }
 }
 
 void Scene::nsteps () {
+    // Number of steps
     bool ok = false;
-    int N;
-    while (!ok) {
-        N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
+    int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
                                  1, 0, 100, 1, &ok);
+
+    if (!ok) {
+        return;
     }
 
-    std::cout << "algorithms nsteps" << std::endl;
+    // Timestep
+    ok = false;
+    double timestep = QInputDialog::getDouble(NULL, "Parameters", "Timestep",
+                                              0.01, 0, 100, 3, &ok);
+
+    if (!ok) {
+        return;
+    }
+
+    // Method
+    int method = 0;
+    if (!ask_method(method)) {
+        return;
+    }
+
     for (int i = 1; i <= N; ++i) {
-        // TODO
+        compute_gradients(method);
+        std::vector<Point_3> new_points;
+
+        for (int p = 0; p < m_pointcloud.size(); ++p) {
+            Point_3 pp = m_pointcloud[p];
+            Vector_3 grad = m_vectorfield[pp];
+            new_points.push_back(pp - timestep * grad);
+        }
+
+        m_pointcloud.clear();
+        m_pointcloud.addPoints(new_points.begin(), new_points.end());
     }
 }
 

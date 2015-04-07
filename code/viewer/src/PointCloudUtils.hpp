@@ -24,7 +24,7 @@ Vector pointCloudToVector (InputIterator begin,
     Vector vec(2 * N);
     int i = 0;
     for (InputIterator it = begin; it != beyond; ++it) {
-        vec(2 * i) = AD(it->x(), 2 * N, 2 * i);
+        vec(2 * i)     = AD(it->x(), 2 * N, 2 * i);
         vec(2 * i + 1) = AD(it->y(), 2 * N, 2 * i + 1);
         ++i;
     }

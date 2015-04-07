@@ -57,6 +57,8 @@ class Scene {
         int open (QString filename);
 
         // algorithms menu
+        bool ask_method (int& method);
+        void compute_gradients (int method);
         void vector_field ();
         void nsteps ();
 

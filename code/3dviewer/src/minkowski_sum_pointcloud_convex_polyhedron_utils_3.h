@@ -139,7 +139,7 @@ class AreaBoundaryAccumulator {
         template <typename Point>
         void operator() (Point a, Point b, Point c, bool tag) {
             if (tag) {
-                FT cross = CGAL::cross_product(b - a, c - a).squared_length();
+                FT cross = sqrt(CGAL::cross_product(b - a, c - a).squared_length());
                 if (cross != 0) {
                     val += cross;
                 }

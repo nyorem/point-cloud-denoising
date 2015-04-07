@@ -45,7 +45,6 @@ void ps_arc (std::ostream& os,
              const unsigned int g = 0,
              const unsigned int b = 0,
              const bool filled = false) {
-
     double startAngleD = startAngle * 180 / M_PI;
     double endAngleD = endAngle * 180 / M_PI;
 
