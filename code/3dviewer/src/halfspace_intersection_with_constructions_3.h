@@ -209,7 +209,7 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3 (PlaneIterator pbegin,
                                                       PlaneIterator pend,
                                                       Polyhedron &P) {
-      halfspace_intersection_with_constructions_3(pbegin, pend, P, boost::none);
+      halfspace_intersection_with_constructions_3(pbegin, pend, P, boost::optional<typename Polyhedron::Vertex::Point_3>(boost::none));
     }
 } // namespace CGAL
 
