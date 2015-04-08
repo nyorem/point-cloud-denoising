@@ -66,6 +66,7 @@
     </property>
     <addaction name="actionVectorField"/>
     <addaction name="actionNsteps"/>
+    <addaction name="actionAddNoise"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithms"/>
@@ -198,6 +199,11 @@
    </property>
    <property name="shortcut">
     <string>B</string>
+   </property>
+  </action>
+  <action name="actionAddNoise">
+   <property name="text">
+    <string>Add noise</string>
    </property>
   </action>
  </widget>

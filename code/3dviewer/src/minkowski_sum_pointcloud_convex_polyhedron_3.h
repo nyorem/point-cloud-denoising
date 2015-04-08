@@ -2,7 +2,6 @@
 #define _MINKOWSKI_SUM_POINTCLOUD_CONVEX_POLYHEDRON_3_H_
 
 #include <CGAL/Delaunay_triangulation_3.h>
-#include <CGAL/Bbox_3.h>
 #include "halfspace_intersection_with_constructions_3.h"
 #include "minkowski_sum_pointcloud_convex_polyhedron_utils_3.h"
 
@@ -37,14 +36,18 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     std::list<Vertex_handle> neighbours;
     dt.adjacent_vertices(v, std::back_inserter(neighbours));
+    std::cout << "neighbours: " << neighbours.size() << std::endl;
 
     // Voronoi faces
     for (typename std::list<Vertex_handle>::iterator it = neighbours.begin();
          it != neighbours.end();
          ++it) {
-        Vector_3 p = ((*it)->point() - v->point()) / 2;
-        boundary.push_back(Plane_3(CGAL::midpoint((*it)->point(), v->point()),
-                                   p));
+        if (! dt.is_infinite(*it)) {
+            std::cout << "infinite " << dt.is_infinite(*it) << std::endl;
+            Vector_3 p = ((*it)->point() - v->point()) / 2;
+            Plane_3 pp(CGAL::midpoint((*it)->point(), v->point()), p);
+            boundary.push_back(pp);
+        }
     }
 
     // Translated polyhedron
@@ -62,12 +65,12 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     // Intersection
     Polyhedron_face_tag P;
-    /* std::cout << "before inter" << std::endl; */
+    std::cout << "before inter" << std::endl;
     CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
                                                       boundary.end(),
                                                       P,
                                                       v->point());
-    /* std::cout << "after inter" << std::endl; */
+    std::cout << "after inter" << std::endl;
 
     // Tag faces with true if they belong to the convex polyhedron
     // and false otherwise
@@ -119,29 +122,10 @@ void minkowski_sum_pointcloud_convex_polyhedron_3 (PointIterator pbegin,
 
     DT dt(pbegin, pbeyond);
 
-    // Bounding box: make Voronoi cells bounded
-    CGAL::Bbox_3 bb = CGAL::bbox_3(pbegin, pbeyond);
-    double coeff = 3;
-    Point_3 a(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
-            b(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
-            c(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
-            d(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
-            e(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius),
-            f(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
-            g(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
-            h(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius);
-    dt.insert(a); dt.insert(b); dt.insert(c); dt.insert(d);
-    dt.insert(e); dt.insert(f); dt.insert(g); dt.insert(h);
-
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
          vit != dt.finite_vertices_end();
          ++vit) {
         Point_3 P = vit->point();
-
-        if (P == a || P == b || P == c || P == d ||
-            P == e || P == f || P == g || P == h) {
-            continue;
-        }
 
         voronoi_cell_convex_polyhedron_3<FT>(dt, Vertex_handle(vit),
                                              polybegin,
@@ -180,30 +164,11 @@ Vector minkowski_sum_pointcloud_convex_polyhedron_vector_out_3 (PointIterator pb
 
     DT dt(pbegin, pbeyond);
 
-    // Bounding box: make Voronoi cells bounded
-    CGAL::Bbox_3 bb = CGAL::bbox_3(pbegin, pbeyond);
-    double coeff = 3;
-    Point_3 a(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
-            b(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
-            c(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmin() - coeff * radius),
-            d(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmin() - coeff * radius),
-            e(bb.xmin() - coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius),
-            f(bb.xmin() - coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
-            g(bb.xmax() + coeff * radius, bb.ymax() + coeff * radius, bb.zmax() + coeff * radius),
-            h(bb.xmax() + coeff * radius, bb.ymin() - coeff * radius, bb.zmax() + coeff * radius);
-    dt.insert(a); dt.insert(b); dt.insert(c); dt.insert(d);
-    dt.insert(e); dt.insert(f); dt.insert(g); dt.insert(h);
-
     int i = 0;
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
          vit != dt.finite_vertices_end();
          ++vit) {
         Point_3 P = vit->point();
-
-        if (P == a || P == b || P == c || P == d ||
-            P == e || P == f || P == g || P == h) {
-            continue;
-        }
 
         acc.reset();
 

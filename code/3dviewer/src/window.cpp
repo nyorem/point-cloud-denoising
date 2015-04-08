@@ -203,3 +203,8 @@ void MainWindow::on_actionNsteps_triggered () {
     m_pViewer->update();
 }
 
+void MainWindow::on_actionAddNoise_triggered () {
+    m_pScene->add_noise();
+    m_pViewer->update();
+}
+

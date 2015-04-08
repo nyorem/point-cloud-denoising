@@ -56,6 +56,7 @@ class MainWindow : public CGAL::Qt::DemosMainWindow {
         // algorithms menu
         void on_actionVectorField_triggered ();
         void on_actionNsteps_triggered ();
+        void on_actionAddNoise_triggered ();
 };
 
 #endif // ifndef MAINWINDOW_H

@@ -61,13 +61,14 @@ class Scene {
         void compute_gradients (int method);
         void vector_field ();
         void nsteps ();
+        void add_noise ();
 
         // toggle rendering options
-        void toggle_view_smooth ()  { m_smooth = !m_smooth; }
-        void toggle_view_ball ()  { m_view_ball = !m_view_ball; }
-        void toggle_view_edges ()   { m_view_edges = !m_view_edges; }
-        void toggle_view_facets ()  { m_view_facets = !m_view_facets; }
-        void toggle_view_pointcloud ()   { m_view_pointcloud = !m_view_pointcloud; }
+        void toggle_view_smooth () { m_smooth = !m_smooth; }
+        void toggle_view_ball () { m_view_ball = !m_view_ball; }
+        void toggle_view_edges () { m_view_edges = !m_view_edges; }
+        void toggle_view_facets () { m_view_facets = !m_view_facets; }
+        void toggle_view_pointcloud () { m_view_pointcloud = !m_view_pointcloud; }
         void toggle_view_vectorfield () { m_view_vectorfield = !m_view_vectorfield; }
 
         // set visibility

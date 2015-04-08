@@ -89,6 +89,7 @@ template <typename Kernel>
 std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
     typedef typename CPoint_cloud<Kernel>::Point Point;
 
+    cloud.clear();
     std::string str;
 
     while (std::getline(in, str)) {
