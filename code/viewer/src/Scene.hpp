@@ -28,7 +28,7 @@ class Scene : public QGraphicsScene {
         void randomPointsEllipse (int N, float a, float b,
                                   float noiseVariance,
                                   float oscMagnitude, bool uniform);
-        void oneStep ();
+        void nSteps ();
         void computeGradients ();
         void toggleGradients ();
         void toggleDecomposition ();

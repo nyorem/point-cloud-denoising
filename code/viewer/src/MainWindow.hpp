@@ -26,7 +26,7 @@ class MainWindow : public QWidget {
         void toggleVoronoiVertices ();
         void toggleVoronoiEdges ();
         void randomPointsEllipse ();
-        void oneStep ();
+        void nSteps ();
         void computeGradients ();
         void toggleGradients ();
         void toggleDecomposition ();
@@ -43,7 +43,7 @@ class MainWindow : public QWidget {
         QPushButton* m_delaunayButton;
         QPushButton* m_voronoiVerticesButton, *m_voronoiEdgesButton;
         QPushButton* m_randomEllipseButton;
-        QPushButton* m_oneStepButton;
+        QPushButton* m_nStepsButton;
         QPushButton *m_computeGradientsButton;
         QPushButton* m_gradientsButton;
         QPushButton* m_decompositionButton;

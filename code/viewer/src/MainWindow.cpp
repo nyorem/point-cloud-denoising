@@ -63,9 +63,9 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     m_randomEllipseButton = new QPushButton("Points on ellipse", m_rightside);
     m_randomEllipseButton->move((m_rightside->width() - m_randomEllipseButton->width()) / 2, 0);
 
-    // One step of the algorithm
-    m_oneStepButton = new QPushButton("One step", m_rightside);
-    m_oneStepButton->move((m_rightside->width() - m_oneStepButton->width()) / 2, 0);
+    // N steps of the algorithm
+    m_nStepsButton = new QPushButton("N steps", m_rightside);
+    m_nStepsButton->move((m_rightside->width() - m_nStepsButton->width()) / 2, 0);
 
     // Compute gradients
     m_computeGradientsButton = new QPushButton("Compute Gradients", m_rightside);
@@ -90,7 +90,7 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
     layout->addWidget(m_voronoiVerticesButton);
     layout->addWidget(m_voronoiEdgesButton);
     layout->addWidget(m_ballsButton);
-    layout->addWidget(m_oneStepButton);
+    layout->addWidget(m_nStepsButton);
     layout->addWidget(m_computeGradientsButton);
     layout->addWidget(m_gradientsButton);
     layout->addWidget(m_decompositionButton);
@@ -152,10 +152,10 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
             this, SLOT(randomPointsEllipse()));
 
     // One step
-    /* connect(m_oneStepButton, &QPushButton::clicked, */
-    /*         this, &MainWindow::oneStep); */
-    connect(m_oneStepButton, SIGNAL(clicked()),
-            this, SLOT(oneStep()));
+    /* connect(m_nStepsButton, &QPushButton::clicked, */
+    /*         this, &MainWindow::nSteps); */
+    connect(m_nStepsButton, SIGNAL(clicked()),
+            this, SLOT(nSteps()));
 
     // Gradients
     /* connect(m_gradientsButton, &QPushButton::clicked, */
@@ -236,8 +236,8 @@ void MainWindow::toggleVoronoiEdges () {
     m_view->m_scene->toggleVoronoiEdges();
 }
 
-void MainWindow::oneStep () {
-    m_view->m_scene->oneStep();
+void MainWindow::nSteps () {
+    m_view->m_scene->nSteps();
 }
 
 void MainWindow::toggleGradients () {

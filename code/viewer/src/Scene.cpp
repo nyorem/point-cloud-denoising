@@ -120,7 +120,7 @@ void Scene::randomPointsEllipse (int N, float a, float b,
     m_dt->insert(points.begin(), points.end());
 }
 
-void Scene::oneStep () {
+void Scene::nSteps () {
     int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
                                  1, 0, 100, 10);
 
@@ -139,7 +139,7 @@ void Scene::oneStep () {
         }
 
         // Compute the perimeter of the union and the gradient
-        FunctionUnion_ad f(m_radius, true);
+        FunctionUnion_ad f(m_radius, false);
         f(points_vec);
 
         // Update the gradients
@@ -182,7 +182,7 @@ void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
     // Compute the perimeter of the union and the gradient
-    FunctionUnion_ad f(m_radius, true);
+    FunctionUnion_ad f(m_radius, false);
     f(points_vec);
     Eigen::VectorXd grad = f.grad();
 
