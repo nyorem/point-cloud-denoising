@@ -2,6 +2,7 @@
 #define _MINKOWSKI_SUM_POINTCLOUD_CONVEX_POLYHEDRON_3_H_
 
 #include <CGAL/Delaunay_triangulation_3.h>
+#include "halfspace_intersection_with_dual_3.h"
 #include "halfspace_intersection_with_constructions_3.h"
 #include "minkowski_sum_pointcloud_convex_polyhedron_utils_3.h"
 
@@ -27,10 +28,10 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
                                        double radius) {
     typedef typename std::iterator_traits<VectorIterator>::value_type Vector_3;
     typedef typename CGAL::Kernel_traits<Vector_3>::Kernel Kernel;
-    typedef typename Kernel::Plane_3 Plane_3;
-    typedef typename CGAL::Polyhedron_3<Kernel, Items_face_tag> Polyhedron_face_tag;
-    typedef typename Polyhedron_face_tag::Facet_iterator Facet_iterator;
-    typedef typename Polyhedron_face_tag::Facet::Halfedge_handle Halfedge_handle;
+    typedef Plane_tag<Kernel> Plane_3;
+    typedef typename CGAL::Polyhedron_3<Kernel, Items_tag> Polyhedron_tag;
+    typedef typename Polyhedron_tag::Facet_iterator Facet_iterator;
+    typedef typename Polyhedron_tag::Facet::Halfedge_handle Halfedge_handle;
 
     std::list<Plane_3> boundary;
 
@@ -43,9 +44,9 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
          it != neighbours.end();
          ++it) {
         if (! dt.is_infinite(*it)) {
-            std::cout << "infinite " << dt.is_infinite(*it) << std::endl;
             Vector_3 p = ((*it)->point() - v->point()) / 2;
             Plane_3 pp(CGAL::midpoint((*it)->point(), v->point()), p);
+            pp.tag = false;
             boundary.push_back(pp);
         }
     }
@@ -59,19 +60,25 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
                  pv = v->point() - CGAL::ORIGIN;
         Plane_3 p(vv.x(), vv.y(), vv.z(),
                   -(pv * vv + radius));
+        p.tag = true;
         boundary.push_back(p);
         poly.push_back(p);
     }
 
     // Intersection
-    Polyhedron_face_tag P;
+    Polyhedron_tag P;
     std::cout << "before inter" << std::endl;
     CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
                                                       boundary.end(),
                                                       P,
                                                       v->point());
+    /* CGAL::halfspace_intersection_with_dual_3(boundary.begin(), */
+    /*                                          boundary.end(), */
+    /*                                          v->point(), */
+    /*                                          P); */
     std::cout << "after inter" << std::endl;
 
+    // TODO: use directly the tag present in the polyhedron's facets
     // Tag faces with true if they belong to the convex polyhedron
     // and false otherwise
     for (Facet_iterator fit = P.facets_begin();

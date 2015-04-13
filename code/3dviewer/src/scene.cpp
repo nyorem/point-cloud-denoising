@@ -157,7 +157,7 @@ int Scene::open (QString filename) {
 }
 
 void Scene::compute_gradients (int method) {
-    FT_ad val_ad;
+    FT_ad val_ad = 0;
     VectorXd g = Eigen::VectorXd::Zero(3 * m_pointcloud.size());
 
     if (method == 0) { // Volume
@@ -283,5 +283,6 @@ void Scene::add_noise () {
     }
 
     std::for_each(m_pointcloud.begin(), m_pointcloud.end(), Add_gaussian_noise(squaredVariance));
+    // TODO; recompute balls
 }
 

@@ -58,6 +58,7 @@ namespace CGAL
             void operator () (HDS &hds)
             {
                 typedef typename Polyhedron::Facet Facet;
+                typedef typename Polyhedron::Facet_handle Facet_handle;
                 typedef typename Polyhedron::Facet_const_handle Facet_const_handle;
                 typedef typename Polyhedron::Facet_const_iterator Facet_const_iterator;
                 typedef typename Polyhedron::Vertex_const_iterator Vertex_const_iterator;
@@ -80,7 +81,6 @@ namespace CGAL
                                 h->next()->vertex()->point(),
                                 h->next()->next()->vertex()->point());
                     // translate extreme vertex
-                    /* std::cout << "inside halfspace" << p.d() << std::endl; */
                     Point_3 extreme_p = CGAL::ORIGIN + p.orthogonal_vector () / (-p.d());
                     Point_3 translated_extreme_p(extreme_p.x() + origin.x(),
                                                  extreme_p.y() + origin.y(),
@@ -98,7 +98,7 @@ namespace CGAL
                     typename Polyhedron::Halfedge_around_vertex_const_circulator
                         h0 = it->vertex_begin(), hf = h0;
 
-                    B.begin_facet();
+                    Facet_handle handle = B.begin_facet();
                     do
                     {
                         B.add_vertex_to_facet(extreme_points[hf->facet()]);
@@ -118,9 +118,9 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3(PlaneIterator pbegin,
                                                      PlaneIterator pend,
                                                      Polyhedron &P,
-                                                     boost::optional<typename Polyhedron::Vertex::Point_3> const& origin,
+                                                     boost::optional<typename Polyhedron::Point_3> const& origin,
                                                      const Traits & ch_traits) {
-            typedef typename Kernel_traits<typename Polyhedron::Vertex::Point_3>::Kernel K;
+            typedef typename Kernel_traits<typename Polyhedron::Point_3>::Kernel K;
             typedef typename K::Point_3 Point;
             typedef typename K::Plane_3 Plane;
             typedef typename CGAL::internal::Build_dual_polyhedron<Polyhedron> Builder;
@@ -175,10 +175,10 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3(PlaneIterator pbegin,
                                                      PlaneIterator pend,
                                                      Polyhedron &P,
-                                                     typename Polyhedron::Vertex::Point_3 const& origin,
+                                                     typename Polyhedron::Point_3 const& origin,
                                                      const Traits & ch_traits) {
       halfspace_intersection_with_constructions_3(pbegin, pend, P,
-                                                  boost::optional<typename Polyhedron::Vertex::Point_3>(origin),
+                                                  boost::optional<typename Polyhedron::Point_3>(origin),
                                                   ch_traits);
     }
 
@@ -188,8 +188,8 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3 (PlaneIterator pbegin,
                                                       PlaneIterator pend,
                                                       Polyhedron &P,
-                                                      boost::optional<typename Polyhedron::Vertex::Point_3> const& origin) {
-        typedef typename Kernel_traits<typename Polyhedron::Vertex::Point_3>::Kernel K;
+                                                      boost::optional<typename Polyhedron::Point_3> const& origin) {
+        typedef typename Kernel_traits<typename Polyhedron::Point_3>::Kernel K;
         typedef typename K::Point_3 Point_3;
         typedef typename internal::Convex_hull_3::Default_traits_for_Chull_3<Point_3>::type Traits;
 
@@ -203,9 +203,9 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3 (PlaneIterator pbegin,
                                                       PlaneIterator pend,
                                                       Polyhedron &P,
-                                                      typename Polyhedron::Vertex::Point_3 const& origin) {
+                                                      typename Polyhedron::Point_3 const& origin) {
       halfspace_intersection_with_constructions_3(pbegin, pend, P,
-                                                  boost::optional<typename Polyhedron::Vertex::Point_3>(origin));
+                                                  boost::optional<typename Polyhedron::Point_3>(origin));
     }
 
     // Compute the intersection of halfspaces by constructing explicitly
@@ -215,7 +215,7 @@ namespace CGAL
     void halfspace_intersection_with_constructions_3 (PlaneIterator pbegin,
                                                       PlaneIterator pend,
                                                       Polyhedron &P) {
-      halfspace_intersection_with_constructions_3(pbegin, pend, P, boost::optional<typename Polyhedron::Vertex::Point_3>(boost::none));
+      halfspace_intersection_with_constructions_3(pbegin, pend, P, boost::optional<typename Polyhedron::Point_3>(boost::none));
     }
 } // namespace CGAL
 
