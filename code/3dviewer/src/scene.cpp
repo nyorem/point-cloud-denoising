@@ -124,36 +124,43 @@ int Scene::open (QString filename) {
         in >> m_pointcloud;
         std::cout << "done" << std::endl;
 
-        if (! m_ball.empty()) {
-            // add polyhedral balls: \forall p, B_N(p, r)
-            size_t N = m_pointcloud.size();
-            for (int i = 0; i < N; ++i) {
-                Point_cloud::Point P = m_pointcloud[i];
-                m_pointsAD.push_back(Point_ad(AD(P.x(), 3 * N, 3 * i),
-                                              AD(P.y(), 3 * N, 3 * i + 1),
-                                              AD(P.z(), 3 * N, 3 * i + 2)));
-
-                std::vector<Plane_3> boundary;
-                for (size_t j = 0; j < m_normalsBall.size(); ++j) {
-                    Vector_3 vv = m_normalsBall[j],
-                             pv = P - CGAL::ORIGIN;
-                    Plane_3 p(vv.x(), vv.y(), vv.z(),
-                              -(pv * vv + m_radius));
-                    boundary.push_back(p);
-                }
-                Polyhedron poly;
-                CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
-                                                                  boundary.end(),
-                                                                  poly,
-                                                                  P);
-                m_balls.push_back(poly);
-            }
-        }
+        compute_balls();
     }
 
     QApplication::restoreOverrideCursor();
 
     return 0;
+}
+
+void Scene::compute_balls () {
+    m_balls.clear();
+    m_pointsAD.clear();
+
+    if (! m_ball.empty()) {
+        // add polyhedral balls: \forall p, B_N(p, r)
+        size_t N = m_pointcloud.size();
+        for (int i = 0; i < N; ++i) {
+            Point_cloud::Point P = m_pointcloud[i];
+            Vector_3 pv = P - CGAL::ORIGIN;
+            m_pointsAD.push_back(Point_ad(AD(P.x(), 3 * N, 3 * i),
+                                          AD(P.y(), 3 * N, 3 * i + 1),
+                                          AD(P.z(), 3 * N, 3 * i + 2)));
+
+            std::vector<Plane_3> boundary;
+            for (size_t j = 0; j < m_normalsBall.size(); ++j) {
+                Vector_3 vv = m_normalsBall[j];
+                Plane_3 p(vv.x(), vv.y(), vv.z(),
+                          -(pv * vv + m_radius));
+                boundary.push_back(p);
+            }
+            Polyhedron poly;
+            CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
+                                                              boundary.end(),
+                                                              poly,
+                                                              P);
+            m_balls.push_back(poly);
+        }
+    }
 }
 
 void Scene::compute_gradients (int method) {
@@ -270,6 +277,7 @@ void Scene::nsteps () {
 
         m_pointcloud.clear();
         m_pointcloud.addPoints(new_points.begin(), new_points.end());
+        compute_balls();
     }
 }
 
@@ -283,6 +291,6 @@ void Scene::add_noise () {
     }
 
     std::for_each(m_pointcloud.begin(), m_pointcloud.end(), Add_gaussian_noise(squaredVariance));
-    // TODO; recompute balls
+    compute_balls();
 }
 

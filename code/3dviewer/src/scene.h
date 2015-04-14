@@ -59,6 +59,7 @@ class Scene {
         // algorithms menu
         bool ask_method (int& method);
         void compute_gradients (int method);
+        void compute_balls ();
         void vector_field ();
         void nsteps ();
         void add_noise ();
