@@ -57,7 +57,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
     typedef typename CGAL::Kernel_traits<Point_3>::Kernel Kernel;
     typedef typename Kernel::Plane_3 Plane_3;
     typedef typename Kernel::Vector_3 Vector_3;
-    typedef typename CGAL::Polyhedron_3<Kernel, Items_tag> Polyhedron_face_tag;
+    typedef typename CGAL::Polyhedron_3<Kernel, Items_tag<Kernel> > Polyhedron_face_tag;
 
     typedef CGAL::Fixed_alpha_shape_vertex_base_3<Kernel> Vb;
     typedef CGAL::Fixed_alpha_shape_cell_base_3<Kernel> Fb;

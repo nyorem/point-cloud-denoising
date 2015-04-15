@@ -3,43 +3,6 @@
 
 #include <CGAL/Polyhedron_3.h>
 
-// Enriched face with a boolean tag.
-template < typename Refs >
-struct Face_with_tag :
-    public CGAL::HalfedgeDS_face_base<Refs> {
-        bool tag;
-
-        Face_with_tag () {}
-};
-
-// Enriched vertex with a boolean tag.
-template < typename Refs, typename T, typename P >
-struct Vertex_with_tag :
-    public CGAL::HalfedgeDS_vertex_base<Refs, T, P> {
-        bool tag;
-
-        Vertex_with_tag () {}
-
-        Vertex_with_tag (const P &pt) :
-            CGAL::HalfedgeDS_vertex_base<Refs, T, P>(pt) {
-            }
-};
-
-struct Items_tag : public CGAL::Polyhedron_items_3 {
-    template < typename Refs, typename Traits >
-    struct Face_wrapper {
-        typedef Face_with_tag<Refs> Face;
-    };
-
-    template < typename Refs, typename Traits >
-    struct Vertex_wrapper {
-        typedef typename Traits::Point_3 Point;
-        typedef Vertex_with_tag<Refs,
-                                CGAL::Tag_true,
-                                Point> Vertex;
-    };
-};
-
 // TODO: C++11 -> inheriting constructors
 // using CGAL::Plane_3<K>::Plane_3
 // An extended plane with a boolean tag.
@@ -74,6 +37,47 @@ struct Point_tag : public CGAL::Point_3<K> {
     bool tag;
 
     typedef K Kernel;
+};
+
+// Enriched face with a boolean tag.
+template < typename Refs >
+struct Face_with_tag :
+    public CGAL::HalfedgeDS_face_base<Refs> {
+        bool tag;
+
+        Face_with_tag () {}
+};
+
+// Enriched vertex with a boolean tag and a dual plane (Plane_3_ad).
+template < typename Refs, typename T, typename P, typename Plane >
+struct Vertex_with_tag :
+    public CGAL::HalfedgeDS_vertex_base<Refs, T, P> {
+        bool tag;
+        Plane plane;
+
+        Vertex_with_tag () {}
+
+        Vertex_with_tag (const P &pt) :
+            CGAL::HalfedgeDS_vertex_base<Refs, T, P>(pt) {
+        }
+};
+
+template <typename AD_Kernel>
+struct Items_tag : public CGAL::Polyhedron_items_3 {
+    template < typename Refs, typename Traits >
+    struct Face_wrapper {
+        typedef Face_with_tag<Refs> Face;
+    };
+
+    template < typename Refs, typename Traits >
+    struct Vertex_wrapper {
+        typedef typename Traits::Point_3 Point;
+        typedef Plane_tag<AD_Kernel> Plane_3_ad;
+        typedef Vertex_with_tag<Refs,
+                                CGAL::Tag_true,
+                                Point,
+                                Plane_3_ad> Vertex;
+    };
 };
 
 #endif

@@ -4,6 +4,10 @@
 #include "tag.h"
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/convex_hull_3.h>
+#include <CGAL/intersections.h>
+
+#include <typeinfo>
+#include <type_traits>
 
 namespace CGAL {
     // From a list of tagged planes with AD, construct the dual polyhedron
@@ -62,6 +66,7 @@ namespace CGAL {
              vit != dual.vertices_end();
              ++vit) {
             vit->tag = point_plane_map[vit->point()].tag;
+            vit->plane = point_plane_map[vit->point()];
         }
     }
 
@@ -83,8 +88,9 @@ namespace CGAL {
             typedef Point Point_3_ad;
             Point_3_ad const& m_origin;
 
-            typedef typename CGAL::Kernel_traits<Point>::Kernel AD_Kernel;
-            typedef typename AD_Kernel::Plane_3 Plane_3_ad;
+            typedef typename Polyhedron_primal::Traits::Kernel AD_Kernel;
+            typedef Plane_tag<AD_Kernel> Plane_3_ad;
+            typedef typename AD_Kernel::FT FT_ad;
             std::vector<Plane_3_ad> m_planes_ad;
 
         public:
@@ -108,6 +114,12 @@ namespace CGAL {
                 typename CGAL::Polyhedron_incremental_builder_3<HDS> B(hds, true);
                 typedef typename Polyhedron_primal::Facet_handle Facet_handle;
 
+                // Typedefs for intersection
+                typedef typename AD_Kernel::Line_3 Line_3_ad;
+                typedef boost::optional< boost::variant< Point_3_ad,
+                                                         Line_3_ad,
+                                                         Plane_3_ad > > result_inter;
+
                 B.begin_surface(m_dual.size_of_facets(),
                                 m_dual.size_of_vertices(),
                                 m_dual.size_of_halfedges());
@@ -119,20 +131,28 @@ namespace CGAL {
                      fit != m_dual.facets_end();
                      ++fit, ++n) {
                     typename Facet::Halfedge_const_handle h = fit->halfedge();
-                    Point_3_epick p1(h->vertex()->point());
-                    Point_3_epick p2(h->next()->vertex()->point());
-                    Point_3_epick p3(h->next()->next()->vertex()->point());
+                    Plane_3_ad p1 = h->vertex()->plane,
+                               p2 = h->next()->vertex()->plane,
+                               p3 = h->next()->next()->vertex()->plane;
 
-                    // TODO: construct primal vertex: use intersection + tags
-                    Plane_3_epick p(p1, p2, p3);
-                    Point_3_epick extreme_p_epick = CGAL::ORIGIN + p.orthogonal_vector () / (-p.d());
-                    // TODO: restore AD
-                    Point_3_ad extreme_p(extreme_p_epick.x(),
-                                         extreme_p_epick.y(),
-                                         extreme_p_epick.z());
-                    Point_3_ad translated_extreme_p = extreme_p + (m_origin - CGAL::ORIGIN);
+                    FT_ad dp1 = p1.d() + m_origin.x() * p1.a()
+                        + m_origin.y() * p1.b() + m_origin.z() * p1.c();
+                    FT_ad dp2 = p2.d() + m_origin.x() * p2.a()
+                        + m_origin.y() * p2.b() + m_origin.z() * p2.c();
+                    FT_ad dp3 = p3.d() + m_origin.x() * p3.a()
+                        + m_origin.y() * p3.b() + m_origin.z() * p3.c();
 
-                    B.add_vertex(translated_extreme_p);
+                    Plane_3_ad pp1(p1.a(), p1.b(), p1.c(), dp1);
+                    Plane_3_ad pp2(p2.a(), p2.b(), p2.c(), dp2);
+                    Plane_3_ad pp3(p3.a(), p3.b(), p3.c(), dp3);
+
+                    // TODO: remove auto keyword
+                    auto result = CGAL::intersection(pp1, pp2, pp3);
+                    const Point_3_ad* pp = boost::get<Point_3_ad>(& *result);
+
+                    Point_3_ad ppp = m_origin + (*pp - CGAL::ORIGIN);
+
+                    B.add_vertex(ppp);
                     primal_vertices[fit] = n;
                 }
 
@@ -147,7 +167,7 @@ namespace CGAL {
                     do {
                         B.add_vertex_to_facet(primal_vertices[hf->facet()]);
                         // TODO: tag correctly the facet
-                        handle->tag= true;
+                        handle->tag= vit->tag;
                     } while (++hf != h0);
                     B.end_facet();
                 }
@@ -169,9 +189,10 @@ namespace CGAL {
                                               Polyhedron &P) {
         typedef Polyhedron Polyhedron_3_ad;
         typedef Point Point_3_ad;
+        typedef typename CGAL::Kernel_traits<Point_3_ad>::Kernel AD_Kernel;
 
         typedef CGAL::Exact_predicates_inexact_constructions_kernel Epick_Kernel;
-        typedef CGAL::Polyhedron_3<Epick_Kernel, Items_tag> Polyhedron_3_epick;
+        typedef CGAL::Polyhedron_3<Epick_Kernel, Items_tag<AD_Kernel> > Polyhedron_3_epick;
 
         Polyhedron_3_epick dual;
         CGAL::construct_dual(pbegin, pbeyond, origin, dual);

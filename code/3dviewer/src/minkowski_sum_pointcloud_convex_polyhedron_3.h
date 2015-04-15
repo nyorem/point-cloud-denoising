@@ -29,7 +29,7 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
     typedef typename std::iterator_traits<VectorIterator>::value_type Vector_3;
     typedef typename CGAL::Kernel_traits<Vector_3>::Kernel Kernel;
     typedef Plane_tag<Kernel> Plane_3;
-    typedef typename CGAL::Polyhedron_3<Kernel, Items_tag> Polyhedron_tag;
+    typedef typename CGAL::Polyhedron_3<Kernel, Items_tag<Kernel> > Polyhedron_tag;
     typedef typename Polyhedron_tag::Facet_iterator Facet_iterator;
     typedef typename Polyhedron_tag::Facet::Halfedge_handle Halfedge_handle;
 
@@ -68,14 +68,14 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
     // Intersection
     Polyhedron_tag P;
     std::cout << "before inter" << std::endl;
-    CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
-                                                      boundary.end(),
-                                                      P,
-                                                      v->point());
-    /* CGAL::halfspace_intersection_with_dual_3(boundary.begin(), */
-    /*                                          boundary.end(), */
-    /*                                          v->point(), */
-    /*                                          P); */
+    /* CGAL::halfspace_intersection_with_constructions_3(boundary.begin(), */
+    /*                                                   boundary.end(), */
+    /*                                                   P, */
+    /*                                                   v->point()); */
+    CGAL::halfspace_intersection_with_dual_3(boundary.begin(),
+                                             boundary.end(),
+                                             v->point(),
+                                             P);
     std::cout << "after inter" << std::endl;
 
     // TODO: use directly the tag present in the polyhedron's facets

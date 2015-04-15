@@ -98,6 +98,7 @@ int Scene::open (QString filename) {
 
     if (ext == "off") {
         // read polyhedral ball B_N(0, 1)
+        m_balls.clear();
         std::cout << "read polyhedral ball...";
         in >> m_ball;
         std::cout << "done" << std::endl;
