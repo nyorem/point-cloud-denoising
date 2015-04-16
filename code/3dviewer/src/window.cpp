@@ -208,3 +208,8 @@ void MainWindow::on_actionAddNoise_triggered () {
     m_pViewer->update();
 }
 
+void MainWindow::on_actionEllipsoid_triggered () {
+    m_pScene->random_ellipsoid();
+    m_pViewer->update();
+}
+

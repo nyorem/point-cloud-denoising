@@ -63,6 +63,7 @@ class Scene {
         void vector_field ();
         void nsteps ();
         void add_noise ();
+        void random_ellipsoid ();
 
         // toggle rendering options
         void toggle_view_smooth () { m_smooth = !m_smooth; }

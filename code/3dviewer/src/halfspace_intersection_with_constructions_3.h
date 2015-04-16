@@ -158,10 +158,7 @@ namespace CGAL
             }
 
             Polyhedron ch;
-            std::cout << "before ch" << std::endl;
-            std::cout << dual_points.size() << std::endl;
             CGAL::convex_hull_3(dual_points.begin(), dual_points.end(), ch, ch_traits);
-            std::cout << "after ch" << std::endl;
 
             Builder build_dual (ch, p_origin);
             P.delegate(build_dual);

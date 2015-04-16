@@ -67,6 +67,7 @@
     <addaction name="actionVectorField"/>
     <addaction name="actionNsteps"/>
     <addaction name="actionAddNoise"/>
+    <addaction name="actionEllipsoid"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithms"/>
@@ -204,6 +205,11 @@
   <action name="actionAddNoise">
    <property name="text">
     <string>Add noise</string>
+   </property>
+  </action>
+  <action name="actionEllipsoid">
+   <property name="text">
+    <string>Ellipsoid</string>
    </property>
   </action>
  </widget>

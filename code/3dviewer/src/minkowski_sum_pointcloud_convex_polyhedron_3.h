@@ -37,7 +37,6 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     std::list<Vertex_handle> neighbours;
     dt.adjacent_vertices(v, std::back_inserter(neighbours));
-    std::cout << "neighbours: " << neighbours.size() << std::endl;
 
     // Voronoi faces
     for (typename std::list<Vertex_handle>::iterator it = neighbours.begin();
@@ -67,16 +66,14 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     // Intersection
     Polyhedron_tag P;
-    std::cout << "before inter" << std::endl;
-    /* CGAL::halfspace_intersection_with_constructions_3(boundary.begin(), */
-    /*                                                   boundary.end(), */
-    /*                                                   P, */
-    /*                                                   v->point()); */
-    CGAL::halfspace_intersection_with_dual_3(boundary.begin(),
-                                             boundary.end(),
-                                             v->point(),
-                                             P);
-    std::cout << "after inter" << std::endl;
+    CGAL::halfspace_intersection_with_constructions_3(boundary.begin(),
+                                                      boundary.end(),
+                                                      P,
+                                                      v->point());
+    /* CGAL::halfspace_intersection_with_dual_3(boundary.begin(), */
+    /*                                          boundary.end(), */
+    /*                                          v->point(), */
+    /*                                          P); */
 
     // TODO: use directly the tag present in the polyhedron's facets
     // Tag faces with true if they belong to the convex polyhedron

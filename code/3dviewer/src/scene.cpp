@@ -11,12 +11,16 @@
 #include <QFormLayout>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 #include <QGLViewer/qglviewer.h>
 
 #include "halfspace_intersection_with_constructions_3.h"
 #include "inclusion_exclusion.hpp"
 #include "add_noise.h"
+#include "random_sphere_3.h"
 
 Scene::Scene () {
     // view options
@@ -293,5 +297,63 @@ void Scene::add_noise () {
 
     std::for_each(m_pointcloud.begin(), m_pointcloud.end(), Add_gaussian_noise(squaredVariance));
     compute_balls();
+}
+
+void Scene::random_ellipsoid () {
+    QDialog dialog(NULL);
+    dialog.setWindowTitle("Points on ellipsoid");
+    QFormLayout formLayout(&dialog);
+
+    QSpinBox *numberPoints = new QSpinBox();
+    numberPoints->setMinimum(1);
+    numberPoints->setMaximum(10000);
+    numberPoints->setSingleStep(10);
+    numberPoints->setValue(200);
+    formLayout.addRow("Number of points:", numberPoints);
+
+    QDoubleSpinBox *xAxis = new QDoubleSpinBox();
+    xAxis->setMinimum(0.1);
+    xAxis->setMaximum(5);
+    xAxis->setSingleStep(0.1);
+    xAxis->setValue(0.75);
+    formLayout.addRow("a", xAxis);
+
+    QDoubleSpinBox *yAxis = new QDoubleSpinBox();
+    yAxis->setMinimum(0.1);
+    yAxis->setMaximum(5);
+    yAxis->setSingleStep(0.1);
+    yAxis->setValue(0.5);
+    formLayout.addRow("b", yAxis);
+
+    QDoubleSpinBox *zAxis = new QDoubleSpinBox();
+    zAxis->setMinimum(0.1);
+    zAxis->setMaximum(5);
+    zAxis->setSingleStep(0.1);
+    zAxis->setValue(0.5);
+    formLayout.addRow("c", zAxis);
+
+    QCheckBox *uniform = new QCheckBox("Uniform");
+    formLayout.addRow(uniform);
+    uniform->setChecked(true);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                       Qt::Horizontal, &dialog);
+    formLayout.addRow(buttonBox);
+
+    QObject::connect(buttonBox, SIGNAL(accepted()),
+                     &dialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()),
+                     &dialog, SLOT(reject()));
+
+    if (dialog.exec() == QDialog::Accepted) {
+        random_ellipsoid_3<Point_3>(numberPoints->value(),
+                                    xAxis->value(),
+                                    yAxis->value(),
+                                    zAxis->value(),
+                                    uniform->isChecked(),
+                                    m_pointcloud.back_inserter());
+
+        compute_balls();
+    }
 }
 

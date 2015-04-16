@@ -57,6 +57,7 @@ class MainWindow : public CGAL::Qt::DemosMainWindow {
         void on_actionVectorField_triggered ();
         void on_actionNsteps_triggered ();
         void on_actionAddNoise_triggered ();
+        void on_actionEllipsoid_triggered ();
 };
 
 #endif // ifndef MAINWINDOW_H

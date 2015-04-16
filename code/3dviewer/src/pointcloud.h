@@ -58,6 +58,10 @@ class CPoint_cloud {
             return points.end();
         }
 
+        typename std::back_insert_iterator<std::vector<Point> > back_inserter () {
+            return std::back_inserter(points);
+        }
+
         // RENDERING =============================================
 
         // draw point cloud

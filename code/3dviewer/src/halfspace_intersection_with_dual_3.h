@@ -6,9 +6,6 @@
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/intersections.h>
 
-#include <typeinfo>
-#include <type_traits>
-
 namespace CGAL {
     // From a list of tagged planes with AD, construct the dual polyhedron
     // using Epick.
