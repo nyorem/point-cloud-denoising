@@ -49,8 +49,10 @@ ts = [ (2 * k * math.pi) / N for k in range(N) ]
 curvatures = map(lambda t: ellipse_curvature(a, b, t), ts)
 
 # Computed curvatures
-gradper = to_couples(unionballs.gradient_perimeter_boundary(pointsnp, radius, weighted).tolist(), normL2)
 gradvol = to_couples(unionballs.gradient_volume(pointsnp, radius, weighted).tolist(), normL2)
+gradper = to_couples(unionballs.gradient_perimeter_boundary(pointsnp, radius, weighted).tolist(), normL2)
+k = np.mean(curvatures) / np.mean(gradper)
+gradper = [k * g for g in gradper]
 
 # Plot expected / computed curvatures
 plt.figure()
