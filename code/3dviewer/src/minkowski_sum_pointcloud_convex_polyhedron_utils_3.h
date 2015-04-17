@@ -87,7 +87,9 @@ class VolumeAccumulator {
 
         template <typename Point>
         void operator() (Point a, Point b, Point c, bool tag) {
+            std::cout << "volume accum" << std::endl;
             FT cross = CGAL::cross_product(b - a, c - a) * (CGAL::ORIGIN - a);
+            std::cout << cross << std::endl;
             if (cross != 0) {
                 val += cross;
             }
@@ -139,6 +141,7 @@ class AreaBoundaryAccumulator {
         template <typename Point>
         void operator() (Point a, Point b, Point c, bool tag) {
             if (tag) {
+                std::cout << "area accum" << std::endl;
                 FT cross = sqrt(CGAL::cross_product(b - a, c - a).squared_length());
                 if (cross != 0) {
                     val += cross;

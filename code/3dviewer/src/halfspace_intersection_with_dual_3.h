@@ -88,16 +88,11 @@ namespace CGAL {
             typedef typename Polyhedron_primal::Traits::Kernel AD_Kernel;
             typedef Plane_tag<AD_Kernel> Plane_3_ad;
             typedef typename AD_Kernel::FT FT_ad;
-            std::vector<Plane_3_ad> m_planes_ad;
 
         public:
-            template <typename PlaneIterator>
-            Build_primal (PlaneIterator pbegin,
-                          PlaneIterator pbeyond,
-                          Polyhedron_dual const& dual,
+            Build_primal (Polyhedron_dual const& dual,
                           Point const& origin) : m_dual(dual),
                                                  m_origin(origin) {
-                 std::copy(pbegin, pbeyond, std::back_inserter(m_planes_ad));
             }
 
             void operator() (HDS &hds) {
@@ -122,7 +117,7 @@ namespace CGAL {
                                 m_dual.size_of_halfedges());
 
                 // Construct primal vertices
-                size_t n = 0, N = m_dual.size_of_facets();
+                size_t n = 0;
                 std::map<Facet_const_handle, size_t> primal_vertices;
                 for (Facet_const_iterator fit = m_dual.facets_begin();
                      fit != m_dual.facets_end();
@@ -195,7 +190,7 @@ namespace CGAL {
         CGAL::construct_dual(pbegin, pbeyond, origin, dual);
 
         typedef CGAL::Build_primal<Point_3_ad, Polyhedron_3_epick, Polyhedron_3_ad> Builder_primal;
-        Builder_primal builder(pbegin, pbeyond, dual, origin);
+        Builder_primal builder(dual, origin);
         P.delegate(builder);
      }
 } // namesapce CGAL

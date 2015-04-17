@@ -45,7 +45,7 @@ struct Face_with_tag :
     public CGAL::HalfedgeDS_face_base<Refs> {
         bool tag;
 
-        Face_with_tag () {}
+        Face_with_tag () : tag(false) {}
 };
 
 // Enriched vertex with a boolean tag and a dual plane (Plane_3_ad).

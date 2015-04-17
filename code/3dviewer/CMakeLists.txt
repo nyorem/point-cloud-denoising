@@ -52,8 +52,9 @@ set( MOCS moc_window.cxx
 
 include_directories( src )
 
-if( CGAL_Qt4_FOUND AND QT4_FOUND AND OPENGL_FOUND AND QGLVIEWER_FOUND )
-    # Hack because QGLVIEWER_INCLUDE_DIR is wrong on my system
+if( CGAL_Qt4_FOUND AND QT4_FOUND AND OPENGL_FOUND )
+    # Hack because cmake can not find QGLViewer on my system
+    # include_directories ("/usr/local/Cellar/libqglviewer/2.6.1/lib/QGLViewer.framework/Versions/2/Headers")
     include_directories( ${QGLVIEWER_LIBRARIES} )
 
     # UI files (Qt Designer files)

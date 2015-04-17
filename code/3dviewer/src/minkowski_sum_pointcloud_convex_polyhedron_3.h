@@ -88,9 +88,12 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
         // Check if the facet is a polyhedron or a Voronoi facet
         // TODO: why p.opposite() instead of p?
+        std::cout << "tag facet " << fit->tag << std::endl;
         if (std::find(poly.begin(), poly.end(), p.opposite()) != poly.end()) {
+            std::cout << "true" << std::endl;
             fit->tag = true;
         } else {
+            std::cout << "false" << std::endl;
             fit->tag = false;
         }
     }
