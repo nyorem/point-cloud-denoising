@@ -36,10 +36,22 @@ def normL2((x, y)):
 # Ellipse parameters
 a = 1.5
 b = 1
-N = 200
+N = 1000
+xellipse = lambda t: a * math.cos(t)
+yellipse = lambda t: b * math.sin(t)
+
+# Curve
+ts = [ (2 * k * math.pi) / N for k in range(N + 1) ]
+points_x = [xellipse(t) for t in ts]
+points_y = [yellipse(t) for t in ts]
+
+plt.figure()
+plt.plot(points_x, points_y)
+plt.savefig("ellipse.png")
+plt.close()
 
 # Algorithm parameters
-radius = 30
+radius = 0.5
 weighted = False
 
 # Expected curvatures
@@ -50,6 +62,8 @@ curvatures = map(lambda t: ellipse_curvature(a, b, t), ts)
 
 # Computed curvatures
 gradvol = to_couples(unionballs.gradient_volume(pointsnp, radius, weighted).tolist(), normL2)
+k = np.mean(curvatures) / np.mean(gradvol)
+gradvol = [k * g for g in gradvol]
 gradper = to_couples(unionballs.gradient_perimeter_boundary(pointsnp, radius, weighted).tolist(), normL2)
 k = np.mean(curvatures) / np.mean(gradper)
 gradper = [k * g for g in gradper]

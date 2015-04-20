@@ -242,11 +242,13 @@ Vector union_balls_2_vector_out (FTri &ftri, FArc &farc,
     dt.insert(tl); dt.insert(tr);
 
     int N = 0;
-    for (InputIterator it = begin; it != beyond; ++it)
+    std::map<Point, unsigned> index_points;
+    for (InputIterator it = begin; it != beyond; ++it) {
+        index_points[*it] = N;
         ++N;
+    }
     Vector val(N);
 
-    int i = 0;
     // Decomposition of the intersection of a Voronoi cell and a ball
     // It is made of triangles and agular sectors
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
@@ -260,7 +262,7 @@ Vector union_balls_2_vector_out (FTri &ftri, FArc &farc,
 
         ftri.reset(); farc.reset();
         intersection_sphere_voronoi_cell_2<Kernel>(ftri, farc, dt, vit, radius);
-        val[i++] = ftri.getValue() + farc.getValue();
+        val[index_points[P]] = ftri.getValue() + farc.getValue();
     }
 
     return val;
@@ -322,7 +324,7 @@ struct UnionBalls {
             if (m_values(i).derivatives().rows() != 0) {
                 g += m_values(i).derivatives();
             }
-            w[2 * i] = m_values(i).value();
+            w[2 * i]     = m_values(i).value();
             w[2 * i + 1] = m_values(i).value();
         }
 

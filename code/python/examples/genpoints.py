@@ -8,7 +8,7 @@ def sum_tuple (x, y):
 # Generate N points on a circle centered at the origin.
 def on_circle (r, N):
     return [ (r * math.cos(2 * k * math.pi / N),
-              r * math.sin (2 * k * math.pi / N)) for k in range(N) ]
+              r * math.sin(2 * k * math.pi / N)) for k in range(N) ]
 
 # Generate N points on an ellipse with major / minor axes (a, b) centered
 # at the origin.
