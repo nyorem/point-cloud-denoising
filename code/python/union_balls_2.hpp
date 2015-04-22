@@ -314,16 +314,25 @@ struct UnionBalls {
         return val;
     }
 
+    Eigen::VectorXd values () const {
+        Eigen::VectorXd w = Eigen::VectorXd::Zero(2 * m_values.rows());
+
+        for (int i = 0; i < m_values.rows(); ++i) {
+            w[2 * i] = m_values(i).value();
+            w[2 * i + 1] = m_values(i).value();
+        }
+
+        return w;
+    }
+
     Eigen::VectorXd grad () const {
         Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_values.rows()),
-                        w = Eigen::VectorXd::Zero(2 * m_values.rows());
+                        w = values();
 
         for (int i = 0; i < m_values.rows(); ++i) {
             if (m_values(i).derivatives().rows() != 0) {
                 g += m_values(i).derivatives();
             }
-            w[2 * i] = m_values(i).value();
-            w[2 * i + 1] = m_values(i).value();
         }
 
         // Weighting by the corresponding value
@@ -341,6 +350,69 @@ struct UnionBalls {
 
         FTri ftri;
         FArc farc;
+};
+
+// Using Automatic Differentiation, compute the weighted gradient of values along
+// intersections of Voronoi cells and spheres.
+template < typename PointAD,
+           typename FTAD,
+           typename VectorAD,
+           typename FTri,
+           typename FArc,
+           typename FTriW,
+           typename FArcW
+         >
+struct WeightedUnionBalls {
+    WeightedUnionBalls (double radius) : m_radius(radius), ftri(), farc() {
+    }
+
+    FTAD operator() (VectorAD const& v) {
+        m_values = union_balls_2_vector_in_out<PointAD, VectorAD>(ftri, farc,
+                                                                  v,
+                                                                  m_radius);
+
+        m_weights = union_balls_2_vector_in_out<PointAD, VectorAD>(ftriw, farcw,
+                                                                   v,
+                                                                   m_radius);
+
+        FTAD val = 0;
+        for (int i = 0; i < m_values.rows(); ++i) {
+            val += m_values(i);
+        }
+
+        return val;
+    }
+
+    Eigen::VectorXd grad () const {
+        Eigen::VectorXd g = Eigen::VectorXd::Zero(2 * m_values.rows());
+
+        for (int i = 0; i < m_values.rows(); ++i) {
+            if (m_values(i).derivatives().rows() != 0) {
+                g += m_values(i).derivatives();
+            }
+        }
+
+        // Coefficent wise division
+        Eigen::VectorXd w = Eigen::VectorXd::Zero(2 * m_values.rows());
+        for (int i = 0; i < m_weights.rows(); ++i) {
+            w[2 * i] = m_weights[i].value();
+            w[2 * i + 1] = m_weights[i].value();
+        }
+        g = g.cwiseQuotient(w);
+
+        return g;
+    }
+
+    private:
+        double m_radius;
+        VectorAD m_values;
+        VectorAD m_weights;
+
+        FTri ftri;
+        FArc farc;
+
+        FTriW ftriw;
+        FArcW farcw;
 };
 
 #endif

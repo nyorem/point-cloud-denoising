@@ -22,6 +22,13 @@ typedef UnionBalls<Point, FT, VectorXd,
 typedef UnionBalls<Point, FT, VectorXd,
                    TriangleAreaAccumulator<FT>,
                    AngularSectorAreaAccumulator<FT> > VolumeUnion;
+typedef WeightedUnionBalls<Point, FT, VectorXd,
+                           // compute area
+                           TriangleAreaAccumulator<FT>,
+                           AngularSectorAreaAccumulator<FT>,
+                           // divided by perimeter
+                           Accumulator<FT>,
+                           AngularSectorPerimeterAccumulator<FT> > VolumeWeightedPerimeterUnion;
 
 #include <boost/python.hpp>
 #include <boost/numpy.hpp>
@@ -52,8 +59,8 @@ python_to_vector(const np::ndarray &array)
 
 // Compute the perimeter of the boundary of a union of balls in 2D.
 // Input: 2 * N vector of points
-double perimeter_union_balls_2 (const np::ndarray &points,
-                                double radius) {
+np::ndarray perimeter_union_balls_2 (const np::ndarray &points,
+                                     double radius) {
     PerimeterUnion per(radius);
 
     // Convert numpy array to Eigen vector
@@ -67,8 +74,18 @@ double perimeter_union_balls_2 (const np::ndarray &points,
         v(i) = AD(P(i), N, i);
     }
 
-    // Compute perimeter
-    return per(v).value();
+    // Compute perimeters
+    per(v);
+    Eigen::VectorXd vals = per.values();
+
+    // Convert Eigen vector to numpy array
+    auto pvals = np::zeros(p::make_tuple(vals.rows()),
+                           np::dtype::get_builtin<double>());
+    for (size_t i = 0; i < vals.rows(); ++i) {
+        pvals[i] = vals[i];
+    }
+
+    return pvals;
 }
 
 // Compute the gradient of the perimeter of the boundary of a union of balls in 2D.
@@ -105,8 +122,8 @@ np::ndarray gradient_perimeter_union_balls_2 (const np::ndarray &points,
 
 // Compute the volume of a union of balls in 2D.
 // Input: 2 * N vector of points
-double volume_union_balls_2 (const np::ndarray &points,
-                             double radius) {
+np::ndarray volume_union_balls_2 (const np::ndarray &points,
+                                  double radius) {
     VolumeUnion vol(radius);
 
     // Convert numpy array to Eigen vector
@@ -120,8 +137,18 @@ double volume_union_balls_2 (const np::ndarray &points,
         v(i) = AD(P(i), N, i);
     }
 
-    // Compute perimeter
-    return vol(v).value();
+    // Compute volumes
+    vol(v);
+    Eigen::VectorXd vals = vol.values();
+
+    // Convert Eigen vector to numpy array
+    auto pvals = np::zeros(p::make_tuple(vals.rows()),
+                           np::dtype::get_builtin<double>());
+    for (size_t i = 0; i < vals.rows(); ++i) {
+        pvals[i] = vals[i];
+    }
+
+    return pvals;
 }
 
 // Compute the gradient of the volume of a union of balls in 2D.
@@ -156,6 +183,37 @@ np::ndarray gradient_volume_union_balls_2 (const np::ndarray &points,
     return pgrad;
 }
 
+// Compute the gradient of the volume of a union of balls in 2D
+// weighted by the perimeter.
+// Input: 2 * N vector of points
+np::ndarray gradient_volume_union_balls_weighted_perimeter_2 (const np::ndarray &points,
+                                                              double radius) {
+    VolumeWeightedPerimeterUnion vol(radius);
+
+    // Convert numpy array to Eigen vector
+    Eigen::VectorXd P = python_to_vector<double>(points);
+
+    // Convert Eigen vector to Eigen AD vector
+    size_t N = P.rows();
+
+    VectorXd v(N);
+    for (size_t i = 0; i < N; ++i) {
+        v(i) = AD(P(i), N, i);
+    }
+
+    vol(v);
+    Eigen::VectorXd grad = vol.grad();
+
+    // Convert Eigen vector to numpy array
+    auto pgrad = np::zeros(p::make_tuple(grad.rows()),
+                           np::dtype::get_builtin<double>());
+    for (size_t i = 0; i < grad.rows(); ++i) {
+        pgrad[i] = grad[i];
+    }
+
+    return pgrad;
+}
+
 BOOST_PYTHON_MODULE(unionballs) {
     np::initialize();
 
@@ -164,5 +222,7 @@ BOOST_PYTHON_MODULE(unionballs) {
 
     p::def("volume", &volume_union_balls_2);
     p::def("gradient_volume", &gradient_volume_union_balls_2);
+
+    p::def("gradient_volume_weighted_perimeter", &gradient_volume_union_balls_weighted_perimeter_2);
 }
 

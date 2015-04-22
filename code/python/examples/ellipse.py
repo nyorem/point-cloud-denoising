@@ -36,7 +36,7 @@ def normL2((x, y)):
 # Ellipse parameters
 a = 1.5
 b = 1
-N = 1000
+N = 3000
 xellipse = lambda t: a * math.cos(t)
 yellipse = lambda t: b * math.sin(t)
 
@@ -51,8 +51,8 @@ plt.savefig("ellipse.png")
 plt.close()
 
 # Algorithm parameters
-radius = 0.5
-weighted = False
+radius = 0.6
+weighted = True
 
 # Expected curvatures
 points = genpoints.on_ellipse(a, b, N);
@@ -62,13 +62,25 @@ curvatures = map(lambda t: ellipse_curvature(a, b, t), ts)
 
 # Computed curvatures
 gradvol = to_couples(unionballs.gradient_volume(pointsnp, radius, weighted).tolist(), normL2)
-k = np.mean(curvatures) / np.mean(gradvol)
-gradvol = [k * g for g in gradvol]
+# k = np.mean(curvatures) / np.mean(gradvol)
+# gradvol = [k * g for g in gradvol]
+
 gradper = to_couples(unionballs.gradient_perimeter_boundary(pointsnp, radius, weighted).tolist(), normL2)
 k = np.mean(curvatures) / np.mean(gradper)
 gradper = [k * g for g in gradper]
 
+pers = unionballs.perimeter_boundary(pointsnp, radius)
+gradvolw = [ v / p for (p, v) in zip(pers, gradvol) ]
+k = np.mean(curvatures) / np.mean(gradvolw)
+gradvolw = [k * g for g in gradvolw]
+
 # Plot expected / computed curvatures
+plt.figure()
+plt.plot(ts, curvatures, 'b')
+plt.plot(ts, gradper, 'r')
+plt.savefig("curvatures_per.png")
+plt.close()
+
 plt.figure()
 plt.plot(ts, curvatures, 'b')
 plt.plot(ts, gradvol, 'r')
@@ -77,8 +89,8 @@ plt.close()
 
 plt.figure()
 plt.plot(ts, curvatures, 'b')
-plt.plot(ts, gradper, 'r')
-plt.savefig("curvatures_per.png")
+plt.plot(ts, gradvolw, 'r')
+plt.savefig("curvatures_volw.png")
 plt.close()
 
 # Plot differences
@@ -90,5 +102,10 @@ plt.close()
 plt.figure()
 plt.plot(ts, err(gradvol, curvatures))
 plt.savefig("errvol.png")
+plt.close()
+
+plt.figure()
+plt.plot(ts, err(gradvolw, curvatures))
+plt.savefig("errvolw.png")
 plt.close()
 

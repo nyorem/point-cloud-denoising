@@ -211,7 +211,144 @@ an approximation of the classical mean curvature flow.
 Indeed, we will show that the norm of these gradients are estimations of the
 mean curvature of the underlying sampled surface.
 
+First, we will compute an approximation of the gradient of the area of the union
+of balls.
+
 % TODO
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{2d/2d_proof_gradient_area_1}
+    \caption{Situation for a ball $ B(x_i, r) $}
+\end{figure}
+
+Let's say that we move the point $ x _i $ by $ dx_i $, let's study the variation
+of the area of $ V(x_i, X) \cap B(x_i, r) $.
+
+If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
+have: $ A_{new} = A_{old} + A_1 - A_2 $ where $ A_1 $ is the upper gained area
+and $ A_2 $ the lower lost area.
+
+Then, we can approximate $ A_1 $ by $ \int_{B_1} || y - z(y) || dy $ where $ B =
+\partial B_(x_i, r) \cap V(x_i, X) = B_1 \cup B_2 $ is the visible boundary of
+the ball.
+
+For any $ y \in B $, we define $ z(y) $ as the intersection of the half-line $ D $
+with the circle of center $ x_i + dx_i $ with radius $ r $.
+Then, we parametrize the half-line $ D $ by $ y + t \frac{y - x_i}{||y - x_i||}
+$ where $ t \ge 0 $.
+
+Let's find this intersection point by assuming that $ dx_i $ and $ t $ are small
+such that $ t^2 = dx_i^2 = t \times dx_i = 0 $.
+
+We need to find $ D \cap C(x_i + dx_i, r) $. Let $ t \ge 0 $ then , we have :
+\begin{equation}
+    || y + t \frac{y - x_i}{|| y - x_i||} - (x_i + dx_i) ||^2 = r^2
+    \tag{$\star$}
+\end{equation}
+
+If we expand this expression, we get:
+
+\begin{align*}
+    (\star) & \iff || y
+    - (x_i + dx_i) ||^2 + t^2 + 2t \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i
+        + dx_i) \right) = r^2 \\
+    & \iff || y - x_i || ^2 - 2 (y - x_i | dx_i) + || dx_i || ^2 + t^2 + 2t
+    \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i + dx_i) \right) = r^2 \\
+    & \iff -2 (y - x_i | dx_i) + 2t || y - x_i|| = 0 \\
+    & \iff t = t^{\star} = \left( \frac{y - x_i}{||y - x_i||} | dx_i \right)
+\end{align*}
+
+Then, $ z(y) = y = t^{\star} \frac{y - x_i}{||y - x_i||} $ and $ || y - z(y) || =
+t^{\star} $.
+
+We deduce that :
+$$ A_1 \approx \int_{B_1} \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) dy $$
+and:
+$$ A_1 - A_2 \approx \int_{B} \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) dy $$
+
+Finally, we have:
+\begin{equation}
+    \label{eqn:gradient_area_2d}
+    \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy
+\end{equation}
+
+Now, let's find the link between the previously computed gradient and the mean
+curvature. We suppose that our point cloud $ P $ is a sampling of an underlying
+surface $ M $. More precisely, we suppose that $ P $ is an $ \epsilon $-sampling
+of $ M $ defined in \cite{amenta1999surface}.
+
+We will first do two approximations on \ref{eqn:gradient_area_2d}:
+\begin{enumerate}
+    \item the first one is to suppose that the offset of $ M $ is close enough to the offset of $ P $.
+    \item the second one is that if the sampling is dense enough then we can replace $ p $
+        by the projection of $ y $ on $ M $.
+\end{enumerate}
+
+Using these approximations, we get:
+\begin{align*}
+    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{M^r} \cap V(p,
+        P)} (x - p) dx \\
+    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx \\
+\end{align*}
+
+Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
+where $ \vec{n_M}(q) $ is the normal vector of $ M $ at $ q $ on the upper part
+of $ \partial{M^r} \cap V(p, P) $.
+
+We will need the Jacobian of this substitution. If we decompose this
+substitution on $ T_p(M) \times [-r, r] $, where $ T_p(M) $ is the tangent space
+of $ M $ at $ p $, we get: $ D \phi = id + r D \vec{n_M}(q) $.
+
+Then, we use the fact that the matrix $ D \vec{n_M}(q) $ is diagonalizable and
+that its eigenvalues are the principal curvatures.
+We deduce that : $ \det (D \phi) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+
+Using an analogous substitution on the lower part of $ \partial{M^r} \cap V(p,
+P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
+
+By summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
+
+It follows that:
+\begin{align*}
+    \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx &= \int_{M \cap V(p, P)}
+    r \times \vec{n_M}(q) ( \det (id + r D \vec{n_M}(q)) - \det (id - r D
+    \vec{n_M}(q)) ) dq \\
+    &= 2r \int_{M \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_M}(q) dq \\
+\end{align*}
+
+Finally, if we suppose that $ \vec{n_M}(q) = \vec{n_M}(p) $, $ \kappa_1(q) =
+\kappa_1(p) $ and $ \kappa_2(q) = \kappa_2(p) $, we have the following final
+result:
+
+$$ \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
+
+In short, the gradient of the area of union of balls is proportional to the mean
+curvature.
+
+\section{Curvature estimation}
+
+We can use the previous result to estimate mean curvature on a point set using
+the norm of the gradients of the area of the union of balls.
+
+We did our tests on a sampled ellipse with major / minor axes of $ a / b $. We
+can parametrize this ellipse by :
+\begin{cases}
+    x(t) &= a \cos (t) \\
+    y(t) &= b \sin (t)
+\end{cases}
+
+We recall the formula for computing the curvature of a parametrized curve:
+$$ \kappa(t) = \frac{x'(t) y''(t) - y'(t) x''(t)}{(x'^2(t) +
+    y'^2(t))^{\frac{3}{2}}} $$
+
+For an ellipse, we obtain:
+$$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}}} $$
+
+We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
+the computed ones where $ N $ is the number of samples.
+
+% TODO: pictures
 
 \section{Gradient descent}
 
