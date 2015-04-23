@@ -1,8 +1,8 @@
 \chapter{3D case}
 
-In this part, we will be interested in doing the same job as in 2D except that
-we will use a convex polyhedron instead of an euclidean ball in the Minkowski
-sum.
+In this part, we will be interested in doing the same job in 3D as in 2D except
+that we will use a convex polyhedron instead of an euclidean ball in the
+Minkowski sum.
 
 This choice will raise a number of issues such as the construction of the
 Voronoi diagram of a point set under a polyhedral norm.
@@ -103,7 +103,8 @@ We can define it in two ways:
 The construction of the Voronoi diagram under a polyhedral norm is a complex
 topic and had been studied thoroughly in \cite{ma2000bisectors}.
 
-For the duration of this internship, we had the choice between three paths:
+For the duration of this internship, we had the choice between three paths
+(by increasing order of difficulty):
 \begin{enumerate}
     \item Construction of $ V(p, P) \cap B(p, r) $
     \item Construction of $ V(p, P) \cap B_N(p, r) $
@@ -112,15 +113,104 @@ For the duration of this internship, we had the choice between three paths:
 
 We chose the second path because the third one, as said previously, is a very
 complex subject and can not be done during the internship because of its length.
-Also, we can approximate the first path using the second one by choosing for $
-B_N(p, r) $ a discretized sphere.
+Also, we can approximate the first one using the second one by choosing for $
+B_N(p, r) $ a discretization of a sphere.
 
 We used two different methods in order to evaluate the volume (or the area of
-the boundary) of $ V(p, P) \cap B_N(p, r) $: using a variant of the
-exclusion-inclusion formula, and a more simple method by directly summing the
-quantities $ \mu(V(p, P) \cap B_N(p, r) $.
+the boundary or more generally an additive measure $ \mu $) of $ V(p, P) \cap
+B_N(p, r) $: a simple method by directly summing the quantities $ \mu(V(p, P)
+\cap B_N(p, r)) $ or by using a variant of the inclusion-exclusion formula.
+
+\subsubsection{Naive method}
+% TODO
+
+We want to compute :
+
+$$ \mu(P + r B_N(0, 1)) = \sum_p \mu(\bigcup_p B_N(p, r) \cap V(p, P)) $$
+
+The idea of this method is to approximate $ \mu(\bigcup_p B_N(p, r) \cap V(p,
+P)) $ by $ \mu(B_N(p, r) \cap V(p, P)) $.
+
+\subsubsection{Inclusion-exclusion formula}
+% TODO
+
+The inclusion-exclusion formula is a well known formula which describes the
+indicator function of a union of sets: given a finite number of sets $ A = \{
+A_1, \ldots, A_N \} $, we have:
+
+$$ \indicator{\bigcup A_i} = \sum_{\emptyset \neq X \subseteq A} (-1)^{\card X -
+    1} \indicator{\bigcap X} $$
+
+This formula can also be expressed using the notion of nerve as shown in
+\cite{attali2007inclusion}. We defined the nerve of $ A = \{ A_x, x \in X \} $
+to be the graph where an edge exists between $ x $ and $ y $ only if $ A_x \cap
+A_y \neq \emptyset $.
+
+Then, we can write the inclusion-exclusion formula as:
+
+$$ \indicator{\bigcup A_x} = \sum_{\sigma \in Nerve(A)} (-1)^{\dim \sigma}
+\indicator{\bigcap \sigma} $$
+
+In our case, we get:
+
+\begin{equation}
+    \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(B)} (-1)^{\dim \sigma}
+    \indicator{\bigcap \sigma}
+    \label{eqn:incl_excl_simplices}
+\end{equation}
+
+where $ B $ is the collection of all the $ B_N(p, r), p \in P $.
+
+Now, the approximation is to replace $ Nerve(B) $ by $ Del(P, r) $ which is the
+$\alpha$-complex of $ P $ with $ \alpha = r $.
+
+% TODO: explain why approximation
+
+A question we can ask is: is the inclusion-exclusion formula still valid if we
+replace $ Nerve(B) $ with $ Nerve(\{ B_N(p, r) \cap V(p, P), p \in P\}) $ ?
+
+If we want to prove this assertion, we may use the technique used to prove the
+inclusion-exclusion formula for union of balls.
+
+The proof starts by defining the subcomplex $ L_p $ induced by a vertex $ p $.
+We consider all the polyhedrons that contains $ p $ and we construct the nerve of
+it. Formally, $ L_p = Nerve(\{ B_N(x, r), p \in B_n(x, r)\}) $.
+
+Then, when we evaluate the indicator function at $ p $ of the union, we can
+decompose it in two parts: simplices of $ L_p $ and the other ones.
+
+\begin{align*}
+    \indicator{\bigcup B_N(p, r)}(p) &= \sum_{\sigma \in L_p} (-1)^{\dim \sigma}
+    \indicator{\bigcap \sigma}(p) + \sum_{\sigma \notin L_p} (-1)^{\dim \sigma}
+    \underbrace{\indicator{\bigcap \sigma}(p)}_{= 0 \text{ since } p \notin
+        \sigma} \\
+    &= \sum_{\sigma \in L_p} (-1)^{\dim \sigma} \\
+    &= \chi(L_p)
+\end{align*}
+
+Here, $ \chi $ is the Euler characteristic of $ L_p $.
+
+Now, if we show that $ L_p $ is contractible (can be continuously deformed to a
+point), we will get $ \chi(L_p) = 1 $. Obviously, we also have $
+\indicator{\bigcup B_N(p, r)}(p) = 1 $ and we conclude that the formula
+\ref{eqn:incl_excl_simplices} is true.
+
+We can use this argument to generalize this formula. If we suppose the there
+exists $ r, r' $ such that: $ B(p, r) \subseteq B_N(p, r) \subseteq B(p, r') $,
+then we have: $ K_p \subseteq L_p \subseteq K'_p $ where $ K_p $ (resp. $ K'_p $)
+is the induced subcomplex of $ p $ in the simplicial complex defined by all the
+balls $ B(p, r) $ (resp. $ B(p, r') $), $ p \in P $.
+
+Then, we know that $ K_p $ and $ K'_p $ are either empty or contractible. We
+want to deduce that $ L_p $ is either empty or contractible.
+
+% TODO: finish the proof
 
 \section{Experiments}
+
+% TODO
+
+We compare the two different methods.
 
 % Construction of the Voronoi diagram
 % -> polyhedral norm

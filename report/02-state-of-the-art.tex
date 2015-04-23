@@ -1,6 +1,6 @@
 \chapter{State of the art}
 
-% TODO
+% TODO: references
 
 Nowadays, the traditional methods used for smoothing a point cloud are the
 following:
@@ -9,12 +9,17 @@ following:
     \item Laplacian smoothing
 \end{itemize}
 
-In this internship, we chose to use a Mean Curvature Flow based technique.
+In this internship, we chose to use a Mean Curvature Flow (MCF) based technique.
 
-Let's recall the more important results related to the MCF.
-First the definition of this flow, given a surface. We want to move each point f
-this surface in the direction of its inward normal by an amount related to the
-mean curvature at this point.
+The MCF is well known for its smoothing properties used for example in image
+processing (see \cite{ciomaga2010level}).
+
+We can also relate the MCF to the gradient flow of the volume area functional.
+
+Let's recall the more important results related to the MCF.  First the
+definition of this flow: given a surface. Each step of the flow will consist in
+moving each point of the surface in the direction of its inward normal by an
+amount related to the mean curvature at this point.
 
 Multiple approaches exist:
 \begin{itemize}
@@ -28,9 +33,8 @@ Multiple approaches exist:
         f}{\sqrt{|\nabla f|^2 + 1}}) $.
 \end{itemize}
 
-The MCF is well known for its smoothing properties used for example in image
-processing (see \cite{ciomaga2010level}).
-
-We can also relate the MCF to the gradient flow of the surface area functional.
+These approaches are mainly based on solving differential equations and
+continuous ones. In this report, we will focus on computational geometry related
+techniques on "discrete" surfaces (i.e. point clouds).
 
 % vim: set spelllang=en :
