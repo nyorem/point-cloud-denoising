@@ -3,13 +3,13 @@
 \section{Problem}
 In this part, we will focus on a 2D point cloud and we will use for the energy
 the area of the $ r $-offset of a point cloud $ X $: the Minkowski sum with an euclidean
-ball $ B(0, r) $. This offset will be denoted by $ X^{\oplus r} $.
+ball $ B(0, r) $. This offset will be denoted by $ X^r $.
 
 \section{Area of a union of balls}
 In order to compute this energy, we need to know how to estimate the area of the
 intersection of a ball and a Voronoi cell. Indeed, the area of the union of
 balls is the same as the sum of the areas of the restrictions of the balls to
-their Voronoi cell (because essentially the Voronoi cells partition the plane).
+their Voronoi cell (because the Voronoi cells partition the plane).
 
 This is the same work as the one done in \cite{cazals2011computing} except that
 we restrict ourselves to 2D which is simpler than in 3D.
@@ -199,11 +199,15 @@ same point clouds.
 
 In the previous screenshots, we can see that the gradients are (if the radius of
 the balls are big enough and if the sampling is sufficiently uniform) in the
-same direction that the normals to the underlying surface.
+same direction that the normals to the underlying surface. Also, the norm of
+these gradients seem to be related to the curvature of the approximated surface.
+
+In the next section, we will prove these two conjectures: the gradient is indeed
+related to the mean curvature vector.
 
 % TODO
 
-\section{Relation with the mean curvature flow}
+\section{Relation with the mean curvature vector}
 
 The flow we will obtain by considering the previously computed gradients will be
 an approximation of the classical mean curvature flow.
@@ -211,10 +215,28 @@ an approximation of the classical mean curvature flow.
 Indeed, we will show that the norm of these gradients are estimations of the
 mean curvature of the underlying sampled surface.
 
-First, we will compute an approximation of the gradient of the area of the union
-of balls.
+First, let's define the mean curvature vector at $ p $ of an hypersurface $ S $:
+\begin{definition}
+    Given an hypersurface $ S $ of $ \R^d $, the mean curvature $ \vec{\kappa}(p) $ vector at $ p
+    \in S $ is defined by:
+    $$ \vec{\kappa}(p) = \frac{1}{d-1} \sum_{i=1}^{d-1} \kappa_i(p) \vec{n}(p) $$
+    where the $ \kappa_i(p) $ are the $ d - 1 $ principal curvatures at $ p $
+    and $ \vec{n}(p) $ is the normal vector of $ S $ at $ p $.
+\end{definition}
 
-% TODO
+The next proposition gives the gradient of the volume of union of balls :
+\begin{proposition}
+    Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (x_i) $
+    Then, if we denote by $ A $ the volume of the union of balls, then the
+    partial derivatives of this quantity are:
+    \begin{equation}
+        \label{eqn:gradient_area_2d}
+        \nabla_{x_i} A = \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy
+    \end{equation}
+    where $ B = \partial B(x_i, r) \cap V(x_i, X) $.
+\end{proposition}
+
+\begin{proof}
 
 \begin{figure}[H]
     \centering
@@ -229,17 +251,17 @@ If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
 have: $ A_{new} = A_{old} + A_1 - A_2 $ where $ A_1 $ is the upper gained area
 and $ A_2 $ the lower lost area.
 
-Then, we can approximate $ A_1 $ by $ \int_{B_1} || y - z(y) || dy $ where $ B =
-\partial B_(x_i, r) \cap V(x_i, X) = B_1 \cup B_2 $ is the visible boundary of
+Then, we can write that $ A_1 = \int_{B_1} || y - z(y) || dy + o(||dx_i||) $ where $ B =
+\partial B(x_i, r) \cap V(x_i, X) = B_1 \cup B_2 $ is the visible boundary of
 the ball.
 
 For any $ y \in B $, we define $ z(y) $ as the intersection of the half-line $ D $
-with the circle of center $ x_i + dx_i $ with radius $ r $.
+with the circle of center $ x_i + dx_i $ of radius $ r $.
 Then, we parametrize the half-line $ D $ by $ y + t \frac{y - x_i}{||y - x_i||}
 $ where $ t \ge 0 $.
 
 Let's find this intersection point by assuming that $ dx_i $ and $ t $ are small
-such that $ t^2 = dx_i^2 = t \times dx_i = 0 $.
+such that $ t^2 = dx_i^2 = t dx_i = o(||dx_i||^2) $.
 
 We need to find $ D \cap C(x_i + dx_i, r) $. Let $ t \ge 0 $ then , we have :
 \begin{equation}
@@ -255,11 +277,11 @@ If we expand this expression, we get:
         + dx_i) \right) = r^2 \\
     & \iff || y - x_i || ^2 - 2 (y - x_i | dx_i) + || dx_i || ^2 + t^2 + 2t
     \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i + dx_i) \right) = r^2 \\
-    & \iff -2 (y - x_i | dx_i) + 2t || y - x_i|| = 0 \\
+    & \iff -2 (y - x_i | dx_i) + 2t || y - x_i|| + o(||dx_i||^2) = 0 \\
     & \iff t = t^{\star} = \left( \frac{y - x_i}{||y - x_i||} | dx_i \right)
 \end{align*}
 
-Then, $ z(y) = y = t^{\star} \frac{y - x_i}{||y - x_i||} $ and $ || y - z(y) || =
+Then, $ z(y) = y + t^{\star} \frac{y - x_i}{||y - x_i||} $ and $ || y - z(y) || =
 t^{\star} $.
 
 We deduce that :
@@ -268,16 +290,48 @@ and:
 $$ A_1 - A_2 \approx \int_{B} \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) dy $$
 
 Finally, we have:
-\begin{equation}
-    \label{eqn:gradient_area_2d}
-    \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy
-\end{equation}
+$$ \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy $$
 
-Now, let's find the link between the previously computed gradient and the mean
-curvature. We suppose that our point cloud $ P $ is a sampling of an underlying
-surface $ M $. More precisely, we suppose that $ P $ is an $ \epsilon $-sampling
-of $ M $ defined in \cite{amenta1999surface}.
+\end{proof}
 
+Now, we will study the case where the point cloud is densely sampled on a smooth
+manifold.
+
+For this, we will need two important definitions: the $\epsilon$-sampling of a
+point cloud and the reach of a manifold $ M $.
+
+\begin{definition}
+    A set of points $ x_i $ is said to be an $\epsilon$-sampling of a manifold $
+    M $ if the set of the balls  $ B(x_i, \epsilon) $ verifies: $ M \subseteq
+    \bigcup_i B(x_i, \epsilon) $ (see \cite{amenta1999surface}).
+\end{definition}
+
+\begin{definition}
+    The reach of a manifold $ M $ denoted by $ reach(M) $ is the largest $ r
+    \geq 0 $ for which for any $ p \in M^r $, there exists a unique $ q \in M $
+    such that $ q = p_M(p) $ where $ p_M $ is the projection on $ M $. $ p_M(x)
+    $ is defined such that $ || x - p_M(x) || = d(x, M) $.
+\end{definition}
+
+For example, if we consider a circle in the plane of radius $ R $, then every
+point in the plane has a unique projection on the circle except the center which
+is at distance $ R $ of every point on the circle: there is no closest point.
+Consequently, its reach is $ R $.
+
+Now, if we suppose that we have a point cloud that is an $\epsilon$-sampling of
+a smooth manifold $ M $, then the following proposition gives the link between
+the gradient of volume of an offset of $ M $ and the mean curvature vector.
+
+\begin{proposition}
+    Given an $\epsilon$-sampling $ P $ of a manifold $ M $ and $ r \ge 0 $ such
+    that: $ \epsilon \leq r \leq reach(M) $, then:
+    $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
+    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
+    $ \nabla_p A $ converges towards the mean curvature vector of $ M $ at $ p
+    $.
+\end{proposition}
+
+\begin{proof}
 We will first do two approximations on \ref{eqn:gradient_area_2d}:
 \begin{enumerate}
     \item the first one is to suppose that the offset of $ M $ is close enough to the offset of $ P $.
@@ -288,8 +342,9 @@ We will first do two approximations on \ref{eqn:gradient_area_2d}:
 Using these approximations, we get:
 \begin{align*}
     \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{M^r} \cap V(p,
-        P)} (x - p) dx \\
-    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx \\
+        P)} (x - p) dx + o(\epsilon^2) \\
+    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx +
+    o(\epsilon) \\
 \end{align*}
 
 Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
@@ -323,10 +378,12 @@ result:
 
 $$ \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
 
+\end{proof}
+
 In short, the gradient of the area of union of balls is proportional to the mean
 curvature.
 
-\section{Curvature estimation}
+\section{Mean curvature estimation}
 
 We can use the previous result to estimate mean curvature on a point set using
 the norm of the gradients of the area of the union of balls.
