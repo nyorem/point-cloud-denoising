@@ -376,7 +376,7 @@ Finally, if we suppose that $ \vec{n_M}(q) = \vec{n_M}(p) $, $ \kappa_1(q) =
 \kappa_1(p) $ and $ \kappa_2(q) = \kappa_2(p) $, we have the following final
 result:
 
-$$ \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
+$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
 
 \end{proof}
 
@@ -405,7 +405,34 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}}} $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
+Here are the computed gradients mapped a colour ramp (from green to red), we see
+that the gradients are more important where the curvature is higher.
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.3]{2d/area/curvature-ellipse-200-15}
+    \caption{Computed curvatures using gradients of the area with $ r = 15 $}
+
+    \includegraphics[scale=0.3]{2d/perimeter/curvature-ellipse-200-15}
+    \caption{Computed curvatures using gradients of the perimeter with $ r = 15 $}
+\end{figure}
+
 % TODO: pictures
+
+Now, we study the absolute difference between the computed and expected
+curvatures for different choices of gradients (area, perimeter of the boundary,
+weighted...):
+
+\begin{figure}[H]
+    \centering
+
+    \includegraphics[scale=0.3]{2d/area/curvature-error-ellipse-200-05}
+    \caption{Error between the curvatures using gradients of the area with $ r = 0.5 $}
+
+    \includegraphics[scale=0.3]{2d/perimeter/curvature-error-ellipse-200-05}
+    \caption{Error between the curvatures using gradients of the perimeter with $ r = 0.5 $}
+\end{figure}
 
 \section{Gradient descent}
 
@@ -450,6 +477,7 @@ sampled on an ellipse.
     \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_area_flow}
 \end{figure}
+% TODO: remove extra space
 
 Next, we add some outliers around the ellipse and observe the effects of the two
 flows.
@@ -571,6 +599,10 @@ sampled set of points.
 \end{figure}
 
 % TODO: explain why
+
+\section{Assessment}
+
+% TODO
 
 % Union of balls
 % Intersection with Voronoi cells

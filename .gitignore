@@ -40,7 +40,7 @@
 *.xdy
 *.tdo
 *.fls
-report/*.pdf
+**/*.pdf
 
 # cmake
 **/build/*
@@ -53,5 +53,4 @@ papers/
 others/
 **/*.so
 **/*.pyc
-
 code/python/examples/*.png

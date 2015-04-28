@@ -131,6 +131,24 @@ $$ \mu(P + r B_N(0, 1)) = \sum_p \mu(\bigcup_p B_N(p, r) \cap V(p, P)) $$
 The idea of this method is to approximate $ \mu(\bigcup_p B_N(p, r) \cap V(p,
 P)) $ by $ \mu(B_N(p, r) \cap V(p, P)) $.
 
+It is an approximation because, for example, if we want to compute the perimeter
+of the boundary of squares in 2D, the difference between what we want to compute
+and what we actually compute is:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
+    \caption{In red what we compute}
+
+    \includegraphics[scale=0.8]{3d/3d_perimeter_squares_truth}
+    \caption{In green what we want}
+\end{figure}
+
+We see that there is a small difference between the two: our computation is just
+an approximation.
+
+% TODO: explain approximation
+
 \subsubsection{Inclusion-exclusion formula}
 % TODO
 
@@ -159,10 +177,23 @@ In our case, we get:
     \label{eqn:incl_excl_simplices}
 \end{equation}
 
-where $ B $ is the collection of all the $ B_N(p, r), p \in P $.
+where $ B $ is the collection of all the balls $ B_N(p, r), p \in P $.
 
-Now, the approximation is to replace $ Nerve(B) $ by $ Del(P, r) $ which is the
-$\alpha$-complex of $ P $ with $ \alpha = r $.
+We will need the following definition:
+\begin{definition}
+    The $\alpha$-complex of a set of points $ X $ denoted by $ Del(X, \alpha) $
+    is a subset of the Delaunay triangulation.
+
+    For each simplex of the Delaunay triangulation, we can associate to it a
+    characteristic radius: the radius of the smallest empty circle containing
+    the simplex.
+
+    Now, the $\alpha$-complex contains all the simplices of the Delaunay
+    triangulation whose characteristic radii is smaller than $\alpha$.
+\end{definition}
+
+Now, we will approximate \ref{eqn:incl_excl_simplices} by replacing $ Nerve(B)
+$ by $ Del(P, r) $.
 
 % TODO: explain why approximation
 
