@@ -17,8 +17,8 @@ typedef CGAL::Bbox_3 Bbox;
 #include "CGAL_AD.hpp"
 #include <CGAL/Filtered_kernel.h>
 
-/* typedef CGAL::Simple_cartesian<AD> Kernel_ad; */
-typedef CGAL::Filtered_kernel<CGAL::Simple_cartesian<AD> > Kernel_ad;
+typedef CGAL::Simple_cartesian<AD> Kernel_ad;
+/* typedef CGAL::Filtered_kernel<CGAL::Simple_cartesian<AD> > Kernel_ad; */
 typedef Kernel_ad::FT FT_ad;
 typedef CGAL::Point_3<Kernel_ad> Point_ad;
 typedef CGAL::Vector_3<Kernel_ad> Vector_ad;

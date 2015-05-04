@@ -5,6 +5,7 @@
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/intersections.h>
+#include <CGAL/assertions.h>
 
 namespace CGAL {
     // From a list of tagged planes with AD, construct the dual polyhedron
@@ -87,6 +88,7 @@ namespace CGAL {
 
             typedef typename Polyhedron_primal::Traits::Kernel AD_Kernel;
             typedef Plane_tag<AD_Kernel> Plane_3_ad;
+            typedef typename AD_Kernel::Plane_3 Plane_3_ad_untag;
             typedef typename AD_Kernel::FT FT_ad;
 
         public:
@@ -110,7 +112,7 @@ namespace CGAL {
                 typedef typename AD_Kernel::Line_3 Line_3_ad;
                 typedef boost::optional< boost::variant< Point_3_ad,
                                                          Line_3_ad,
-                                                         Plane_3_ad > > result_inter;
+                                                         Plane_3_ad_untag > > result_inter;
 
                 B.begin_surface(m_dual.size_of_facets(),
                                 m_dual.size_of_vertices(),
@@ -123,6 +125,7 @@ namespace CGAL {
                      fit != m_dual.facets_end();
                      ++fit, ++n) {
                     typename Facet::Halfedge_const_handle h = fit->halfedge();
+
                     Plane_3_ad p1 = h->vertex()->plane,
                                p2 = h->next()->vertex()->plane,
                                p3 = h->next()->next()->vertex()->plane;
@@ -138,11 +141,14 @@ namespace CGAL {
                     Plane_3_ad pp2(p2.a(), p2.b(), p2.c(), dp2);
                     Plane_3_ad pp3(p3.a(), p3.b(), p3.c(), dp3);
 
-                    // TODO: remove auto keyword
-                    auto result = CGAL::intersection(pp1, pp2, pp3);
+                    // TODO: fix AD
+                    result_inter result = CGAL::intersection(pp1, pp2, pp3);
+                    CGAL_assertion_msg(bool(result),
+                                       "halfspace_intersection_with_dual_3: no intersection");
+                    CGAL_assertion_msg(boost::get<Point_3_ad>(& *result) != NULL,
+                                       "halfspace_intersection_with_dual_3: intersection is not a point");
                     const Point_3_ad* pp = boost::get<Point_3_ad>(& *result);
-
-                    Point_3_ad ppp = m_origin + (*pp - CGAL::ORIGIN);
+                    Point_3_ad ppp = *pp + (m_origin - CGAL::ORIGIN);
 
                     B.add_vertex(ppp);
                     primal_vertices[fit] = n;

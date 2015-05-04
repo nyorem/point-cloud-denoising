@@ -100,7 +100,7 @@ class AD
   inline bool operator!=(const Scalar& other) const  
   { return m_value != other; }
   inline bool operator!=(const AD& other) const  
-  { return m_value == other; }
+  { return m_value != other; }
   
   friend inline bool operator< (const Scalar& a, const AD& b) 
   { return a <  b.value(); }

@@ -44,7 +44,7 @@ Scene::Scene () {
     double r;
     while (!ok) {
         r = QInputDialog::getDouble(NULL, "Balls", "Radius",
-                                    2.0, 0, 10, 2, &ok);
+                                    0.5, 0, 10, 2, &ok);
     }
     m_radius = r;
 }
