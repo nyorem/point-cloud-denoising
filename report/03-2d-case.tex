@@ -387,11 +387,11 @@ $$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \i
 
 So, using the mean curvature vector:
 
-$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
+$$ \nabla_p A = 4r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
 
 Which means:
 
-$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(M \cap V(p, P)) - 1 |
+$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 4r Vol(M \cap V(p, P)) - 1 |
 \times|| \vec{\kappa}(p) ||$$
 
 \end{proof}
@@ -406,10 +406,12 @@ the norm of the gradients of the area of the union of balls.
 
 We did our tests on a sampled ellipse with major / minor axes of $ a / b $. We
 can parametrize this ellipse by :
+$$
 \begin{cases}
     x(t) &= a \cos (t) \\
     y(t) &= b \sin (t)
 \end{cases}
+$$
 
 We recall the formula for computing the curvature of a parametrized curve:
 $$ \kappa(t) = \frac{x'(t) y''(t) - y'(t) x''(t)}{(x'^2(t) +
