@@ -143,6 +143,7 @@ class AreaBoundaryAccumulator {
             if (tag) {
                 std::cout << "area accum" << std::endl;
                 FT cross = sqrt(CGAL::cross_product(b - a, c - a).squared_length());
+                std::cout << cross << std::endl;
                 if (cross != 0) {
                     val += cross;
                 }

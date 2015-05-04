@@ -107,7 +107,7 @@ class CVector_field {
                 Point p = mit->first;
                 Vector v = mit->second;
                 /* v = v / CGAL::sqrt(v.squared_length()); */
-                Point q = p + 0.075 * v;
+                Point q = p + 2 * v;
 
                 double rr, gg, bb;
                 ramp(CGAL::sqrt(mit->second.squared_length()) / max_value, rr, gg, bb);

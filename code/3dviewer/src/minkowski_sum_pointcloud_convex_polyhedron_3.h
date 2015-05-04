@@ -100,6 +100,7 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     // Compute a value along the intersection
     acc(P);
+    std::cout << std::endl;
 }
 
 // Compute a value along the Minkowski sum of a point cloud
@@ -256,7 +257,6 @@ struct UnionPolyhedra {
 
         FTAD val = 0;
         for (int i = 0; i < m_values.rows(); ++i) {
-            /* std::cout << m_values(i).derivatives() << std::endl; */
             val += m_values(i);
         }
 

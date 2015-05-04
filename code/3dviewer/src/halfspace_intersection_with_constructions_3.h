@@ -145,7 +145,6 @@ namespace CGAL
 
             // construct dual points to apply the convex hull
             std::vector<Point> dual_points;
-            std::cout << "dual points" << std::endl;
             for (PlaneIterator p = pbegin; p != pend; ++p) {
                 // translate plane
                 Plane translated_p(p->a(),
@@ -154,7 +153,6 @@ namespace CGAL
                                    p->d() + p_origin.x() * p->a() + p_origin.y() * p->b() + p_origin.z() * p->c());
                 Point pp = CGAL::ORIGIN + translated_p.orthogonal_vector () / (-translated_p.d());
                 dual_points.push_back(pp);
-                std::cout << pp << std::endl;
             }
 
             Polyhedron ch;

@@ -21,11 +21,15 @@ void container_to_ad (InputIterator begin,
                       OutputIterator out) {
     typedef typename std::iterator_traits<InputIterator>::value_type Point;
 
+    int i = 0;
+    int N = std::distance(begin, beyond);
     for (InputIterator it = begin;
          it != beyond;
          ++it) {
         Point p = *it;
-        *out++ = Point_ad(p.x(), p.y(), p.z());
+        *out++ = Point_ad(AD(p.x(), 3 * N, 3 * i),
+                          AD(p.y(), 3 * N, 3 * i + 1),
+                          AD(p.z(), 3 * N, 3 * i + 2));
     }
 }
 
@@ -75,11 +79,11 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
          pit != pbeyond;
          ++pit) {
         std::list<Plane_3> poly;
+        Vector_3 pv = *pit - CGAL::ORIGIN;
         for (VectorIterator vit = vbegin;
              vit != vbeyond;
              ++vit) {
-            Vector_3 vv = *vit,
-                     pv = *pit - CGAL::ORIGIN;
+            Vector_3 vv = *vit;
             Plane_3 p(vv.x(), vv.y(), vv.z(),
                       -(pv * vv + radius));
             poly.push_back(p);
@@ -113,6 +117,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                                           P,
                                                           p);
         mark_faces_true(P);
+        ap.reset();
         ap(P);
         area += ap.getValue();
     }
@@ -138,6 +143,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
         CGAL::halfspace_intersection_with_constructions_3(planes.begin(),
                                                           planes.end(),
                                                           P);
+        ap.reset();
         mark_faces_true(P);
         ap(P);
         area -= ap.getValue();
@@ -167,6 +173,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
         CGAL::halfspace_intersection_with_constructions_3(planes.begin(),
                                                           planes.end(),
                                                           P);
+        ap.reset();
         mark_faces_true(P);
         ap(P);
         area += ap.getValue();
@@ -199,6 +206,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
         CGAL::halfspace_intersection_with_constructions_3(planes.begin(),
                                                           planes.end(),
                                                           P);
+        ap.reset();
         mark_faces_true(P);
         ap(P);
         area -= ap.getValue();

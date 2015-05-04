@@ -159,7 +159,7 @@ namespace CGAL {
                     do {
                         B.add_vertex_to_facet(primal_vertices[hf->facet()]);
                         // TODO: tag correctly the facet
-                        handle->tag= vit->tag;
+                        handle->tag = vit->tag;
                     } while (++hf != h0);
                     B.end_facet();
                 }

@@ -198,7 +198,9 @@ void Scene::compute_gradients (int method) {
     }
 
     std::cout << "value: " << val_ad << std::endl;
+    std::ofstream file_gradients("gradients.txt");
     std::cout << g << std::endl;
+    file_gradients << g;
 
     std::vector<Vector_3> grads;
     vector_to_container<Vector_3>(g, std::back_inserter(grads));

@@ -137,11 +137,12 @@ and what we actually compute is:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
-    \caption{In red what we compute}
 
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares_truth}
     \caption{In green what we want}
+
+    \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
+    \caption{In red what we actually compute}
 \end{figure}
 
 We see that there is a small difference between the two: our computation is just
@@ -223,17 +224,18 @@ Here, $ \chi $ is the Euler characteristic of $ L_p $.
 
 Now, if we show that $ L_p $ is contractible (can be continuously deformed to a
 point), we will get $ \chi(L_p) = 1 $. Obviously, we also have $
-\indicator{\bigcup B_N(p, r)}(p) = 1 $ and we conclude that the formula
+\indicator{\bigcup B_N(p, r)}(p) = 1 $ and we will conclude that the formula
 \ref{eqn:incl_excl_simplices} is true.
 
-We can use this argument to generalize this formula. If we suppose the there
+We can use this argument to generalize this formula. If we suppose that there
 exists $ r, r' $ such that: $ B(p, r) \subseteq B_N(p, r) \subseteq B(p, r') $,
 then we have: $ K_p \subseteq L_p \subseteq K'_p $ where $ K_p $ (resp. $ K'_p $)
 is the induced subcomplex of $ p $ in the simplicial complex defined by all the
 balls $ B(p, r) $ (resp. $ B(p, r') $), $ p \in P $.
 
 Then, we know that $ K_p $ and $ K'_p $ are either empty or contractible. We
-want to deduce that $ L_p $ is either empty or contractible.
+want to deduce that $ L_p $ is either empty or contractible which will end the
+proof.
 
 % TODO: finish the proof
 
@@ -241,7 +243,37 @@ want to deduce that $ L_p $ is either empty or contractible.
 
 % TODO
 
-We compare the two different methods.
+We compare the two different methods using various polyhedrons as base and
+various point clouds.
+
+We can choose for the polyhedron a sufficiently discretized sphere. We expect
+the result to be the same as in the 2D case: gradients oriented like the outward
+normal with a norm proportional to the mean curvature.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.3]{3d/sphere-polyhedron-200}
+        \subcaption{Discretized sphere with 200 planes}
+    \end{minipage}
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.3]{3d/sphere-1000}
+        \subcaption{Initial point cloud: 1000 points on a sphere}
+    \end{minipage}
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.3]{3d/sphere-sphere-1000-05}
+        \subcaption{Gradients of the volume}
+    \end{minipage}
+\end{figure}
+
+We clearly see that the gradient are oriented like the outward normals.
+
+\section{Assessment}
+
+% TODO
 
 % Construction of the Voronoi diagram
 % -> polyhedral norm

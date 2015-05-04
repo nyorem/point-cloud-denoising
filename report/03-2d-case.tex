@@ -220,7 +220,7 @@ First, let's define the mean curvature vector at $ p $ of an hypersurface $ S $:
     Given an hypersurface $ S $ of $ \R^d $, the mean curvature $ \vec{\kappa}(p) $ vector at $ p
     \in S $ is defined by:
     $$ \vec{\kappa}(p) = \frac{1}{d-1} \sum_{i=1}^{d-1} \kappa_i(p) \vec{n}(p) $$
-    where the $ \kappa_i(p) $ are the $ d - 1 $ principal curvatures at $ p $
+    where the $ \kappa_i(p) \in \R $ are the $ d - 1 $ principal curvatures at $ p $
     and $ \vec{n}(p) $ is the normal vector of $ S $ at $ p $.
 \end{definition}
 
@@ -231,7 +231,7 @@ The next proposition gives the gradient of the volume of union of balls :
     partial derivatives of this quantity are:
     \begin{equation}
         \label{eqn:gradient_area_2d}
-        \nabla_{x_i} A = \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy
+        \nabla_{x_i} A = \partiald{A}{x_i} = \int_{B} \frac{y - x_i}{||y - x_i||} dy
     \end{equation}
     where $ B = \partial B(x_i, r) \cap V(x_i, X) $.
 \end{proposition}
@@ -244,7 +244,7 @@ The next proposition gives the gradient of the volume of union of balls :
     \caption{Situation for a ball $ B(x_i, r) $}
 \end{figure}
 
-Let's say that we move the point $ x _i $ by $ dx_i $, let's study the variation
+Let's say that we move the point $ x _i $ by a small quantity $ dx_i $, let's study the variation
 of the area of $ V(x_i, X) \cap B(x_i, r) $.
 
 If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
@@ -278,19 +278,24 @@ If we expand this expression, we get:
     & \iff || y - x_i || ^2 - 2 (y - x_i | dx_i) + || dx_i || ^2 + t^2 + 2t
     \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i + dx_i) \right) = r^2 \\
     & \iff -2 (y - x_i | dx_i) + 2t || y - x_i|| + o(||dx_i||^2) = 0 \\
-    & \iff t = t^{\star} = \left( \frac{y - x_i}{||y - x_i||} | dx_i \right)
+    & \iff t = t^{\star} = \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) +
+    o(||dx_i||)
 \end{align*}
 
 Then, $ z(y) = y + t^{\star} \frac{y - x_i}{||y - x_i||} $ and $ || y - z(y) || =
 t^{\star} $.
 
 We deduce that :
-$$ A_1 \approx \int_{B_1} \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) dy $$
-and:
-$$ A_1 - A_2 \approx \int_{B} \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) dy $$
+$$ A_1 = \int_{B_1} \left[ \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) +
+o(||dx_i||) \right] dy $$
 
-Finally, we have:
-$$ \partiald{A}{x_i} \approx \int_{B} \frac{y - x_i}{||y - x_i||} dy $$
+And:
+
+$$ A_1 - A_2 = \int_{B} \left[ \left( \frac{y - x_i}{||y - x_i||} | dx_i \right)
++ o(||dx_i||) \right] dy $$
+
+Finally, we have, by linearity:
+$$ \partiald{A}{x_i} = \int_{B} \frac{y - x_i}{||y - x_i||} dy $$
 
 \end{proof}
 
@@ -349,15 +354,17 @@ Using these approximations, we get:
 
 Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
 where $ \vec{n_M}(q) $ is the normal vector of $ M $ at $ q $ on the upper part
-of $ \partial{M^r} \cap V(p, P) $.
+of $ \partial{M^r} \cap V(p, P) $. This substitution is a diffeomorphism because
+$ r $ is smaller than the reach of $ M $.
 
 We will need the Jacobian of this substitution. If we decompose this
 substitution on $ T_p(M) \times [-r, r] $, where $ T_p(M) $ is the tangent space
 of $ M $ at $ p $, we get: $ D \phi = id + r D \vec{n_M}(q) $.
 
-Then, we use the fact that the matrix $ D \vec{n_M}(q) $ is diagonalizable and
-that its eigenvalues are the principal curvatures.
-We deduce that : $ \det (D \phi) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+Then, we use the fact that the matrix $ D \vec{n_M}(q) $ (Jacobian of the shape
+operator) is diagonalizable and that its eigenvalues are the principal
+curvatures.  We deduce that : $ \det (D \phi) = (1 + \kappa_1(q)) (1 +
+\kappa_2(q)) $.
 
 Using an analogous substitution on the lower part of $ \partial{M^r} \cap V(p,
 P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
@@ -378,10 +385,19 @@ result:
 
 $$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
 
+So, using the mean curvature vector:
+
+$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
+
+Which means:
+
+$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(M \cap V(p, P)) - 1 |
+\times|| \vec{\kappa}(p) ||$$
+
 \end{proof}
 
-In short, the gradient of the area of union of balls is proportional to the mean
-curvature.
+In short, the gradient of the volume of union of balls is proportional to the mean
+curvature vector.
 
 \section{Mean curvature estimation}
 
@@ -405,8 +421,9 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}}} $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
-Here are the computed gradients mapped a colour ramp (from green to red), we see
-that the gradients are more important where the curvature is higher.
+Here are the computed gradients mapped to a colour ramp (from green to red), we see
+that the gradients are more important where the curvature is higher and are
+collinear the to the outward normals.
 
 \begin{figure}[H]
     \centering
@@ -477,6 +494,7 @@ sampled on an ellipse.
     \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_area_flow}
 \end{figure}
+\vspace{-1em}
 % TODO: remove extra space
 
 Next, we add some outliers around the ellipse and observe the effects of the two
