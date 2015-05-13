@@ -59,6 +59,7 @@
     <addaction name="actionView_pointcloud"/>
     <addaction name="actionView_smooth"/>
     <addaction name="actionView_vectorfield"/>
+    <addaction name="actionView_intersections"/>
    </widget>
    <widget class="QMenu" name="menuAlgorithms">
     <property name="title">
@@ -68,6 +69,8 @@
     <addaction name="actionNsteps"/>
     <addaction name="actionAddNoise"/>
     <addaction name="actionEllipsoid"/>
+    <addaction name="separator"/>
+    <addaction name="actionChangeRadius"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAlgorithms"/>
@@ -210,6 +213,30 @@
   <action name="actionEllipsoid">
    <property name="text">
     <string>Ellipsoid</string>
+   </property>
+  </action>
+  <action name="actionView_intersections">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Intersections</string>
+   </property>
+   <property name="shortcut">
+    <string>I</string>
+   </property>
+  </action>
+  <action name="actionRadius">
+   <property name="text">
+    <string>Radius</string>
+   </property>
+  </action>
+  <action name="actionChangeRadius">
+   <property name="text">
+    <string>Change radius</string>
    </property>
   </action>
  </widget>

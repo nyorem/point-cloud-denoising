@@ -14,6 +14,7 @@
 #include <QSettings>
 #include <QHeaderView>
 #include <QClipboard>
+#include <QInputDialog>
 
 MainWindow::MainWindow (QWidget* parent)
 : CGAL::Qt::DemosMainWindow(parent) {
@@ -135,6 +136,11 @@ void MainWindow::on_actionView_vectorfield_toggled () {
     m_pViewer->update();
 }
 
+void MainWindow::on_actionView_intersections_toggled () {
+    m_pScene->toggle_view_intersections();
+    m_pViewer->update();
+}
+
 void MainWindow::open (QString filename) {
     QFileInfo fileinfo(filename);
 
@@ -177,18 +183,21 @@ void MainWindow::on_actionReset_triggered () {
     m_pScene->clear_balls();
     m_pScene->clear_pointcloud();
     m_pScene->clear_vectorfield();
+    m_pScene->clear_intersections();
 
     m_pScene->set_visible_ball(false);
     m_pScene->set_visible_edges(true);
     m_pScene->set_visible_facets(false);
     m_pScene->set_visible_pointcloud(true);
     m_pScene->set_visible_vectorfield(true);
+    m_pScene->set_visible_intersections(false);
 
     ui->actionView_ball->setChecked(false);
     ui->actionView_edges->setChecked(true);
     ui->actionView_facets->setChecked(false);
     ui->actionView_pointcloud->setChecked(true);
     ui->actionView_vectorfield->setChecked(true);
+    ui->actionView_intersections->setChecked(false);
 
     m_pViewer->update();
 }
@@ -211,5 +220,15 @@ void MainWindow::on_actionAddNoise_triggered () {
 void MainWindow::on_actionEllipsoid_triggered () {
     m_pScene->random_ellipsoid();
     m_pViewer->update();
+}
+
+void MainWindow::on_actionChangeRadius_triggered () {
+    bool ok = false;
+    double r;
+    while (!ok) {
+        r = QInputDialog::getDouble(NULL, "Balls", "Radius",
+                                    0.5, 0, 10, 2, &ok);
+    }
+    m_pScene->setRadius(r);
 }
 

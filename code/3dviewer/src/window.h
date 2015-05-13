@@ -52,12 +52,14 @@ class MainWindow : public CGAL::Qt::DemosMainWindow {
         void on_actionView_smooth_toggled ();
         void on_actionView_pointcloud_toggled ();
         void on_actionView_vectorfield_toggled ();
+        void on_actionView_intersections_toggled ();
 
         // algorithms menu
         void on_actionVectorField_triggered ();
         void on_actionNsteps_triggered ();
         void on_actionAddNoise_triggered ();
         void on_actionEllipsoid_triggered ();
+        void on_actionChangeRadius_triggered ();
 };
 
 #endif // ifndef MAINWINDOW_H

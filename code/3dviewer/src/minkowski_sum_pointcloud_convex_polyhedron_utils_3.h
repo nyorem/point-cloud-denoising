@@ -53,7 +53,7 @@ FT accumulate_polyhedron_3 (Accum &acc, Polyhedron& P) {
          fit != P.facets_end();
          fit++) {
         Hafc h0 = fit->facet_begin(), hf = h0--, hs = hf;
-        hs ++;
+        hs++;
 
         while (1) {
             Point_3 a = h0->vertex()->point(),
@@ -87,9 +87,7 @@ class VolumeAccumulator {
 
         template <typename Point>
         void operator() (Point a, Point b, Point c, bool tag) {
-            std::cout << "volume accum" << std::endl;
             FT cross = CGAL::cross_product(b - a, c - a) * (CGAL::ORIGIN - a);
-            std::cout << cross << std::endl;
             if (cross != 0) {
                 val += cross;
             }
@@ -141,9 +139,7 @@ class AreaBoundaryAccumulator {
         template <typename Point>
         void operator() (Point a, Point b, Point c, bool tag) {
             if (tag) {
-                std::cout << "area accum" << std::endl;
                 FT cross = sqrt(CGAL::cross_product(b - a, c - a).squared_length());
-                std::cout << cross << std::endl;
                 if (cross != 0) {
                     val += cross;
                 }

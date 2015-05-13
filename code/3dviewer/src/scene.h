@@ -33,6 +33,10 @@ class Scene {
         Point_cloud m_pointcloud;
         std::vector<Point_ad> m_pointsAD;
 
+        // Intersections
+        typedef CGAL::Polyhedron_3<Kernel_ad, Items_tag<Kernel> > Polyhedron_tag;
+        std::vector<Polyhedron_tag> m_inter;
+
         // Vector field
         Vector_field m_vectorfield;
 
@@ -43,6 +47,7 @@ class Scene {
         bool m_view_facets;
         bool m_view_pointcloud;
         bool m_view_vectorfield;
+        bool m_view_intersections;
 
         // parameters
         double m_radius;
@@ -64,6 +69,10 @@ class Scene {
         void nsteps ();
         void add_noise ();
         void random_ellipsoid ();
+        void compute_intersections ();
+        void setRadius (double radius) {
+            m_radius = radius;
+        }
 
         // toggle rendering options
         void toggle_view_smooth () { m_smooth = !m_smooth; }
@@ -72,6 +81,7 @@ class Scene {
         void toggle_view_facets () { m_view_facets = !m_view_facets; }
         void toggle_view_pointcloud () { m_view_pointcloud = !m_view_pointcloud; }
         void toggle_view_vectorfield () { m_view_vectorfield = !m_view_vectorfield; }
+        void toggle_view_intersections () { m_view_intersections = !m_view_intersections; }
 
         // set visibility
         void set_visible_ball (bool visibility) { m_view_ball = visibility; }
@@ -82,6 +92,9 @@ class Scene {
         }
         void set_visible_vectorfield (bool visibility) {
             m_view_vectorfield = visibility;
+        }
+        void set_visible_intersections (bool visibility) {
+            m_view_intersections = visibility;
         }
 
         // clear scene options
@@ -96,13 +109,16 @@ class Scene {
         }
         void clear_balls () { m_balls.clear(); }
         void clear_vectorfield () { m_vectorfield.clear(); }
+        void clear_intersections () { m_inter.clear(); }
 
         // rendering
         void render ();
+        // TODO: remove following unused functions
         void render_edges (); // polyhedron edges
         void render_facets (); // polyhedron facets
         void render_point_cloud (); // point cloud
         void render_vector_field (); // vector field
+        void render_intersections (); // intersections
 };
 
 #endif // SCENE_H

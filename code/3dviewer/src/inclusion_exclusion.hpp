@@ -7,6 +7,7 @@
 #include <CGAL/Fixed_alpha_shape_cell_base_3.h>
 
 #include "halfspace_intersection_with_constructions_3.h"
+#include "halfspace_intersection_with_dual_3.h"
 #include "tag.h"
 
 #include <iterator>
@@ -34,29 +35,62 @@ void container_to_ad (InputIterator begin,
 }
 
 // Set the tag of all the faces of a polyhedron to true.
-template < typename Polyhedron >
-void mark_faces_true (Polyhedron &P) {
-    typedef typename Polyhedron::Facet_iterator Facet_iterator;
+class MarkFacesTrue {
+    public:
+        template < typename Polyhedron >
+        void operator() (Polyhedron &P) {
+            typedef typename Polyhedron::Facet_iterator Facet_iterator;
 
-    for (Facet_iterator fit = P.facets_begin();
-         fit != P.facets_end();
-         ++fit) {
-        fit->tag = true;
-    }
-}
+            for (Facet_iterator fit = P.facets_begin();
+                 fit != P.facets_end();
+                 ++fit) {
+                fit->tag = true;
+            }
+        }
+};
+
+// Mark the faces of the convex polyhedron as true.
+class MarkFacesConvex {
+    public:
+        template < typename PlaneIterator, typename Polyhedron >
+        void operator() (Polyhedron &P, PlaneIterator pbegin, PlaneIterator pbeyond) {
+            typedef typename Polyhedron::Facet_iterator Facet_iterator;
+            typedef typename Polyhedron::Traits::Kernel Kernel;
+            typedef Plane_tag<Kernel> Plane_3;
+            typedef typename Polyhedron::Facet::Halfedge_handle Halfedge_handle;
+
+            for (Facet_iterator fit = P.facets_begin();
+                 fit != P.facets_end();
+                 ++fit) {
+                 Halfedge_handle h(fit->halfedge());
+
+                 Plane_3 p(h->vertex()->point(),
+                           h->next()->vertex()->point(),
+                           h->next()->next()->vertex()->point());
+
+                 if (std::find(pbegin, pbeyond, p.opposite()) != pbeyond) {
+                     fit->tag = true;
+                 } else {
+                     fit->tag = false;
+                 }
+            }
+        }
+};
 
 // Compute an approximation of the area of the boundary of the Minkowski
 // sum of a point cloud with a convex polyhedron using an inclusion-exclusion
 // formula.
 template < typename FT,
+           typename PolyhedronAccum,
+           typename Marker,
            typename PointIterator,
            typename VectorIterator
          >
-FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegin,
-                                                             PointIterator pbeyond,
-                                                             VectorIterator vbegin,
-                                                             VectorIterator vbeyond,
-                                                             double radius) {
+FT inclusion_exclusion_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegin,
+                                                                   PointIterator pbeyond,
+                                                                   VectorIterator vbegin,
+                                                                   VectorIterator vbeyond,
+                                                                   double radius) {
     typedef typename std::iterator_traits<PointIterator>::value_type Point_3;
     typedef typename CGAL::Kernel_traits<Point_3>::Kernel Kernel;
     typedef typename Kernel::Plane_3 Plane_3;
@@ -95,7 +129,11 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
     Alpha_shape_3 as(pbegin, pbeyond, radius);
 
     // Area of the boundary of a polyhedron
-    Area_boundary_polyhedron_3<FT> ap;
+    PolyhedronAccum ap;
+    ap.reset();
+
+    // Face marker
+    Marker marker;
 
     FT area = 0;
     // Vertices
@@ -106,6 +144,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                 Alpha_shape_3::REGULAR);
     as.get_alpha_shape_vertices(std::back_inserter(vertices),
                                 Alpha_shape_3::SINGULAR);
+    std::cout << "vertices " << vertices.size() << std::endl;
     for (typename std::list<Vertex_handle>::const_iterator vit = vertices.begin();
          vit != vertices.end();
          ++vit) {
@@ -116,10 +155,11 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                                           planes.end(),
                                                           P,
                                                           p);
-        mark_faces_true(P);
+        marker(P);
         ap.reset();
         ap(P);
         area += ap.getValue();
+        std::cout << area << std::endl;
     }
 
     // Edges
@@ -130,6 +170,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                              Alpha_shape_3::REGULAR);
     as.get_alpha_shape_edges(std::back_inserter(edges),
                              Alpha_shape_3::SINGULAR);
+    std::cout << "edges " << edges.size() << std::endl;
     for (typename std::list<Edge>::const_iterator eit = edges.begin();
          eit != edges.end();
          ++eit) {
@@ -144,9 +185,10 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                                           planes.end(),
                                                           P);
         ap.reset();
-        mark_faces_true(P);
+        marker(P);
         ap(P);
         area -= ap.getValue();
+        std::cout << area << std::endl;
     }
 
     // Triangles
@@ -157,6 +199,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                               Alpha_shape_3::REGULAR);
     as.get_alpha_shape_facets(std::back_inserter(facets),
                               Alpha_shape_3::SINGULAR);
+    std::cout << "facets " << facets.size() << std::endl;
     for (typename std::list<Facet>::const_iterator fit = facets.begin();
          fit != facets.end();
          ++fit) {
@@ -174,9 +217,10 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                                           planes.end(),
                                                           P);
         ap.reset();
-        mark_faces_true(P);
+        marker(P);
         ap(P);
         area += ap.getValue();
+        std::cout << area << std::endl;
     }
 
     // Tetrahedra
@@ -187,6 +231,7 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                              Alpha_shape_3::REGULAR);
     as.get_alpha_shape_cells(std::back_inserter(cells),
                              Alpha_shape_3::SINGULAR);
+    std::cout << "cells " << cells.size() << std::endl;
     for (typename std::list<Cell_handle>::const_iterator cit = cells.begin();
          cit != cells.end();
          ++cit) {
@@ -207,9 +252,10 @@ FT area_boundary_minkowski_sum_pointcloud_convex_polyhedron (PointIterator pbegi
                                                           planes.end(),
                                                           P);
         ap.reset();
-        mark_faces_true(P);
+        marker(P);
         ap(P);
         area -= ap.getValue();
+        std::cout << area << std::endl;
     }
 
     return area;

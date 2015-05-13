@@ -141,7 +141,6 @@ namespace CGAL {
                     Plane_3_ad pp2(p2.a(), p2.b(), p2.c(), dp2);
                     Plane_3_ad pp3(p3.a(), p3.b(), p3.c(), dp3);
 
-                    // TODO: fix AD
                     result_inter result = CGAL::intersection(pp1, pp2, pp3);
                     CGAL_assertion_msg(bool(result),
                                        "halfspace_intersection_with_dual_3: no intersection");
@@ -162,10 +161,10 @@ namespace CGAL {
                         h0 = vit->vertex_begin(), hf = h0;
 
                     Facet_handle handle = B.begin_facet();
+                    // TODO: tag correctly the facet
+                    handle->tag = vit->tag;
                     do {
                         B.add_vertex_to_facet(primal_vertices[hf->facet()]);
-                        // TODO: tag correctly the facet
-                        handle->tag = vit->tag;
                     } while (++hf != h0);
                     B.end_facet();
                 }

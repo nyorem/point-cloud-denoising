@@ -66,10 +66,6 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
     // Intersection
     Polyhedron_tag P;
-    /* CGAL::halfspace_intersection_with_constructions_3(boundary.begin(), */
-    /*                                                   boundary.end(), */
-    /*                                                   P, */
-    /*                                                   v->point()); */
     CGAL::halfspace_intersection_with_dual_3(boundary.begin(),
                                              boundary.end(),
                                              v->point(),
@@ -88,19 +84,20 @@ void voronoi_cell_convex_polyhedron_3 (DT const& dt,
 
         // Check if the facet is a polyhedron or a Voronoi facet
         // TODO: why p.opposite() instead of p?
-        std::cout << "tag facet " << fit->tag << std::endl;
+        /* std::cout << "tag facet " << fit->tag << std::endl; */
         if (std::find(poly.begin(), poly.end(), p.opposite()) != poly.end()) {
-            std::cout << "true" << std::endl;
+            /* std::cout << "true" << std::endl; */
             fit->tag = true;
         } else {
-            std::cout << "false" << std::endl;
+            /* std::cout << "false" << std::endl; */
             fit->tag = false;
         }
     }
 
     // Compute a value along the intersection
+    /* std::cout << v->point() << " "; */
     acc(P);
-    std::cout << std::endl;
+    /* std::cout << std::endl; */
 }
 
 // Compute a value along the Minkowski sum of a point cloud
@@ -165,7 +162,9 @@ Vector minkowski_sum_pointcloud_convex_polyhedron_vector_out_3 (PointIterator pb
     typedef typename DT::Vertex_handle Vertex_handle;
 
     int N = 0;
+    std::map<Point_3, unsigned> index_points;
     for (PointIterator it = pbegin; it != pbeyond; ++it) {
+        index_points[*it] = N;
         ++N;
     }
     Vector val(N);
@@ -186,7 +185,7 @@ Vector minkowski_sum_pointcloud_convex_polyhedron_vector_out_3 (PointIterator pb
                                              acc,
                                              radius);
 
-        val[i++] = acc.getValue();
+        val[index_points[P]] = acc.getValue();
     }
 
     return val;
@@ -262,6 +261,37 @@ struct UnionPolyhedra {
 
         return val;
     }
+
+    template <typename Vector, typename VectorIterator>
+    FTAD operator() (Vector x,
+                     VectorIterator vbegin, VectorIterator vbeyond, int i = -1) {
+        m_values = minkowski_sum_pointcloud_convex_polyhedron_vector_in_out_3<FTAD, PointAD>(x,
+                                                                                             vbegin, vbeyond,
+                                                                                             m_acc,
+                                                                                             m_radius);
+
+        FTAD val = 0;
+        for (int i = 0; i < m_values.rows(); ++i) {
+            val += m_values(i);
+        }
+
+        if (i == -1) {
+            return val;
+        } else {
+            return m_values(i / 3);
+        }
+    }
+
+    Eigen::VectorXd values () const {
+        Eigen::VectorXd v = Eigen::VectorXd::Zero(m_values.rows());
+
+        for (int i = 0; i < m_values.rows(); ++i) {
+            v(i) = m_values(i).value();
+        }
+
+        return v;
+    }
+
 
     Eigen::VectorXd grad () const {
         Eigen::VectorXd g = Eigen::VectorXd::Zero(3 * m_values.rows());

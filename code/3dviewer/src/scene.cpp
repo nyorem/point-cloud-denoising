@@ -21,6 +21,11 @@
 #include "inclusion_exclusion.hpp"
 #include "add_noise.h"
 #include "random_sphere_3.h"
+#include "GradientUtils.hpp"
+
+// Comment to disable the computation of the intersections of
+// the Voronoi cells and the polyhedron
+#define COMPUTE_INTERSECTIONS
 
 Scene::Scene () {
     // view options
@@ -37,6 +42,9 @@ Scene::Scene () {
 
     // vector field
     m_view_vectorfield = true;
+
+    // intersections
+    m_view_intersections = false;
 
     // parameters
     // radius
@@ -84,6 +92,13 @@ void Scene::render () {
     if (m_view_vectorfield) {
         m_vectorfield.gl_draw_field(1.0f, 255, 0, 0);
     }
+
+    // vector field
+    if (m_view_intersections) {
+        for (size_t i = 0; i < m_inter.size(); ++i) {
+            gl_draw_edges_tag(m_inter[i], 1.0f, 0, 0, 255);
+        }
+    }
 }
 
 int Scene::open (QString filename) {
@@ -130,6 +145,9 @@ int Scene::open (QString filename) {
         std::cout << "done" << std::endl;
 
         compute_balls();
+#ifdef COMPUTE_INTERSECTIONS
+        compute_intersections();
+#endif
     }
 
     QApplication::restoreOverrideCursor();
@@ -144,7 +162,7 @@ void Scene::compute_balls () {
     if (! m_ball.empty()) {
         // add polyhedral balls: \forall p, B_N(p, r)
         size_t N = m_pointcloud.size();
-        for (int i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             Point_cloud::Point P = m_pointcloud[i];
             Vector_3 pv = P - CGAL::ORIGIN;
             m_pointsAD.push_back(Point_ad(AD(P.x(), 3 * N, 3 * i),
@@ -168,38 +186,106 @@ void Scene::compute_balls () {
     }
 }
 
+void Scene::compute_intersections () {
+    m_inter.clear();
+
+    typedef CGAL::Delaunay_triangulation_3<Kernel_ad> DT;
+    typedef DT::Vertex_handle Vertex_handle;
+    typedef Plane_tag<Kernel_ad> Plane_ad;
+
+    DT dt(m_pointsAD.begin(), m_pointsAD.end());
+
+    for (DT::Finite_vertices_iterator it = dt.finite_vertices_begin();
+         it != dt.finite_vertices_end();
+         ++it) {
+        Vertex_handle v(it);
+        std::list<Plane_ad> boundary;
+
+        std::list<Vertex_handle> neighbours;
+        dt.adjacent_vertices(v, std::back_inserter(neighbours));
+
+        // Voronoi faces
+        for (std::list<Vertex_handle>::iterator it = neighbours.begin();
+             it != neighbours.end();
+             ++it) {
+            if (! dt.is_infinite(*it)) {
+                Vector_ad p = ((*it)->point() - v->point()) / 2;
+                Plane_ad pp(CGAL::midpoint((*it)->point(), v->point()), p);
+                pp.tag = false;
+                boundary.push_back(pp);
+            }
+        }
+
+        // Translated polyhedron
+        for (std::vector<Vector_ad>::iterator vit = m_normalsBall_ad.begin();
+             vit != m_normalsBall_ad.end();
+             ++vit) {
+            Vector_ad vv = *vit,
+                     pv = v->point() - CGAL::ORIGIN;
+            Plane_ad p(vv.x(), vv.y(), vv.z(),
+                      -(pv * vv + m_radius));
+            p.tag = true;
+            boundary.push_back(p);
+        }
+
+        Polyhedron_tag P;
+
+        CGAL::halfspace_intersection_with_dual_3(boundary.begin(),
+                                                 boundary.end(),
+                                                 v->point(),
+                                                 P);
+
+        m_inter.push_back(P);
+    }
+}
+
 void Scene::compute_gradients (int method) {
     FT_ad val_ad = 0;
-    VectorXd g = Eigen::VectorXd::Zero(3 * m_pointcloud.size());
+    VectorXd g = Eigen::VectorXd::Zero(3 * m_pointcloud.size()),
+             v = Eigen::VectorXd::Zero(3 * m_pointcloud.size());
+
+    // Convert the point cloud to a big vector
+    VectorXd_ad x = container_to_vector<VectorXd_ad>(m_pointcloud.begin(), m_pointcloud.end());
 
     if (method == 0) { // Volume
         std::cout << "Volume" << std::endl;
         VolumeUnion_ad f(m_radius);
-        val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
-                   m_normalsBall_ad.begin(), m_normalsBall_ad.end());
+        val_ad = f(x, m_normalsBall_ad.begin(), m_normalsBall_ad.end());
         g = f.grad();
-    } else if (method == 1) { // Area of the boundary 1
-        std::cout << "Area of the boundary 1" << std::endl;
+        // TODO: remove finite differences
+        /* VectorXd_ad gg = grad_finite_1(f, x, m_normalsBall_ad.begin(), m_normalsBall_ad.end()); */
+        /* for (int i = 0; i < gg.rows(); ++i) { */
+        /*     g(i) = gg(i).value(); */
+        /* } */
+        v = f.values();
+    } else if (method == 1) { // Area of the boundary naive
+        std::cout << "Area of the boundary Naive" << std::endl;
         AreaBoundaryUnion_ad f(m_radius);
         val_ad = f(m_pointcloud.begin(), m_pointcloud.end(),
                    m_normalsBall_ad.begin(), m_normalsBall_ad.end());
         g = f.grad();
-    } else if (method == 2) { // Area of the boundary 2: exclusion-inclusion
-        std::cout << "Area of the boundary 2" << std::endl;
-        val_ad = area_boundary_minkowski_sum_pointcloud_convex_polyhedron<FT_ad>(m_pointsAD.begin(),
-                                                                                 m_pointsAD.end(),
-                                                                                 m_normalsBall_ad.begin(),
-                                                                                 m_normalsBall_ad.end(),
-                                                                                 m_radius);
-        // TODO: do better
+    } else if (method == 2) { // Area of the boundary inclusion-exclusion
+        std::cout << "Area of the boundary Inclusion-exclusion" << std::endl;
+        // TODO: replace by Area_boundary_polyhedron_ad
+        val_ad = inclusion_exclusion_minkowski_sum_pointcloud_convex_polyhedron<FT_ad,
+               Volume_polyhedron_ad,
+               MarkFacesTrue>(m_pointsAD.begin(),
+                              m_pointsAD.end(),
+                              m_normalsBall_ad.begin(),
+                              m_normalsBall_ad.end(),
+                              m_radius);
+        // TODO: improve
         for (int i = 0; i < g.rows(); ++i) {
             g(i) = val_ad.derivatives().coeffRef(i);
         }
     }
 
     std::cout << "value: " << val_ad << std::endl;
+    for (int i = 0; i < m_pointcloud.size(); ++i) {
+        std::cout << m_pointcloud[i] << ": " << v(3 * i) << ", ";
+        std::cout << g(3 * i) << ", " << g(3 * i + 1) << ", " << g(3 * i + 2) << std::endl;
+    }
     std::ofstream file_gradients("gradients.txt");
-    std::cout << g << std::endl;
     file_gradients << g;
 
     std::vector<Vector_3> grads;
@@ -217,8 +303,8 @@ bool Scene::ask_method (int& method) {
 
     QComboBox *gradientMethod = new QComboBox();
     gradientMethod->addItem("Volume");
-    gradientMethod->addItem("Area of the boundary 1");
-    gradientMethod->addItem("Area of the boundary 2");
+    gradientMethod->addItem("Area of the boundary Naive");
+    gradientMethod->addItem("Area of the boundary IE");
 
     formLayout.addRow(gradientMethod);
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,

@@ -80,5 +80,31 @@ struct Items_tag : public CGAL::Polyhedron_items_3 {
     };
 };
 
+template <typename Polyhedron>
+void gl_draw_edges_tag (Polyhedron const& P,
+                        const float line_width,
+                        const unsigned char r,
+                        const unsigned char g,
+                        const unsigned char b) {
+    ::glLineWidth(line_width);
+
+    ::glBegin(GL_LINES);
+
+    ::glColor3ub(r, g, b);
+
+    typedef typename Polyhedron::Traits::Point_3 Point;
+    for (typename Polyhedron::Halfedge_const_iterator it = P.halfedges_begin();
+         it != P.halfedges_end();
+         ++it) {
+        const Point& p1 = it->opposite()->vertex()->point();
+        const Point& p2 = it->vertex()->point();
+
+        ::glVertex3d(p1[0].value(), p1[1].value(), p1[2].value());
+        ::glVertex3d(p2[0].value(), p2[1].value(), p2[2].value());
+    }
+
+    ::glEnd();
+}
+
 #endif
 
