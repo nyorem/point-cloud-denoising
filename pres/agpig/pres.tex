@@ -37,8 +37,57 @@
 \section{Introduction}
 
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Introduction}
+    % \framesubtitle{Flot de courbure moyenne}
+
+    Flot de courbure moyenne:
+    \begin{itemize}
+        \item Faire évoluer une surface en bougeant chaque point: dans la
+            direction de la normale et d'une quantité égale à la courbure
+            moyenne en ce point
+        \item Propriétés lissantes
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.27]{img/mean-curvature-flow-rabbit}
+        \caption{Flot de courbure moyenne sur une surface bruitée}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    % \framesubtitle{Objectifs}
+
+    \emph{Objectifs}
+    \begin{enumerate}
+        \item Flot de courbure moyenne sur des nuages de points: calculer une
+            fonctionnelle de l'union des boules (aire, périmètre du bord) et
+            faire une descente de gradient
+        \item Flot de courbure moyenne anisotrope: remplacer l'union des boules
+            par la somme de Minkowski avec un polyèdre convexe
+    \end{enumerate}
+
+    \emph{Applications:}
+    \begin{enumerate}
+        \item Débruitage
+        \item Simulation de croissance de cristaux
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    % \framesubtitle{Résultats}
+
+    Approximation de la courbure moyenne
+    \begin{theorem}[Lien gradient et courbure moyenne]
+        Soit une surface $ M $ de $ \mathbb{R}^3 $ et soit $ P $ un
+        $\epsilon$-échantillon de $ M $, on a:
+        $$ \frac{\partial A}{\partial p} \approx 4 r \vec{\kappa}(p) Vol(V(p, P) \cap
+        M) $$
+        où $ A $  = volume de l'union des boules $ B(p, r) $ et $ V(p, P) $ =
+        cellule de Voronoi de $ p $.
+    \end{theorem}
 \end{frame}
 
 % {{{1 2D
@@ -46,20 +95,76 @@
 
 \subsection{Problème}
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Problème}
+    % \framesubtitle{Flot de courbure moyenne}
+
+    Flot de courbure moyenne sur des nuages de points: descente de gradient
+    \begin{itemize}
+        \item Calcul du volume (ou du périmètre du bord) de l'union de boules
+        \item Calcul du gradient
+        \item Déplacement des points (Euler explicite): $ p'_i = p_i - \tau \nabla f (p_i) $ où $
+            \tau $ est une constante
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.28]{img/ellipse-balls-15}
+        \caption{Union de boules autour d'une ellipse}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problème}
+    % \framesubtitle{Outils}
+
+    Outils:
+    \begin{itemize}
+        \item CGAL: bibliothèque C++ de géométrie algorithmique
+        \item Différentiation automatique: calcul de dérivées de fonctions (au
+            sens informatique du terme) en surchargeant le type de nombre,
+            remplacement de $ x $ par $ x + y\epsilon $ avec $ \epsilon^2 = 0 $
+        \item Qt
+    \end{itemize}
 \end{frame}
 
 \subsection{Estimation de courbure moyenne}
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Estimation de courbure moyenne}
+    % \framesubtitle{Comment?}
+
+    Comment?
+    \begin{itemize}
+        \item Norme du gradient $ \propto $ courbure moyenne
+        \item Moyen d'estimer la courbure moyenne d'un nuage de points
+            échantillonnant une surface
+    \end{itemize}
 \end{frame}
 
-\subsection{Float de courbure moyenen}
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Estimation de courbure moyenne}
+    % \framesubtitle{Exemples}
+
+    Exemples: courbure d'une ellipse
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-area}
+        \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-perimeter}
+        \caption{Aire / périmètre du bord}
+    \end{figure}
+\end{frame}
+
+\subsection{Flot de courbure moyenne}
+\begin{frame}
+    \frametitle{Flot de courbure moyenne}
+    % \framesubtitle{Exemples}
+
+    Exemples: flot d'une ellipse
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{img/ellipse-100-01-15}
+        \includegraphics[scale=0.3]{img/ellipse-100-01-15-100}
+        \caption{0 / 100 itérations}
+    \end{figure}
 \end{frame}
 
 % {{{1 3D
@@ -67,23 +172,72 @@
 
 \subsection{Problème}
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Problème}
+    % \framesubtitle{Flot anisotrope}
+
+    Flot anisotrope:
+    \begin{itemize}
+        \item Somme de Minkowski avec un polyèdre convexe
+        \item Directions privilégiées
+    \end{itemize}
+
+    Différentes méthodes:
+    \begin{itemize}
+        \item Naïve (approchée)
+        \item Formules d'inclusion-exclusion (approchée)
+        \item Arrangements 3D (exacte?)
+    \end{itemize}
 \end{frame}
 
 \subsection{Exemples}
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Exemples}
+    % \framesubtitle{Polyèdres}
+
+    Polyèdres:
+    \begin{itemize}
+        \item Discrétisation d'une sphère: estimation de normales
+        \item Cube (Norme $ L_{\infty} $)
+        \item Bipyramide (Norme $ L_1 $)
+    \end{itemize}
+\end{frame}
+
+\subsection{Flot}
+\begin{frame}
+    \frametitle{Estimation de normales}
+    % \framesubtitle{Exemples}
+
+    Exemples:
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.25]{img/sphere-1000}
+        \includegraphics[scale=0.25]{img/sphere-sphere-1000-05}
+        \caption{Estimation de normales sur une sphère}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Flot anisotrope}
+    % \framesubtitle{Exemples}
+
+    Exemples:
+    % TODO
 \end{frame}
 
 % {{{1 PERSPECTIVES
 \section{Perspectives}
 
 \begin{frame}
-    \frametitle{Titre}
-    \framesubtitle{Sous-titre}
+    \frametitle{Perspectives}
+    % \framesubtitle{Sous-titre}
+
+    \begin{itemize}
+        \item Améliorer calcul en 3D (utilisation d'arrangements 3D)
+    \end{itemize}
 \end{frame}
+
+\plain{Merci!}
 
 \end{document}
 
+% vim: set spelllang=fr :

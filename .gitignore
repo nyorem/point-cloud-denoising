@@ -41,6 +41,7 @@
 *.tdo
 *.fls
 **/*.pdf
+*.pygstyle
 
 # cmake
 **/build/*
