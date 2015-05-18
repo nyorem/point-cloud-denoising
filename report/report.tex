@@ -107,8 +107,9 @@ $[$Prof/Dr/Mrs/Mr$]$ $<$first-name last-name$>$\\
 }
 \session{$June$\hfill 2015}
 
-%%% Title page
 \begin{document}
+
+% Title page
 \selectlanguage{english}
 \frontmatter
 \begin{titlingpage}
@@ -117,7 +118,7 @@ $[$Prof/Dr/Mrs/Mr$]$ $<$first-name last-name$>$\\
 \setlength{\parskip}{-1pt plus 1pt}
 
 % Abstract
-\input{00-abstract.tex}
+\input{abstract.tex}
 \cleardoublepage
 
 \tableofcontents* % the asterisk means that the table of contents itself isn't put into the ToC
@@ -126,14 +127,17 @@ $[$Prof/Dr/Mrs/Mr$]$ $<$first-name last-name$>$\\
 \mainmatter
 \SingleSpace
 
-\input{01-intro.tex}
-\input{02-state-of-the-art.tex}
-\input{03-2d-case.tex}
-\input{04-3d-case.tex}
-\input{05-conclusion.tex}
+% Main matter
+\input{A-curvature-flow.tex}
+\input{B-2d.tex}
+\input{C-3d.tex}
+\input{D-conclusion.tex}
 
 \backmatter
-% \appendix
+\appendix
+
+% Appendix
+\input{A-AD.tex}
 
 % Bibliography
 \bibliographystyle{plain}
