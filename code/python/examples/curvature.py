@@ -1,5 +1,7 @@
 #!/ usr/bin/env python
 
+# Estimate curvature and plot curvatures / errors
+
 import math
 import numpy as np
 import pylab as plt

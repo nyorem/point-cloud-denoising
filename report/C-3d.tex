@@ -1,5 +1,8 @@
 \chapter{3D case}
 
+% {{{1 PROBLEM
+\section{Problem}
+
 In this part, we will be interested in doing the same job in 3D as in 2D except
 that we will use a convex polyhedron instead of an euclidean ball in the
 Minkowski sum.
@@ -7,6 +10,7 @@ Minkowski sum.
 This choice will raise a number of issues such as the construction of the
 Voronoi diagram of a point set under a polyhedral norm.
 
+% {{{1 POLYHEDRAL NORM
 \section{Polyhedral norm}
 A polyhedral norm is a norm $ N $ defined as the following:
 
@@ -24,6 +28,7 @@ of halfspaces and so is a convex polyhedron. Hence, computing the $ r $-offset
 of a point cloud under a polyhedral norm $ N $ is the same as computing the
 Minkowski sum of a point cloud and a convex polyhedron.
 
+% {{{1 CONSTRUCTION OF THE VORONOI DIAGRAM FOR A POLYHEDRAL NORM
 \section{Construction of the Voronoi diagram for a polyhedral norm}
 
 The main problem of a polyhedral norm is that the underlying Voronoi diagram is
@@ -34,6 +39,7 @@ points, we have the following Voronoi diagram:
 
 % TODO: insert figure
 
+% {{{2 SYMBOLIC PERTURBATION
 \subsection{Symbolic perturbation}
 
 Given a polyhedral norm $ N $, we define its symbolic perturbation $ N_\epsilon
@@ -98,6 +104,7 @@ We can define it in two ways:
 \end{enumerate}
 % TODO: definition
 
+% {{{2 CONSTRUCTION OF A VORONOI CELL
 \subsection{Construction of a Voronoi cell}
 
 The construction of the Voronoi diagram under a polyhedral norm is a complex
@@ -121,6 +128,11 @@ the boundary or more generally an additive measure $ \mu $) of $ V(p, P) \cap
 B_N(p, r) $: a simple method by directly summing the quantities $ \mu(V(p, P)
 \cap B_N(p, r)) $ or by using a variant of the inclusion-exclusion formula.
 
+We will show that both of these methods are approximations.
+
+We will also briefly describe an exact method (based on 3D arrangements).
+
+% {{{3 NAIVE METHOD
 \subsubsection{Naive method}
 % TODO
 
@@ -150,6 +162,7 @@ an approximation.
 
 % TODO: explain approximation
 
+% {{{3 INCLUSION-EXCLUSION FORMULA
 \subsubsection{Inclusion-exclusion formula}
 % TODO
 
@@ -239,6 +252,28 @@ proof.
 
 % TODO: finish the proof
 
+% {{{1 IMPLEMENTATION DETAILS
+\section{Implementation details}
+
+We used the same libraries as in the 2D case except for the rendering part, in
+2D, we used custom \texttt{QWidget}. In this part, we choose to use an
+\texttt{OpenGL} based renderer: \texttt{QGLViewer}.
+
+For the first method, the Voronoi diagram is represented implicitly as a list of
+halfspaces (the planes defining the boundary of the cell).
+
+For the two methods, we needed a way to compute intersection of halfspaces: for
+the first, we need to compute the intersection of a Voronoi cell and a convex
+polyhedron and for the second one, we need to compute intersections of convex
+polyhedra.
+
+In order to construct this intersection, we used the duality which allows us to
+replace the computation of the intersection by the computation of the convex
+hull (see \cite{preparata1979finding}) of the dual points.
+
+% TODO
+
+% {{{1 EXPERIMENTS
 \section{Experiments}
 
 % TODO
@@ -269,8 +304,30 @@ normal with a norm proportional to the mean curvature.
     \end{minipage}
 \end{figure}
 
-We clearly see that the gradient are oriented like the outward normals.
+We clearly see that the gradients are oriented like the outward normals.
 
+We also did some experiments for checking the convergence of the flow.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.4]{3d/sphere-cube-0}
+        \subcaption{Initial sphere with 1000 points}
+    \end{minipage}
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.4]{3d/sphere-cube-10}
+        \subcaption{After 10 iterations}
+    \end{minipage}
+    \begin{minipage}{0.32\linewidth}
+        \centering
+        \includegraphics[scale=0.3]{3d/sphere-cube-cube}
+        \subcaption{Shape of the cube}
+    \end{minipage}
+
+    \caption{Flow of a sphere under a cube}
+\end{figure}
 
 % TODO:
 % - description des différentes méthodes + comparaison

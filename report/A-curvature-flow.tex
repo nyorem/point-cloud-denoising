@@ -1,4 +1,550 @@
+% TODO: fixer notations
+% Notations:
+% Surface = S
+% Nuage de points = P -> points p_i
+
+% partie logiciel:
+% 2D
+
+% 3D 1: intersection de demi-espaces -> associer plane + inter pour AD (lien avec AD), type de nombre
+% 3D 2: inclusion-exclusion
+% -> environ 3 pages + bouts de codes
+
+% courbe de décroissance de l'aire en fonction du pas de temps
+
 \chapter{Introduction}
+
+% TODO: contexte / state of the art
+% TODO: annonce du plan
+
+% {{{1 MOTIVATION
+\section{Motivation}
+
+The main motivation of this internship is to develop techniques for computing the
+mean curvature flow on point clouds instead of surfaces.
+
+This will have applications on denoising and smoothing of point clouds. Indeed,
+the mean curvature flow is known for its smoothing properties (see
+\cite{ciomaga2010level}).
+
+For example, here is an illustration of the mean curvature flow on a noised
+surface (extracted from \cite{clarenz2000anisotropic}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/mean-curvature-flow-rabbit}
+    \caption{Mean curvature flow on a noised surface}
+\end{figure}
+
+We will also tackle the problem of computing a curvature-related flow for
+polyhedral norms (i.e. we will do the Minkowski sum of a point cloud with a
+convex polyhedron). It will allow us to apply a denoising which will have some
+privileged directions: the denoising / smoothing will have different effects in
+these directions.
+
+This will have applications, for example, in physics based simulations like
+crystal growth simulation.  An other example would be when we build a 3D scan of
+an object: we want to be able to smooth the point cloud while preserving details
+(the signature of the author for example).
+
+In the next section, we will describe in more details the continuous mean
+curvature flow.
+
+% TODO
+
+% {{{1 MEAN CURVATURE FLOW
+\section{Mean Curvature Flow}
+
+Given a family of hypersurfaces $ S_t $ of $ \R^d $, we say that $ S_t $ is
+evolving by mean curvature if it satisfies the following equation:
+
+$$ \partiald{x}{t} = \vec{\kappa}(x) $$
+
+Where $ \vec{\kappa}(x) $ is the mean curvature vector of $ S_t $ at $ x $ and
+$ \partiald{x}{t} $ is the normal velocity.
+
+Put in more simple words, it says that at each step we move each point of the
+hypersurface $ S_t $ in the direction of the inward normal by an amount given by
+the mean curvature.
+
+Now, we will prove that the mean curvature flow belongs to a more general
+category of geometric flows: the gradient flows. Given an energy $ f $, we say
+that $ S $ evolves according to the gradient flow of $ f $ if we have:
+
+$$ \partiald{x}{t} = \nabla f(x) $$
+
+Indeed, the next proposition shows the relation between the mean curvature flow
+and the area functional.
+
+\begin{proposition}
+    The mean curvature flow is the gradient flow of the area functional.
+\end{proposition}
+
+To prove this proposition, we will need some background on hypersurfaces.
+
+First, the notion of the reach of an hypersurface: it is widely used in
+computational geometry.
+\begin{definition}
+    The reach of a manifold $ M $ denoted by $ reach(M) $ is the largest $ r
+    \geq 0 $ for which for any $ p \in M^r $, there exists a unique $ q \in M $
+    such that $ q = p_M(p) $ where $ p_M $ is the projection on $ M $. $ p_M(x)
+    $ is defined such that $ || x - p_M(x) || = d(x, M) $.
+\end{definition}
+
+For example, if we consider a circle in the plane of radius $ R $, then every
+point in the plane has a unique projection on the circle except the center which
+is at distance $ R $ of every point on the circle: there is no closest point.
+Consequently, its reach is $ R $.
+
+Another more general example is that any convex set has infinite reach. This is
+because the projection on a closed convex set is uniquely defined.
+
+The reach is also related to the Local Feature Size (LFS) defined in
+\cite{amenta1999surface}: $ LFS(p) = d(p, \mathcal{M}) $ $ reach(M) =
+\min\limits_{p \in M}~LFS(p) $ where $ \mathcal{M}  $ is the medial axis of $ M
+$.
+
+% TODO: exemples:
+% reach < min (rayons de courbure) et dessin inégalité contraire fausse
+
+Then, some facts about the curvature of embedded hypersurfaces:
+
+\begin{proposition}
+    For an hypersurface $ S \subseteq \R^d $, the map $ x \in S \rightarrow
+    \vec{n}_S(x) $ where $ \vec{n}_S(x) $ is the normal vector of $ S $ at $ x $ is
+    called the Gauss map while its derivative is called the shape operator.
+
+    Then, we have that the shape operator is diagonalizable and its eigenvalues
+    are the $ d-1 $ principal curvatures at $ x $: $ \kappa_1(x), \ldots,
+    \kappa_{d-1}(x) $.
+
+    We will also denote by $ \vec{\kappa}(x) $ the mean curvature vector at $ x
+    $: $ \vec{\kappa}(x) = \sum_{i=1}^{d-1} \kappa_i(x) \vec{n}_S(x) $.
+\end{proposition}
+
+And finally, a change of variable result:
+
+% TODO: reference
+\begin{lemma}
+    \label{lemma:diffeo}
+    Given a smooth hypersurface $ S $, and a function $ f : S \times [0, r] \to \R^d $
+    defined by $ f(x, t) = x + t \phi(x) \vec{n}_S(x) $ where $ \phi : \R^d \to
+    \R^d $ is a smooth vector field then $ f $ is a diffeomorphism for $ r < reach(S) $.
+
+    Its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D \vec{n}_S (x)) $.
+
+    Using the previous proposition, we get:
+    $$ J_f(x) = \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) $$
+\end{lemma}
+
+We will denote by $ Vol^d(S) $ the $d$-dimensional volume of an object $ S
+$.
+
+Then, we can tackle the proof:
+
+\begin{proof}
+    We parametrize the evolving surface $ S_t $ by $ S_t = \{ x + t \phi(x)
+    \vec{n}(x), x \in S_0\} $ where $ \phi : \R^d \rightarrow \R^d $ is a smooth
+    vector field. We denote by $ A = Vol^{d-1} $ the area functional.
+    Then, we have, using the lemma \ref{lemma:diffeo}:
+    \begin{align*}
+        Vol^{d-1}(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(x) dx \\
+        &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) \\
+        &= \int_{S_0} 1dx + t \int_{S_0} \phi(x) \vec{\kappa}(x) dx + O(t^2)
+    \end{align*}
+
+    So:
+    $$ \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t}= \int_{S_0}
+    \phi(x) \vec{\kappa}(x) dx $$
+
+    This equation tells us exactly that the variation of the area functional is
+    linked to the mean curvature.
+\end{proof}
+
+This proposition will be at the basis of our work. We will replace "hypersurface"
+with "point cloud sampled on an hypersurface" and try to approximate the area of
+the hypersurface by something which can be computed using only the point cloud.
+
+% {{{1 DISCRETIZATION OF THE AREA
+\section{Discretization of the area}
+
+In this section, we will try to compute an approximation of the area of an
+hypersurface with only knowing points sampled on it.
+
+First, we will introduce the $r$-offset of a point cloud:
+
+\begin{definition}
+    For $ r > 0 $ and a point cloud $ P $, we define the $r$-offset of $ P $
+    denoted by $ P^r $ by:
+    $$ P^r = \bigcup_{p \in P} B(p, r)$$
+\end{definition}
+
+It can also be seen as the Minkowski sum of $ P $ and the euclidean ball $ B(0,
+r) $.
+
+\begin{definition}
+    For any sets $ A $ and $ B $ of a vector space, we define the Minkowski sum
+    of $ A $ and $ B $ denoted by $ A \oplus B $:
+    $$ A \oplus B = \{ a + b, a \in A, b \in B \} $$
+\end{definition}
+
+Then, we will define a similar notion for hypersurfaces called the tubular
+neighbourhood:
+
+\begin{definition}
+    For any $ r > 0 $, the tubular neighbourhood of an hypersurface $ S $
+    denoted by $ S^r $ is the set of all points $ x \in \R^d $ such that there
+    exists $ y \in S $ and $ d(x, y) \leq r $.
+\end{definition}
+
+Using these notions, we can relate the area of an hypersurface to the volume of
+its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volume}.
+
+\begin{proposition}
+    \label{prop:comp-offset-area}
+    If $ S $ is a smooth hypersurface whose reach is positive and $ reach(S) > r
+    > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(S^r)}{2r} + O(r^2) $$
+
+    The constants in the reset of the development only depend on the curvature
+    of $ S $.
+\end{proposition}
+
+\begin{proof}
+    We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $.
+
+    Now, we will do the following change of variable: $ \phi : S \times [-r, r]
+\rightarrow S^r $ where $ \phi(x, t) = x + t \vec{n}_K(x) $.
+
+    Using this substitution and the lemma \ref{lemma:diffeo} with $ \phi = 1 $:
+
+    \begin{align*}
+        Vol^d(S^r) &= \int_S \int_{-r}^r J_{\phi}(p) dt dp \\
+        &= \int_S \int_{-r}^r \prod_{i=1}^{d-1} (1 + t \kappa_i(p)) dt dp \\
+        &= \int_S \int_{-r}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
+                < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
+        &= 2r \int_S 1 dp + \int_K \int_{-r}^r \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) dt dp \\
+        &= 2r Vol^{d-1}(S) + O(r^2)
+    \end{align*}
+
+    So: $ \frac{Vol^d(S^r)}{2r} = Vol^{d-1}(S) + O(r^2) $.
+\end{proof}
+
+This proposition is related to the Minkowski content. It is used to measure the
+area of the boundary of a set: the $ d-1 $ dimensional volume in dimension $ d
+$.
+
+It is defined as follows:
+$$ \lim\limits_{\epsilon \to 0} \frac{\mu(S^{\epsilon}) - \mu(S)}{\epsilon} $$
+
+This is exactly what we computed: a Taylor expansion of $ Vol^d(S^r) $.
+
+Next, we want to approximate $ Vol^d(S^r) $ by $ Vol^d(P^r) $ where $ P \subset
+S $ is a point cloud. We will need a formalization of the notion of sampling:
+
+\begin{definition}
+    A set of points $ p_i $ is said to be an $\epsilon$-sampling of a manifold $
+    M $ if the set of the balls  $ B(p_i, \epsilon) $ verifies: $ M \subseteq
+    \bigcup_i B(p_i, \epsilon) $ (see \cite{amenta1999surface}).
+\end{definition}
+
+The following proposition bounds the error of this approximation:
+
+\begin{proposition}
+    \label{prop:comp-vol-offsets}
+    For an hypersurface $ S $ with positive reach and an $\epsilon$-sampling $ P
+    \subseteq S $, we have:
+    $$ 0 \leq Vol^d(S^r) - Vol^d(P^r) \leq \frac{\epsilon^2}{r} Vol^{d-1}(S) +
+    O(\frac{\epsilon^4}{r^2}) $$
+\end{proposition}
+
+\begin{proof}
+    Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $.
+
+    Then, we parametrize $ P^r $ by $ f : S \rightarrow P^r $ where $ f(x) = x +
+    r(x) \vec{n}_S(x) $ for $ r(x) \in [0, r] $.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.8]{offset-parametrization}
+        \caption{Parametrization of the offset (in red)}
+    \end{figure}
+
+    We have:
+    \begin{align*}
+        r(x)^2 + \epsilon^2 = r^2 \iff& (r - r(x)) (r + r(x)) = \epsilon^2 \\
+        \iff& r - r(x) = \frac{\epsilon^2}{r + r(x)} \leq \frac{\epsilon^2}{r} \\
+    \end{align*}
+
+    Now, we will use the same formula as in the previous proofs:
+
+    \begin{align*}
+        Vol^d(S^r) - Vol^d(P^r) &= \int_{A^r \textbackslash P^r} 1 dp \\
+        &= \int_S \int_{r(x)}^r \det(id + t D \vec{n}_S(p)) dt dp \\
+        &= \int_S \int_{r(x)}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
+                < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
+        &= \int_S (r - r(x)) dp + O((r - r(x))^2) \\
+        &\leq \frac{\epsilon^2}{r} Vol^{d-1}(S) + O(\frac{\epsilon^4}{r^2})
+    \end{align*}
+\end{proof}
+
+Now, combining the previous propositions, we will show that we can approximate
+the area of $ S $ by the volume of $ P^r $:
+
+\begin{proposition}
+    \label{prop:approx-volume-area}
+    Given an hypersurface $ S $, an $\epsilon$-sampling of $ S $: $ P $, we
+    have:
+    $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
+    O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
+
+    So, when $ \frac{\epsilon}{r} $ and $ r $ vanish then $
+    \frac{Vol^d(P^r)}{2r} $ converges towards the area of $ S $.
+\end{proposition}
+
+\begin{proof}
+    We will use the propositions \ref{prop:comp-vol-offsets} and
+    \ref{prop:comp-offset-area}.
+
+    We have, using the triangle inequaltiy:
+    \begin{align*}
+        \left| \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) \right| \leq& \left| \frac{Vol^d(P^r)}{2r} -
+            \frac{Vol^d(S^r)}{2r} \right| + \left| \frac{Vol^d(S^r)}{2r} -
+            Vol^{d-1}(S) \right| \\
+        \leq& \frac{\epsilon^2}{2r^2} Vol^{d-1}(S) + O(\frac{\epsilon^4}{r^3}) + O(r^2) \\
+    \end{align*}
+\end{proof}
+
+At this point, we have shown a way to approximate the area of an hypersurface
+with a quantity proportional to the volume of the $r$-offset of a point cloud
+sampled on the surface.
+Now, we want to study the gradient of this newly computed quantity.
+
+% TODO
+
+% {{{1 CONVERGENCE OF THE GRADIENT
+\section{Convergence of the gradient}
+
+In this section, we will derive formulae for the gradients of the volume of
+union of balls in $ \R^d $.
+
+The next proposition gives the gradient of the volume of union of balls :
+\begin{proposition}
+    Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (p_i) $.
+    Then, if we denote by $ A $ the volume of the union of balls, we are
+    interested in the variation of A by moving one point at a time.
+
+    More precisely, we want to compute the following quantity: if we move the
+    ith point by an amount $ \delta p_i $, what is the variation of $ A $:
+    $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
+        \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
+
+    We will denote this quantity $ \nabla_{p_i} A $. Then we have:
+    \begin{equation}
+        \label{eqn:gradient_area_2d}
+        \nabla_{p_i} A = \int_{B} \frac{y - p_i}{||y - p_i||} dy
+    \end{equation}
+    where $ B = \partial B(p_i, r) \cap V(p_i, P) $.
+    % TODO: ajouter référence article oudet minimizing convex...
+\end{proposition}
+
+\begin{proof}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{2d/2d_proof_gradient_area_1}
+    \caption{Situation for a ball $ B(p_i, r) $}
+\end{figure}
+
+Let's say that we move the point $ x _i $ by a small quantity $ \delta p_i $, let's study the variation
+of the area of $ \bigcup V(p_i, P) \cap B(p_i, r) $ by moving a single point: $ p_i $.
+% TODO
+
+If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
+have: $ A_{new} = A_{old} + A_1 - A_2 $ where $ A_1 $ is the upper gained area
+and $ A_2 $ the lower lost area.
+
+Then, we can write that $ A_1 = \int_{B_1} || y - z(y) || dy + o(||\delta p_i||) $ where $ B =
+\partial B(p_i, r) \cap V(p_i, P) = B_1 \cup B_2 $ is the visible boundary of
+the ball.
+
+For any $ y \in B $, we define $ z(y) $ as the intersection of the half-line $ D $
+with the circle of center $ p_i + \delta p_i $ of radius $ r $.
+Then, we parametrize the half-line $ D $ by: $ y + t \frac{y - p_i}{||y - p_i||}
+$ where $ t \ge 0 $.
+
+Let's find this intersection point by assuming that $ t $ is small
+such that $ t^2 = t \delta p_i = o(||\delta p_i||^2) $.
+
+We need to find $ D \cap C(p_i + \delta p_i, r) $. Let $ t \ge 0 $ then , we have :
+\begin{equation}
+    || y + t \frac{y - p_i}{|| y - p_i||} - (p_i + \delta p_i) ||^2 = r^2
+    \tag{$\star$}
+\end{equation}
+
+If we expand this expression, we get:
+
+\begin{align*}
+    (\star) & \iff || y
+    - (p_i + \delta p_i) ||^2 + t^2 + 2t \left( \frac{y-p_i}{|| y - p_i||} | y - (p_i
+        + \delta p_i) \right) = r^2 \\
+    & \iff || y - p_i || ^2 - 2 (y - p_i | \delta p_i) + || \delta p_i || ^2 + t^2 + 2t
+    \left( \frac{y-p_i}{|| y - p_i||} | y - (p_i + \delta p_i) \right) = r^2 \\
+    & \iff -2 (y - p_i | \delta p_i) + 2t || y - p_i|| + o(||\delta p_i||^2) = 0 \\
+    & \iff t = t^{\star} = \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right) +
+    o(||\delta p_i||)
+\end{align*}
+
+Then, $ z(y) = y + t^{\star} \frac{y - p_i}{||y - p_i||} $ and $ || y - z(y) || =
+t^{\star} $.
+
+We deduce that :
+$$ A_1 = \int_{B_1} \left[ \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right) +
+o(||\delta p_i||) \right] dy $$
+
+And:
+
+$$ A_1 - A_2 = \int_{B} \left[ \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right)
++ o(||\delta p_i||) \right] dy $$
+
+Finally, we have, by linearity:
+$$ \nabla_{p_i} A = \int_{B} \frac{y - p_i}{||y - p_i||} dy $$
+
+\end{proof}
+
+Now, we will relate the previously computed gradients to the mean curvature
+vector of an hypersurface.
+
+If we suppose that we have a point cloud that is an $\epsilon$-sampling of
+a smooth manifold $ M $, then the following proposition gives the link between
+the gradient of volume of an offset of $ M $ and the mean curvature vector.
+
+\begin{proposition}
+    \label{prop:gradient-mean-curvature}
+    Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) manifold $ M $ and $ r \ge 0 $ such
+    that: $ \epsilon \leq r \leq reach(M) $, then:
+    $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
+    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
+    $ \nabla_p A $ converges towards the mean curvature vector of $ M $ at $ p $.
+% TODO: ajouter dessins + lemme Amenta Bern (2)
+\end{proposition}
+
+To prove that, we will need two lemmas extracted from \cite{amenta1999surface}
+which will tell us how the Voronoi cells look:
+\begin{lemma}
+    If $ S $ is an hypersurface, $ P $ an $\epsilon$-sampling of $ S $ and $ p
+    \in P $, then:
+    $$ V(p, P) \cap S \subseteq B\left(p, \frac{\epsilon}{1 - \epsilon}
+        LFS(p)\right) $$
+\end{lemma}
+
+\begin{lemma}
+    If $ S $ is an hypersurface, $ P $ an $\epsilon$-sampling of $ S $, $ p
+    \in P $ and $ v \in V(p, P) $ such that $ d(p, v) \ge \nu LFS(p) $ for $ \nu
+    > 0 $, then the angle at $ s $ between the vector $ v $ and the normal at
+    the surface (oriented in the same direction) is at most $
+    \arcsin(\frac{r}{\nu(1-r)}) + \arcsin(\frac{r}{(1-r)}) $.
+\end{lemma}
+
+These two lemmas tell us that the Voronoi cells are skinny (first lemma) and
+long (second lemma).
+% TODO: lemmes Amenta Bern (2)
+
+\begin{proof}
+We will first do two approximations on \ref{eqn:gradient_area_2d}:
+\begin{enumerate}
+    \item the first one is to suppose that the offset of $ M $ is close enough to the offset of $ P $.
+    \item the second one is that if the sampling is dense enough then we can replace $ p $
+        by the projection of $ x $ on $ M $.
+\end{enumerate}
+
+Using these approximations, we get:
+\begin{align*}
+    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{M^r} \cap V(p,
+        P)} (x - p) dx + o(\epsilon^2) \\
+    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx +
+    o(\epsilon) \\
+\end{align*}
+
+Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
+where $ \vec{n_M}(q) $ is the normal vector of $ M $ at $ q $ on the upper part
+of $ \partial{M^r} \cap V(p, P) $. This substitution is a diffeomorphism because
+$ r $ is smaller than the reach of $ M $.
+
+We will need the Jacobian of this substitution. If we decompose this
+substitution on $ T_p(M) \times [-r, r] $, where $ T_p(M) $ is the tangent space
+of $ M $ at $ p $, we get: $ D \phi = id + r D \vec{n_M}(q) $.
+
+Using the lemma \ref{lemma:diffeo}, we have that $ \phi $ is a diffeomorphism
+and that $ \det (D \phi) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+
+Using an analogous substitution on the lower part of $ \partial{M^r} \cap V(p,
+P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
+
+By summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
+
+It follows that:
+\begin{align*}
+    \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx &= \int_{M \cap V(p, P)}
+    r \times \vec{n_M}(q) ( \det (id + r D \vec{n_M}(q)) - \det (id - r D
+    \vec{n_M}(q)) ) dq \\
+    &= 2r \int_{M \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_M}(q) dq \\
+\end{align*}
+
+% TODO: surface C infinie, constantes depéndent de la dérivée de la courbure
+Finally, if we suppose that $ \vec{n_M}(q) = \vec{n_M}(p) $, $ \kappa_1(q) =
+\kappa_1(p) $ and $ \kappa_2(q) = \kappa_2(p) $, we have the following final
+result:
+
+$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
+
+So, using the mean curvature vector:
+
+$$ \nabla_p A = 4r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
+
+Which means:
+
+$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 4r Vol(M \cap V(p, P)) - 1 |
+\times|| \vec{\kappa}(p) ||$$
+
+\end{proof}
+
+We can summarize the situation with the following diagram:
+
+\begin{displaymath}
+    \xymatrix{A_r \ar[d]^{\nabla} \ar[r] & A \ar[d]^{\nabla} \\
+        \nabla A_r \ar[r] & \nabla A }
+\end{displaymath}
+
+$ A_r $ represents the discretization of the area of an hypersurface: it
+is $ \frac{Vol^d(P^r)}{2r} $ which converges towards the continuous area (see
+proposition \ref{prop:approx-volume-area}). There is also a convergence property
+for the gradients: the discretized gradient converges towards the continuous one
+(see proposition \ref{prop:gradient-mean-curvature}).
+
+In some sense, "discretization" and "gradient" commute: the gradient of the
+discretization converges towards the continuous gradient.
+
+% TODO
+
+% {{{1 OTHER KINDS OF DISCRETIZATIONS
+\section{Other kinds of discretizations}
+
+% TODO: flot de l'aire du bord d'une surface = union de boules
+In this work, we were also interested in other discretizations. Instead of
+choosing the volume as the functional, we can also choose the area of the
+boundary or corresponding weighted versions (i.e. the gradient of the volume
+will be weighted by the corresponding volume of the intersection between the
+Voronoi cell and a ball).
+
+For the former case (area of the boundary), we have the following lemma:
+\begin{lemma}
+    If $ S $ is a smooth hypersurface whose reach is positive and $ reach(S) > r
+    > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(\partial S^r)}{2r} + O(r^2) $$
+\end{lemma}
+
+Finally, we were interested in replacing the ball that we use to make the
+Minkowski sum with by a convex polyhedron. A more detailed study of this problem
+will be done in the section dedicated to 3D.
 
 % % 01-intro
 
@@ -9,11 +555,7 @@
 
 % More precisely, given a set of points, we want to be able to smooth it by taking
 % into account the different scales present in it: we want to be able to control
-% the smoothing such that it is more important in some directions. An example
-% where this kind of smoothing could be interesting is when we build a 3D scan of
-% an object: we want to be able to smooth the point cloud while preserving details
-% (the signature of the author for example).
-
+% the smoothing such that it is more important in some directions.
 % A lot of smoothing algorithms already exist, some are related to Computer
 % Vision, some are more based on Computational Geometry techniques:
 % \begin{itemize}
@@ -30,16 +572,6 @@
 % \cite{chambolle2012nonlocal}. Basically, it is a mean curvature flow under an
 % energy minimization. This energy is related to a non-local curvature.
 
-% More formally, let's suppose we have a point cloud in $ \mathbb{R}^d $ made of $
-% N $ points : $ p_1, \ldots, p_N $, we want to apply an adaptive smoothing on it.
-% Firstly, we will compute the energy that we want to minimize: $ E(P) = Vol(P + r
-% K) $ where $ K $ is a chosen convex polyhedron, $ r \in \mathbb{R} $ and $ (+) $
-% is the Minkowski sum. If we choose $ K = B(0, 1) $ an euclidean ball, then $ P +
-% rK $ is the $ r $-offset of P and $ E(P) $ is a measure of a union of balls
-% (like its volume, or the area of its boundary). In this case, the $ r $-offset
-% will contain intrinsic informations about the point set like normal direction or
-% curvature approximation.
-
 % Secondly, we will need to compute the gradient of this energy. For doing that,
 % there are multiple choices: use analytical formulae (which exist at least in
 % 2D), use approximations (finite differences) or use a technique called automatic
@@ -47,18 +579,6 @@
 % number type and so increasing the complexity a little bit. We will try to use,
 % in most cases, the automatic differentiation method since it allows us to have
 % better results than approximate methods without being too painful to implement.
-
-% Finally, we will do one step of the flow: move our point set in the direction
-% which will be computed as the result of a gradient descent algorithm applied on
-% the point set. The weighting of the gradients will be an important question.
-
-% The advantage of such algorithm resides in its anisotropy: since the polyhedron
-% $ K $ may be any convex polyhedron, it can privilege some directions in the
-% space and so preserve details in some directions.
-
-% We will test this algorithm using multiple polyhedrons, values of $ r
-% $, point sets with a small / high amount of noise to see if the algorithm is
-% noise-resilient or not.
 
 % % 02-state-of-the-art
 
@@ -73,16 +593,6 @@
 
 % In this internship, we chose to use a Mean Curvature Flow (MCF) based technique.
 
-% The MCF is well known for its smoothing properties used for example in image
-% processing (see \cite{ciomaga2010level}).
-
-% We can also relate the MCF to the gradient flow of the volume area functional.
-
-% Let's recall the more important results related to the MCF.  First the
-% definition of this flow: given a surface. Each step of the flow will consist in
-% moving each point of the surface in the direction of its inward normal by an
-% amount related to the mean curvature at this point.
-
 % Multiple approaches exist:
 % \begin{itemize}
 %     \item Level-set approach: the moving surface is represented by : $ \{ x |
@@ -95,13 +605,9 @@
 %         f}{\sqrt{|\nabla f|^2 + 1}}) $.
 % \end{itemize}
 
-% These approaches are mainly based on solving differential equations and
-% continuous ones. In this report, we will focus on computational geometry related
-% techniques on "discrete" surfaces (i.e. point clouds).
-
 % TODO:
 % - motivation
-% - discrétisation de l'aire d'uns surface
+% - discrétisation de l'aire d'une surface
 % - relation gradient énergie discrétisée et gradient énergie continue
 % - autres discrétisations
 

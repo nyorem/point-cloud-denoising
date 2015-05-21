@@ -5,20 +5,31 @@
 \begin{abstract}
 
 % TODO
-During this internship, we were interested in the denoising of point clouds and
-more specifically an adaptive one: the magnitude of the smoothing will be more
-important in some directions. The idea is to move the point cloud while
-minimizing an energy. This energy will be related to the Minkowski sum of
-the point set with a convex polyhedron.
+During this internship, we were interested in the denoising / smoothing of point
+clouds and more specifically in an adaptive one: the magnitude of the smoothing
+will be more important in some privileged directions. In order to do that, we
+will use a mean curvature flow based method: the idea is to move the point cloud
+while minimizing an energy. This energy will be related to the Minkowski sum of
+the point cloud with a convex polyhedron. The choice of this polyhedron will
+determine the privileged directions of the smoothing.
 
 This report is divided as follows: firstly, we will give a detailed introduction
-on point cloud denoising, then we will focus on the state of the art related
-techniques on smoothing and geometric flows.  Moreover, we will start by
-studying the two dimensional case with the $r$-offset of a point cloud. We will
-continue by dealing with the 3D case with a polyhedral norm.
+on the mean curvature flow and we will prove some properties (valid in any dimension
+$d$) which will be used throughout the rest of the report like the convergence
+of the gradient of the energy towards the mean curvature vector.
+
+Secondly, we will study the two dimensional case with the $r$-offset
+of a point cloud. We will prove that this technique can be used to simulate a
+discrete mean curvature flow. Many examples will be studied.
+
+We will continue by looking at the 3D case where we will study the Minkowski sum
+of a 3D point cloud with a convex polyhedron. Several theoretical and practical
+issues will arise. We will deal with these issues and explain the choices that
+were made.
 
 \end{abstract}
 
+\newpage
 \abstractintoc
 \renewcommand\abstractname{R\'{e}sum\'{e}}
 
@@ -26,7 +37,30 @@ continue by dealing with the 3D case with a polyhedral norm.
 \begin{abstract} \selectlanguage{french}
 
 % TODO
-Durant ce stage, nous nous sommes intéressés au lissage adaptatif de nuage de points...
+Durant ce stage, nous nous sommes intéressés au débruitage / lissage de nuage de
+points et plus précisément à un lissage adaptatif: le lissage sera plus
+important dans certaines directions privilégiées. Les techniques utilisées
+seront basées sur le flot de courbure moyenne: l'idée est de faire évoluer le
+nuage de points tout en minimisant une énergie. Cette dernière sera liée à la
+somme de Minkowski du nuage de points avec un polyèdre convexe. Le choix de ce
+polyèdre déterminera les directions privilégiées du lissage.
+
+Ce rapport est structuré de la manière suivante: tout d'abord, nous donnerons
+une introduction détaillée sur le flot de courbure moyenne et nous démontrerons
+des propriétés (valable en dimension quelconque) que nous utiliserons tout au
+long du rapport comme la convergence du gradient de l'énergie considérée vers le
+vecteur courbure moyenne.
+
+Ensuite, nous étudierons le cas bidimensionnelle en choisissant le $r$-offset
+d'un nuage de points. Nous montrerons que cette technique peut être utilisée
+pour simuler un flot de courbure moyenne discret. Beaucoup d'exemples
+illustreront ces résultats.
+
+Par la suite, nous nous intéresserons au cas 3D pour lequel nous étudierons la
+somme de Minkowski d'un nuage de points avec un polyèdre convexe. Nous serons
+confrontés à des difficultés aussi bien théoriques que pratiques. Nous
+expliquerons alors les choix qui ont été faits pour résoudre les problèmes
+rencontrés.
 
 \end{abstract}
 

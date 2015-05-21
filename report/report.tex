@@ -1,3 +1,5 @@
+% TODO: remove figure[H] -> white space
+
 \documentclass[12pt, a4paper]{memoir} % for a short document
 \usepackage[french,english]{babel}
 
@@ -8,7 +10,7 @@
 % \setSingleSpace{1.05}
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{amsfonts}
 \usepackage{amsthm}
 \usepackage{bbm}
@@ -20,7 +22,9 @@
 \usepackage{relsize}
 \usepackage{float}
 \usepackage{accents}
+\usepackage{caption}
 \usepackage{subcaption}
+\usepackage[all]{xy} % for diagrams
 
 % Clickable links in the toc
 \usepackage{hyperref}
@@ -37,6 +41,9 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\partiald}[2]{\frac{\partial{#1}}{\partial{#2}}}
 \newcommand{\indicator}[1]{\mathbbm{1}_{#1}}
+
+% Custom options
+% \setlength{\belowcaptionskip}{-5pt}
 
 % Custom theorems
 \newtheorem{definition}{Definition}

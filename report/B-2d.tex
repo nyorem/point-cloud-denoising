@@ -1,11 +1,26 @@
 \chapter{2D case}
 
+% {{{1 PROBLEM
 \section{Problem}
-In this part, we will focus on a 2D point cloud and we will use for the energy
-the area of the $ r $-offset of a point cloud $ X $: the Minkowski sum with an euclidean
-ball $ B(0, r) $. This offset will be denoted by $ X^r $.
 
+In this part, we will focus on a 2D point cloud and we will use for the energy
+the area of the $ r $-offset of a point cloud $ X $: the Minkowski sum with an
+euclidean ball $ B(0, r) $.
+
+We will also choose other types of energies like the perimeter of the boundary,
+the weighted area (the gradient of a Voronoi cell is weighted by its
+corresponding area) and the weighted perimeter.
+
+Firstly, we will show how to compute the area of the union of balls or more
+generally any quantity computed on the intersection of a Voronoi cell and a
+circle. Then, we will run different experiments to verify that the gradient of
+the union of balls is proportional to the mean curvature of the underlying
+hypersurface. Finally, we will run our programs on different point clouds with
+different parameters to show that it can simulate discrete mean curvature flows.
+
+% {{{1 AREA OF A UNION OF BALLS
 \section{Area of a union of balls}
+
 In order to compute this energy, we need to know how to estimate the area of the
 intersection of a ball and a Voronoi cell. Indeed, the area of the union of
 balls is the same as the sum of the areas of the restrictions of the balls to
@@ -87,12 +102,30 @@ intersection except that if there are no intersection then the perimeter is null
 and instead of adding triangles areas or angular sectors, we add lengths of
 circular arcs.
 
+% {{{1 IMPLEMENTATION DETAILS
+\section{Implementation details}
+
+For the implementation, we used different libraries: \texttt{CGAL} which is a
+C++ library that offers all the basic geometric types (point, vector, line,
+plane..), data structures and algorithms (triangulations...). We also used
+\texttt{Eigen} which is a C++ linear algebra library which provides types such
+as vector, matrix and manipulation operations. We used \texttt{Qt} for the GUI
+programming.
+
+The main difficulty here was to compute the intersection between a Voronoi cell
+and a circle. The Voronoi cell is computed using its dual graph: the Delaunay
+triangulation.
+
+Then the automatic differentiation technique allowed us to only care about the
+computation of the area and not its gradient.
+
 % TODO
 
+% {{{1 GRADIENT
 \section{Gradient}
 
-Then, we used the previously described automatic differentiation technique to
-compute the gradient of the previously computed area.
+Then, we used the automatic differentiation technique described in
+\ref{appendix:ad} to compute the gradient of the previously computed area.
 
 Here are a few examples of such gradients for different input point sets:
 
@@ -164,232 +197,38 @@ same point clouds.
 In the previous screenshots, we can see that the gradients are (if the radius of
 the balls are big enough and if the sampling is sufficiently uniform) in the
 same direction that the normals to the underlying surface. Also, the norm of
-these gradients seem to be related to the curvature of the approximated surface.
+these gradients is related to the mean curvature of the approximated surface
+(see proposition \ref{prop:gradient-mean-curvature}).
 
-In the next section, we will prove these two conjectures: the gradient is indeed
-related to the mean curvature vector.
-
-% TODO
-
-\section{Relation with the mean curvature vector}
-
-The flow we will obtain by considering the previously computed gradients will be
-an approximation of the classical mean curvature flow.
-
-Indeed, we will show that the norm of these gradients are estimations of the
-mean curvature of the underlying sampled surface.
-
-First, let's define the mean curvature vector at $ p $ of an hypersurface $ S $:
-\begin{definition}
-    Given an hypersurface $ S $ of $ \R^d $, the mean curvature $ \vec{\kappa}(p) $ vector at $ p
-    \in S $ is defined by:
-    $$ \vec{\kappa}(p) = \frac{1}{d-1} \sum_{i=1}^{d-1} \kappa_i(p) \vec{n}(p) $$
-    where the $ \kappa_i(p) \in \R $ are the $ d - 1 $ principal curvatures at $ p $
-    and $ \vec{n}(p) $ is the normal vector of $ S $ at $ p $.
-\end{definition}
-
-The next proposition gives the gradient of the volume of union of balls :
-\begin{proposition}
-    Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (x_i) $
-    Then, if we denote by $ A $ the volume of the union of balls, then the
-    partial derivatives of this quantity are:
-    \begin{equation}
-        \label{eqn:gradient_area_2d}
-        \nabla_{x_i} A = \partiald{A}{x_i} = \int_{B} \frac{y - x_i}{||y - x_i||} dy
-    \end{equation}
-    where $ B = \partial B(x_i, r) \cap V(x_i, X) $.
-\end{proposition}
-
-\begin{proof}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.8]{2d/2d_proof_gradient_area_1}
-    \caption{Situation for a ball $ B(x_i, r) $}
-\end{figure}
-
-Let's say that we move the point $ x _i $ by a small quantity $ dx_i $, let's study the variation
-of the area of $ V(x_i, X) \cap B(x_i, r) $.
-
-If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
-have: $ A_{new} = A_{old} + A_1 - A_2 $ where $ A_1 $ is the upper gained area
-and $ A_2 $ the lower lost area.
-
-Then, we can write that $ A_1 = \int_{B_1} || y - z(y) || dy + o(||dx_i||) $ where $ B =
-\partial B(x_i, r) \cap V(x_i, X) = B_1 \cup B_2 $ is the visible boundary of
-the ball.
-
-For any $ y \in B $, we define $ z(y) $ as the intersection of the half-line $ D $
-with the circle of center $ x_i + dx_i $ of radius $ r $.
-Then, we parametrize the half-line $ D $ by $ y + t \frac{y - x_i}{||y - x_i||}
-$ where $ t \ge 0 $.
-
-Let's find this intersection point by assuming that $ dx_i $ and $ t $ are small
-such that $ t^2 = dx_i^2 = t dx_i = o(||dx_i||^2) $.
-
-We need to find $ D \cap C(x_i + dx_i, r) $. Let $ t \ge 0 $ then , we have :
-\begin{equation}
-    || y + t \frac{y - x_i}{|| y - x_i||} - (x_i + dx_i) ||^2 = r^2
-    \tag{$\star$}
-\end{equation}
-
-If we expand this expression, we get:
-
-\begin{align*}
-    (\star) & \iff || y
-    - (x_i + dx_i) ||^2 + t^2 + 2t \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i
-        + dx_i) \right) = r^2 \\
-    & \iff || y - x_i || ^2 - 2 (y - x_i | dx_i) + || dx_i || ^2 + t^2 + 2t
-    \left( \frac{y-x_i}{|| y - x_i||} | y - (x_i + dx_i) \right) = r^2 \\
-    & \iff -2 (y - x_i | dx_i) + 2t || y - x_i|| + o(||dx_i||^2) = 0 \\
-    & \iff t = t^{\star} = \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) +
-    o(||dx_i||)
-\end{align*}
-
-Then, $ z(y) = y + t^{\star} \frac{y - x_i}{||y - x_i||} $ and $ || y - z(y) || =
-t^{\star} $.
-
-We deduce that :
-$$ A_1 = \int_{B_1} \left[ \left( \frac{y - x_i}{||y - x_i||} | dx_i \right) +
-o(||dx_i||) \right] dy $$
-
-And:
-
-$$ A_1 - A_2 = \int_{B} \left[ \left( \frac{y - x_i}{||y - x_i||} | dx_i \right)
-+ o(||dx_i||) \right] dy $$
-
-Finally, we have, by linearity:
-$$ \partiald{A}{x_i} = \int_{B} \frac{y - x_i}{||y - x_i||} dy $$
-
-\end{proof}
-
-Now, we will study the case where the point cloud is densely sampled on a smooth
-manifold.
-
-For this, we will need two important definitions: the $\epsilon$-sampling of a
-point cloud and the reach of a manifold $ M $.
-
-\begin{definition}
-    A set of points $ x_i $ is said to be an $\epsilon$-sampling of a manifold $
-    M $ if the set of the balls  $ B(x_i, \epsilon) $ verifies: $ M \subseteq
-    \bigcup_i B(x_i, \epsilon) $ (see \cite{amenta1999surface}).
-\end{definition}
-
-\begin{definition}
-    The reach of a manifold $ M $ denoted by $ reach(M) $ is the largest $ r
-    \geq 0 $ for which for any $ p \in M^r $, there exists a unique $ q \in M $
-    such that $ q = p_M(p) $ where $ p_M $ is the projection on $ M $. $ p_M(x)
-    $ is defined such that $ || x - p_M(x) || = d(x, M) $.
-\end{definition}
-
-For example, if we consider a circle in the plane of radius $ R $, then every
-point in the plane has a unique projection on the circle except the center which
-is at distance $ R $ of every point on the circle: there is no closest point.
-Consequently, its reach is $ R $.
-
-Now, if we suppose that we have a point cloud that is an $\epsilon$-sampling of
-a smooth manifold $ M $, then the following proposition gives the link between
-the gradient of volume of an offset of $ M $ and the mean curvature vector.
-
-\begin{proposition}
-    Given an $\epsilon$-sampling $ P $ of a manifold $ M $ and $ r \ge 0 $ such
-    that: $ \epsilon \leq r \leq reach(M) $, then:
-    $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
-    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
-    $ \nabla_p A $ converges towards the mean curvature vector of $ M $ at $ p
-    $.
-\end{proposition}
-
-\begin{proof}
-We will first do two approximations on \ref{eqn:gradient_area_2d}:
-\begin{enumerate}
-    \item the first one is to suppose that the offset of $ M $ is close enough to the offset of $ P $.
-    \item the second one is that if the sampling is dense enough then we can replace $ p $
-        by the projection of $ y $ on $ M $.
-\end{enumerate}
-
-Using these approximations, we get:
-\begin{align*}
-    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{M^r} \cap V(p,
-        P)} (x - p) dx + o(\epsilon^2) \\
-    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx +
-    o(\epsilon) \\
-\end{align*}
-
-Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
-where $ \vec{n_M}(q) $ is the normal vector of $ M $ at $ q $ on the upper part
-of $ \partial{M^r} \cap V(p, P) $. This substitution is a diffeomorphism because
-$ r $ is smaller than the reach of $ M $.
-
-We will need the Jacobian of this substitution. If we decompose this
-substitution on $ T_p(M) \times [-r, r] $, where $ T_p(M) $ is the tangent space
-of $ M $ at $ p $, we get: $ D \phi = id + r D \vec{n_M}(q) $.
-
-Then, we use the fact that the matrix $ D \vec{n_M}(q) $ (Jacobian of the shape
-operator) is diagonalizable and that its eigenvalues are the principal
-curvatures.  We deduce that : $ \det (D \phi) = (1 + \kappa_1(q)) (1 +
-\kappa_2(q)) $.
-
-Using an analogous substitution on the lower part of $ \partial{M^r} \cap V(p,
-P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
-
-By summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
-
-It follows that:
-\begin{align*}
-    \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx &= \int_{M \cap V(p, P)}
-    r \times \vec{n_M}(q) ( \det (id + r D \vec{n_M}(q)) - \det (id - r D
-    \vec{n_M}(q)) ) dq \\
-    &= 2r \int_{M \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_M}(q) dq \\
-\end{align*}
-
-Finally, if we suppose that $ \vec{n_M}(q) = \vec{n_M}(p) $, $ \kappa_1(q) =
-\kappa_1(p) $ and $ \kappa_2(q) = \kappa_2(p) $, we have the following final
-result:
-
-$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
-
-So, using the mean curvature vector:
-
-$$ \nabla_p A = 4r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
-
-Which means:
-
-$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 4r Vol(M \cap V(p, P)) - 1 |
-\times|| \vec{\kappa}(p) ||$$
-
-\end{proof}
-
-In short, the gradient of the volume of union of balls is proportional to the mean
-curvature vector.
-
+% {{{1 MEAN CURVATURE ESTIMATION
 \section{Mean curvature estimation}
 
 We can use the previous result to estimate mean curvature on a point set using
 the norm of the gradients of the area of the union of balls.
 
-We did our tests on a sampled ellipse with major / minor axes of $ a / b $. We
+We did our tests on a sampled ellipse whose major and minor axes are $ a $ and $ b $. We
 can parametrize this ellipse by :
 $$
 \begin{cases}
     x(t) &= a \cos (t) \\
     y(t) &= b \sin (t)
 \end{cases}
+\text{ for t } \in [ 0, 2\pi ]
 $$
 
 We recall the formula for computing the curvature of a parametrized curve:
 $$ \kappa(t) = \frac{x'(t) y''(t) - y'(t) x''(t)}{(x'^2(t) +
-    y'^2(t))^{\frac{3}{2}}} $$
+    y'^2(t))^{\frac{3}{2}} } $$
 
 For an ellipse, we obtain:
-$$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}}} $$
+$$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
 
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
 Here are the computed gradients mapped to a colour ramp (from green to red), we see
 that the gradients are more important where the curvature is higher and are
-collinear the to the outward normals.
+collinear to the outward normals.
 
 \begin{figure}[H]
     \centering
@@ -417,7 +256,8 @@ weighted...):
     \caption{Error between the curvatures using gradients of the perimeter with $ r = 0.5 $}
 \end{figure}
 
-\section{Gradient descent}
+% {{{1 DISCRETE MEAN CURVATURE FLOW
+\section{Discrete Mean Curvature Flow}
 
 Then, as said in the introduction, we will approximate the mean curvature flow
 by applying a gradient descent algorithm where the considered energy is the area
@@ -438,12 +278,11 @@ the case where a point does not see anything.
 
 % TODO
 
-\section{Experiments}
-
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
 sampled on an ellipse.
 
+% TODO: ajouter convergence vers cercle
 \begin{figure}[H]
     \centering
 
@@ -460,7 +299,7 @@ sampled on an ellipse.
     \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_area_flow}
 \end{figure}
-\vspace{-1em}
+
 % TODO: remove extra space
 
 Next, we add some outliers around the ellipse and observe the effects of the two
@@ -559,7 +398,6 @@ For two different amplitudes:
     radius of $ 15 $}
     \label{fig:ellipse_osc2_area_flow}
 \end{figure}
-% TODO: remove extra space
 
 % TODO: explain why
 
@@ -583,6 +421,18 @@ sampled set of points.
 \end{figure}
 
 % TODO: explain why
+
+% {{{1 ASSESSMENT
+\section{Assessment}
+
+In this chapter, we saw how to simulate discrete mean curvature flows by using
+the gradient of the volume of the $r$-offset of a point cloud.
+
+The methods used in this chapter are hard to extend in 3D (see
+\cite{cazals2011computing}).
+
+Also, we want to use polyhedral (anisotropic) norms, thing that the previous
+method does not allow.
 
 % TODO:
 % - description
