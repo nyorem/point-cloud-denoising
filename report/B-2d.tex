@@ -32,9 +32,10 @@ we restrict ourselves to 2D which is simpler than in 3D.
 For doing that, we need to decompose the intersection into triangles and
 spherical caps.
 
-The following figure illustrates the different cases for the intersection of a
-Voronoi cell and a ball in 2D:
-\begin{figure}[H]
+\ref{fig:inter_voronoi_ball_2d} illustrates the different cases for the
+intersection of a Voronoi cell and a ball in 2D.
+
+\begin{figure}[h]
     \centering
     \begin{minipage}{0.32\linewidth}
         \centering
@@ -127,16 +128,16 @@ computation of the area and not its gradient.
 Then, we used the automatic differentiation technique described in
 \ref{appendix:ad} to compute the gradient of the previously computed area.
 
-Here are a few examples of such gradients for different input point sets:
+See \ref{fig:gradients_area_2d} for a few examples of such gradients for different input point sets.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \begin{minipage}{0.8\linewidth}
         \centering
         \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15}
         \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-gradients}
-        \subcaption{100 samples on an ellipse with $ r = 15 $}
+        \subcaption{Gradients of the area for 100 samples on an ellipse}
         \label{fig:gradients_area_2d_ellipse}
     \end{minipage}
 
@@ -144,7 +145,7 @@ Here are a few examples of such gradients for different input point sets:
         \centering
         \includegraphics[scale=0.32]{2d/area/circle-100-01-15}
         \includegraphics[scale=0.32]{2d/area/circle-100-01-15-gradients}
-        \subcaption{100 samples on a circle with $ r = 15 $}
+        \subcaption{Gradients of the area for 100 samples on a circle}
         \label{fig:gradients_area_2d_circle}
     \end{minipage}
 
@@ -152,25 +153,25 @@ Here are a few examples of such gradients for different input point sets:
         \centering
         \includegraphics[scale=0.32]{2d/area/square-76-001-100}
         \includegraphics[scale=0.32]{2d/area/square-76-001-100-gradients}
-        \subcaption{76 samples on a square with $ r = 100 $}
+        \subcaption{Gradients of the area for 100 samples on a square}
         \label{fig:gradients_area_2d_square}
     \end{minipage}
 
-    \caption{Input point set / Computed gradients}
+    \caption{Input point set / Computed gradients of the area}
     \label{fig:gradients_area_2d}
 \end{figure}
 
 We did the same thing using the gradient of the perimeter of the boundary on the
-same point clouds.
+same point clouds (see \ref{fig:gradients_perimeter_2d}).
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \begin{minipage}{0.8\linewidth}
         \centering
         \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15}
         \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15-gradients}
-        \subcaption{100 samples on an ellipse with $ r = 15 $}
+        \subcaption{Gradients of the perimeter for 100 samples on an ellipse}
         \label{fig:gradients_perimeter_2d_ellipse}
     \end{minipage}
 
@@ -178,7 +179,7 @@ same point clouds.
         \centering
         \includegraphics[scale=0.32]{2d/perimeter/circle-100-01-15}
         \includegraphics[scale=0.32]{2d/perimeter/circle-100-01-15-gradients}
-        \subcaption{100 samples on a circle with $ r = 15 $}
+        \subcaption{Gradients of the perimeter for 100 samples on a circle}
         \label{fig:gradients_perimeter_2d_circle}
     \end{minipage}
 
@@ -186,11 +187,11 @@ same point clouds.
         \centering
         \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100}
         \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100-gradients}
-        \subcaption{76 samples on a square with $ r = 100 $}
+        \subcaption{Gradients of the perimeter for 100 samples on a square}
         \label{fig:gradients_perimeter_2d_square}
     \end{minipage}
 
-    \caption{Input point set / Computed gradients}
+    \caption{Input point set / Computed gradients of the perimeter}
     \label{fig:gradients_perimeter_2d}
 \end{figure}
 
@@ -226,34 +227,40 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
-Here are the computed gradients mapped to a colour ramp (from green to red), we see
-that the gradients are more important where the curvature is higher and are
+\ref{fig:2d-curvature-ellipse-area} and \ref{fig:2d-curvature-ellipse-perimeter}
+represent the computed gradients mapped to a colour ramp (from green to red), we
+see that the gradients are more important where the curvature is higher and are
 collinear to the outward normals.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/area/curvature-ellipse-200-15}
-    \caption{Computed curvatures using gradients of the area with $ r = 15 $}
+    \caption{Computed curvatures on an ellipse using gradients of the area with $ r = 15 $}
+    \label{fig:2d-curvature-ellipse-area}
 
     \includegraphics[scale=0.3]{2d/perimeter/curvature-ellipse-200-15}
-    \caption{Computed curvatures using gradients of the perimeter with $ r = 15 $}
+    \caption{Computed curvatures on an ellipse using gradients of the perimeter with $ r = 15 $}
+    \label{fig:2d-curvature-ellipse-perimeter}
 \end{figure}
 
 % TODO: pictures
 
 Now, we study the absolute difference between the computed and expected
 curvatures for different choices of gradients (area, perimeter of the boundary,
-weighted...):
+weighted...), see \ref{fig:2d-curvature-error-ellipse-area} and
+\ref{fig:2d-curvature-error-ellipse-perimeter}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/area/curvature-error-ellipse-200-05}
-    \caption{Error between the curvatures using gradients of the area with $ r = 0.5 $}
+    \caption{Error between the curvatures on an ellipse using gradients of the area with $ r = 0.5 $}
+    \label{fig:2d-curvature-error-ellipse-area}
 
     \includegraphics[scale=0.3]{2d/perimeter/curvature-error-ellipse-200-05}
-    \caption{Error between the curvatures using gradients of the perimeter with $ r = 0.5 $}
+    \caption{Error between the curvatures on an ellipse using gradients of the perimeter with $ r = 0.5 $}
+    \label{fig:2d-curvature-error-ellipse-perimeter}
 \end{figure}
 
 % {{{1 DISCRETE MEAN CURVATURE FLOW
@@ -280,60 +287,61 @@ the case where a point does not see anything.
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
-sampled on an ellipse.
+sampled on an ellipse: \ref{fig:ellipse_area_flow} and
+\ref{fig:ellipse_perimeter_flow}.
 
 % TODO: ajouter convergence vers cercle
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-balls-15}
     \subcaption{Minkowski sum of an ellipse and balls of radius $ 15 $}
 
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15}
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15-100}
-    \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_perimeter_flow}
-
     \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15}
     \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-100}
-    \subcaption{Area flow : 0 / 100 iterations with a timestep of $ 0.1 $}
+    \subcaption{Area flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_area_flow}
+
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15}
+    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15-100}
+    \subcaption{Perimeter flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.5 $}
+    \label{fig:ellipse_perimeter_flow}
 \end{figure}
 
-% TODO: remove extra space
-
 Next, we add some outliers around the ellipse and observe the effects of the two
-flows.
+flows: see \ref{fig:ellipse_outliers_area_flow} and
+\ref{fig:ellipse_outliers_perimeter_flow}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers}
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers-100}
-    \subcaption{Perimeter flow : 0 / 100 iterations with a timestep of $ 1 $}
-    \label{fig:ellipse_outliers_perimeter_flow}
 
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers}
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers-40}
-    \subcaption{Area flow : 0 / 40 iterations with a timestep of $ 0.1 $}
+    \subcaption{Area flow of an ellipse with outliers: 0 / 40 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_outliers_area_flow}
+
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers-100}
+    \subcaption{Perimeter flow of an ellipse with outliers: 0 / 100 iterations with a timestep of $ 1 $}
+    \label{fig:ellipse_outliers_perimeter_flow}
 \end{figure}
 
 Then, we added some Gaussian noise on these points to test the robustness of our
-algorithm.
+algorithm, see \ref{fig:ellipse_noise_area_flow} and
+\ref{fig:ellipse_noise_perimeter_flow}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-noise-5-75}
-    \subcaption{Perimeter flow : 0 / 75 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_noise_perimeter_flow}
+    \includegraphics[scale=0.3]{2d/area/ellipse-noise-5-75}
+    \subcaption{Area flow on a noised ellipse: 0 / 75 iterations with a timestep of $ 0.05 $}
+    \label{fig:ellipse_noise_area_flow}
 
     \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
-    \includegraphics[scale=0.3]{2d/area/ellipse-noise-5-75}
-    \subcaption{Area flow : 0 / 75 iterations with a timestep of $ 0.05 $}
-    \label{fig:ellipse_noise_area_flow}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-noise-5-75}
+    \subcaption{Perimeter flow on a noised ellipse: 0 / 75 iterations with a timestep of $ 0.5 $}
+    \label{fig:ellipse_noise_perimeter_flow}
 \end{figure}
 
 We notice that the gradient flow of the area may create holes in the point set
@@ -362,41 +370,40 @@ We also tried to add varying oscillations to our ellipse in order to see the
 adaptive part of the algorithm. We generate oscillations with one or two
 amplitudes.
 
-For one constant amplitude:
+For one constant amplitude, see \ref{fig:ellipse_osc_perimeter_flow} and
+\ref{fig:ellipse_osc_area_flow} and for two different amplitudes see
+\ref{fig:ellipse_osc2_area_flow} and \ref{fig:ellipse_osc2_perimeter_flow}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-
-    \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc-25-15-50}
-    \subcaption{Perimeter flow : 0 / 55 iterations with a timestep of $ 0.5 $
-        and a radius of $ 15 $}
-    \label{fig:ellipse_osc_perimeter_flow}
 
     \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
     \includegraphics[scale=0.3]{2d/area/ellipse-osc-25-15-25}
-    \subcaption{Area flow : 0 / 25 iterations with a timestep of $ 0.05 $ and a
-        radius of $ 15 $}
+    \subcaption{Area flow on an ellipse with oscillations (one amplitude) : 0 /
+        25 iterations with a timestep of $ 0.05 $ and a radius of $ 15 $}
     \label{fig:ellipse_osc_area_flow}
+
+    \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc-25-15-50}
+    \subcaption{Perimeter flow on an ellipse with oscillations (one amplitude):
+        0 / 55 iterations with a timestep of $ 0.5 $ and a radius of $ 15 $}
+    \label{fig:ellipse_osc_perimeter_flow}
 \end{figure}
-% TODO: remove extra space
 
-For two different amplitudes:
-
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc2-20-15-55}
-    \subcaption{Perimeter flow : 0 / 55 iterations with a timestep of $ 0.5 $
-        and a radius of $ 15 $}
-    \label{fig:ellipse_osc2_perimeter_flow}
+    \includegraphics[scale=0.3]{2d/area/ellipse-osc2-20-15-25}
+    \subcaption{Area flow on an ellipse with oscillations (two amplitudes): 0 /
+        25 iterations with a timestep of $ 0.05 $ and a radius of $ 15 $}
+    \label{fig:ellipse_osc2_area_flow}
 
     \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
-    \includegraphics[scale=0.3]{2d/area/ellipse-osc2-20-15-25}
-    \subcaption{Area flow : 0 / 25 iterations with a timestep of $ 0.05 $ and a
-    radius of $ 15 $}
-    \label{fig:ellipse_osc2_area_flow}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc2-20-15-55}
+    \subcaption{Perimeter flow on an ellipse with oscillations (two amplitudes)
+        : 0 / 55 iterations with a timestep of $ 0.5 $ and a radius of $ 15 $}
+    \label{fig:ellipse_osc2_perimeter_flow}
 \end{figure}
 
 % TODO: explain why
@@ -404,20 +411,21 @@ For two different amplitudes:
 An other experiment we did is to take points on a line segment and to fix its
 endpoints. Then, we apply our flow on this point set. We expect the flow to
 smooth the point set: points should get closer and closer to an uniformly
-sampled set of points.
+sampled set of points. See \ref{fig:line_fixed_area} and
+\ref{fig:line_fixed_perimeter} for the results.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-
-    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-0}
-    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-50}
-    \subcaption{Perimeter flow : 0 / 50 iterations with a timestep of $ 0.5 $}
-    \label{fig:line_fixed_perimeter}
 
     \includegraphics[scale=0.5]{2d/area/line-01-15-0}
     \includegraphics[scale=0.5]{2d/area/line-01-15-50}
-    \subcaption{Area flow : 0 / 50 iterations with a timestep of $ 0.1 $}
+    \subcaption{Area flow of points on a segment: 0 / 50 iterations with a timestep of $ 0.1 $}
     \label{fig:line_fixed_area}
+
+    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-0}
+    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-50}
+    \subcaption{Perimeter flow of points on a segment: 0 / 50 iterations with a timestep of $ 0.5 $}
+    \label{fig:line_fixed_perimeter}
 \end{figure}
 
 % TODO: explain why

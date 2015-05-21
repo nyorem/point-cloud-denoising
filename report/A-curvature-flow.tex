@@ -11,6 +11,7 @@
 % -> environ 3 pages + bouts de codes
 
 % courbe de décroissance de l'aire en fonction du pas de temps
+% exemples 2d lissage (carré)
 
 \chapter{Introduction}
 
@@ -27,13 +28,15 @@ This will have applications on denoising and smoothing of point clouds. Indeed,
 the mean curvature flow is known for its smoothing properties (see
 \cite{ciomaga2010level}).
 
-For example, here is an illustration of the mean curvature flow on a noised
-surface (extracted from \cite{clarenz2000anisotropic}).
+For example, \ref{fig:mean-curvature-flow-ex} is an illustration of the mean
+curvature flow on a noised surface (extracted from
+\cite{clarenz2000anisotropic}).
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{img/mean-curvature-flow-rabbit}
     \caption{Mean curvature flow on a noised surface}
+    \label{fig:mean-curvature-flow-ex}
 \end{figure}
 
 We will also tackle the problem of computing a curvature-related flow for
@@ -261,12 +264,14 @@ The following proposition bounds the error of this approximation:
     Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $.
 
     Then, we parametrize $ P^r $ by $ f : S \rightarrow P^r $ where $ f(x) = x +
-    r(x) \vec{n}_S(x) $ for $ r(x) \in [0, r] $.
+    r(x) \vec{n}_S(x) $ for $ r(x) \in [0, r] $ (see
+    \ref{fig:offset-parametrization}).
 
-    \begin{figure}[H]
+    \begin{figure}[h]
         \centering
         \includegraphics[scale=0.8]{offset-parametrization}
         \caption{Parametrization of the offset (in red)}
+        \label{fig:offset-parametrization}
     \end{figure}
 
     We have:
@@ -341,73 +346,89 @@ The next proposition gives the gradient of the volume of union of balls :
     We will denote this quantity $ \nabla_{p_i} A $. Then we have:
     \begin{equation}
         \label{eqn:gradient_area_2d}
-        \nabla_{p_i} A = \int_{B} \frac{y - p_i}{||y - p_i||} dy
+        \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx
     \end{equation}
-    where $ B = \partial B(p_i, r) \cap V(p_i, P) $.
+    where $ B = \partial B(p_i, r) \cap V(p_i, P) $ is the visible boundary of
+    the ball.
     % TODO: ajouter référence article oudet minimizing convex...
 \end{proposition}
 
 \begin{proof}
 
-\begin{figure}[H]
+Let us say that we move the point $ p _i $ by a small quantity $ \delta p_i $,
+let's study the variation of the area of $ \bigcup_i V(p_i, P) \cap B(p_i, r) $.
+
+More formally, let's define $ A_{\epsilon} = A(V(p_i + \epsilon \delta p_i, P) \cap
+B(p_i + \epsilon \delta p_i, r)) $, we want to compute the following limit:
+$$ \lim\limits_{\epsilon \to 0} \frac{A_{\epsilon} - A_0}{\epsilon} $$
+
+For computing this quantity, we will define the following sets:
+\begin{itemize}
+    \item $ B_1 = \{ x \in B, (x - p_i | \delta p_i) \geq 0\} $
+    \item $ A_1^{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
+        "upper" gained area (see \ref{fig:demo-gradient} for a drawing of the
+        situation in 2D)
+    \item $ B_2 = \{ x \in B, (x - p_i | \delta p_i) \leq 0\} $
+    \item $ A_2^{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
+        "lower" lost area.
+\end{itemize}
+
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.8]{2d/2d_proof_gradient_area_1}
-    \caption{Situation for a ball $ B(p_i, r) $}
+    \caption{Situation for a ball $ B(p_i, r) $ in 2D}
+    \label{fig:demo-gradient}
 \end{figure}
 
-Let's say that we move the point $ x _i $ by a small quantity $ \delta p_i $, let's study the variation
-of the area of $ \bigcup V(p_i, P) \cap B(p_i, r) $ by moving a single point: $ p_i $.
+Then, we have: $ A_\epsilon = A_0 + Vol(A_1^\epsilon) - Vol(A_2^\epsilon) +
+O(\epsilon^2) $
 % TODO
 
-If we denote the old area by $ A_{old} $ and the new area by $ A_{new} $, the we
-have: $ A_{new} = A_{old} + A_1 - A_2 $ where $ A_1 $ is the upper gained area
-and $ A_2 $ the lower lost area.
+Now, we will approximate $ Vol(A_1^\epsilon) $ write that $ Vol(A_1^\epsilon) =
+\int_{B_1} || x - z(x) || dx + o(||\delta p_i||) $. We do the same things for $
+A_2^\epsilon $.
 
-Then, we can write that $ A_1 = \int_{B_1} || y - z(y) || dy + o(||\delta p_i||) $ where $ B =
-\partial B(p_i, r) \cap V(p_i, P) = B_1 \cup B_2 $ is the visible boundary of
-the ball.
+For any $ x \in B $, we define $ z(x) $ as the intersection of the half-line $ D
+$ with the circle of center $ p_i + \epsilon \delta p_i $ of radius $ r $. We
+also parametrize the half-line $ D $ by: $ x + t \frac{x - p_i}{||x - p_i||} $
+where $ t \ge 0 $.
 
-For any $ y \in B $, we define $ z(y) $ as the intersection of the half-line $ D $
-with the circle of center $ p_i + \delta p_i $ of radius $ r $.
-Then, we parametrize the half-line $ D $ by: $ y + t \frac{y - p_i}{||y - p_i||}
-$ where $ t \ge 0 $.
-
-Let's find this intersection point by assuming that $ t $ is small
+Let us find this intersection point by assuming that $ t $ is small
 such that $ t^2 = t \delta p_i = o(||\delta p_i||^2) $.
 
 We need to find $ D \cap C(p_i + \delta p_i, r) $. Let $ t \ge 0 $ then , we have :
 \begin{equation}
-    || y + t \frac{y - p_i}{|| y - p_i||} - (p_i + \delta p_i) ||^2 = r^2
+    || x + t \frac{x - p_i}{||x - p_i||} - (p_i + \epsilon \delta p_i) ||^2 = r^2
     \tag{$\star$}
 \end{equation}
 
 If we expand this expression, we get:
 
 \begin{align*}
-    (\star) & \iff || y
-    - (p_i + \delta p_i) ||^2 + t^2 + 2t \left( \frac{y-p_i}{|| y - p_i||} | y - (p_i
-        + \delta p_i) \right) = r^2 \\
-    & \iff || y - p_i || ^2 - 2 (y - p_i | \delta p_i) + || \delta p_i || ^2 + t^2 + 2t
-    \left( \frac{y-p_i}{|| y - p_i||} | y - (p_i + \delta p_i) \right) = r^2 \\
-    & \iff -2 (y - p_i | \delta p_i) + 2t || y - p_i|| + o(||\delta p_i||^2) = 0 \\
-    & \iff t = t^{\star} = \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right) +
-    o(||\delta p_i||)
+    (\star) & \iff || x - (p_i + \epsilon \delta p_i) ||^2 + t^2 + 2t \left(
+        \frac{x-p_i}{|| x - p_i||} | x - (p_i + \epsilon \delta p_i) \right) = r^2 \\
+    & \iff || x - p_i || ^2 - 2 \epsilon (x - p_i | \delta p_i) + || \epsilon \delta p_i || ^2 + t^2 + 2t
+    \left( \frac{x-p_i}{|| x - p_i||} | x - (p_i + \epsilon \delta p_i) \right) = r^2 \\
+    & \iff -2 \epsilon (x - p_i | \delta p_i) + 2t || x - p_i|| + o(||\delta p_i||^2) = 0
+    \text{ because } || x - p_i || = r \\
+    & \iff t = t^{\star} = \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
+    o(||\delta p_i||^2)
 \end{align*}
 
-Then, $ z(y) = y + t^{\star} \frac{y - p_i}{||y - p_i||} $ and $ || y - z(y) || =
+Then, $ z(y) = x + t^{\star} \frac{x - p_i}{||x - p_i||} $ and $ || x - z(x) || =
 t^{\star} $.
 
 We deduce that :
-$$ A_1 = \int_{B_1} \left[ \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right) +
-o(||\delta p_i||) \right] dy $$
+$$ Vol(A_1^\epsilon) = \int_{B_1} \left[ \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
+o(||\delta p_i||^2) \right] dx $$
 
 And:
 
-$$ A_1 - A_2 = \int_{B} \left[ \left( \frac{y - p_i}{||y - p_i||} | \delta p_i \right)
-+ o(||\delta p_i||) \right] dy $$
+$$ Vol(A_1^\epsilon) - Vol(A_2^\epsilon) = \int_{B} \left[ \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right)
++ o(||\delta p_i||^2) \right] dx $$
 
 Finally, we have, by linearity:
-$$ \nabla_{p_i} A = \int_{B} \frac{y - p_i}{||y - p_i||} dy $$
+$$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
 
 \end{proof}
 
@@ -499,11 +520,11 @@ $$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \i
 
 So, using the mean curvature vector:
 
-$$ \nabla_p A = 4r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
+$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
 
 Which means:
 
-$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 4r Vol(M \cap V(p, P)) - 1 |
+$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(M \cap V(p, P)) - 1 |
 \times|| \vec{\kappa}(p) ||$$
 
 \end{proof}

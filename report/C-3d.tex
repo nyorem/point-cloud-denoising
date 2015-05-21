@@ -66,7 +66,7 @@ Now, we prove that $ V_{N_\epsilon}(x, X) $ converges towards $ V_{N'}(x, X) $
 under the Hausdorff distance.
 
 We want to prove that $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X)) \rightarrow 0 $
-Let's take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
+Let us take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
 \epsilon \leq \epsilon_\delta $ then $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X))
 \leq \delta $. The last inequality is equivalent to say that:
 \begin{align}
@@ -75,11 +75,11 @@ Let's take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
     \label{eqn:haussdorf-voronoi1}
 \end{align}
 
-Let's take care of the first inclusion:
+Let us take care of the first inclusion:
 % TODO: proof
 
 And now the second inclusion:
-Let's take $ y \in V_{N_\epsilon}(x, X) $. By definition of $ N_\epsilon $, we
+Let us take $ y \in V_{N_\epsilon}(x, X) $. By definition of $ N_\epsilon $, we
 have: $ \forall x' \in X,~N(x - y) + \epsilon || x - y || \leq N(x' - y) +
 \epsilon || x' - y || $. If we choose $ z = y $ then $ z $ satisfies $ || z - y
 || \leq \delta $ and $ z \in V_{N'}(x, X) $. Indeed, using the previous
@@ -97,7 +97,7 @@ We can define it in two ways:
         homeomorphic to a segment / half-line / line. For any triplet $ (x, y,
         z) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) \cap V_{N'}(z, X) $ is
         homeomorphic to a point.
-    \item Let's consider the open Voronoi regions: $ \ocirc{V}_N(x, X) = \{ y
+    \item let us consider the open Voronoi regions: $ \ocirc{V}_N(x, X) = \{ y
         \in X,~ N(x - y) < N(x' - y)\} $. Then, we can define a good partition
         by saying that the complement of the open Voronoi regions must have a
         zero measure.
@@ -144,17 +144,20 @@ The idea of this method is to approximate $ \mu(\bigcup_p B_N(p, r) \cap V(p,
 P)) $ by $ \mu(B_N(p, r) \cap V(p, P)) $.
 
 It is an approximation because, for example, if we want to compute the perimeter
-of the boundary of squares in 2D, the difference between what we want to compute
-and what we actually compute is:
+of the boundary of squares in 2D, there is a difference between what we want to compute
+and what we actually compute is (see \ref{fig:3d-inclusion-exclusion-squares-1}
+and \ref{fig:3d-inclusion-exclusion-squares-2}).
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares_truth}
     \caption{In green what we want}
+    \label{fig:3d-inclusion-exclusion-squares-1}
 
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
     \caption{In red what we actually compute}
+    \label{fig:3d-inclusion-exclusion-squares-2}
 \end{figure}
 
 We see that there is a small difference between the two: our computation is just
@@ -285,7 +288,10 @@ We can choose for the polyhedron a sufficiently discretized sphere. We expect
 the result to be the same as in the 2D case: gradients oriented like the outward
 normal with a norm proportional to the mean curvature.
 
-\begin{figure}[H]
+\ref{fig:3d-mean-curvature-sphere-cube} gives an example where the point cloud
+is a sphere and the polyhedron is a cube.
+
+\begin{figure}[h]
     \centering
     \begin{minipage}{0.32\linewidth}
         \centering
@@ -302,13 +308,17 @@ normal with a norm proportional to the mean curvature.
         \includegraphics[scale=0.3]{3d/sphere-sphere-1000-05}
         \subcaption{Gradients of the volume}
     \end{minipage}
+    \caption{Sphere / cube}
+    \label{fig:3d-mean-curvature-sphere-cube}
 \end{figure}
-
-We clearly see that the gradients are oriented like the outward normals.
+We remark that the gradients are oriented like the outward normals.
 
 We also did some experiments for checking the convergence of the flow.
 
-\begin{figure}[H]
+\ref{fig:3d-flow-sphere-cube} gives an example where the point cloud is a sphere
+and the polyhedron is a cube.
+
+\begin{figure}[h]
     \centering
     \begin{minipage}{0.32\linewidth}
         \centering
@@ -327,6 +337,7 @@ We also did some experiments for checking the convergence of the flow.
     \end{minipage}
 
     \caption{Flow of a sphere under a cube}
+    \label{fig:3d-flow-sphere-cube}
 \end{figure}
 
 % TODO:

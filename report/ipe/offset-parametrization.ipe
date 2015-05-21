@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70107" creator="Ipe 7.1.7">
-<info created="D:20150421142059" modified="D:20150521114536"/>
+<info created="D:20150520111637" modified="D:20150520113342"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -220,13 +220,13 @@ h
 <dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
 <dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
 <textsize name="large" value="\large"/>
-<textsize name="small" value="\small"/>
-<textsize name="tiny" value="\tiny"/>
 <textsize name="Large" value="\Large"/>
 <textsize name="LARGE" value="\LARGE"/>
 <textsize name="huge" value="\huge"/>
 <textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
 <textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
 <textstyle name="center" begin="\begin{center}" end="\end{center}"/>
 <textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
 <textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
@@ -248,67 +248,133 @@ h
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
 <page>
-<layer name="alpha"/>
-<view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="black" cap="1">
-224 672 m
-224 672 l
-h
+<layer name="curve"/>
+<layer name="cloud"/>
+<layer name="offset-cloud"/>
+<layer name="offset-curve"/>
+<layer name="voronoi"/>
+<layer name="latex"/>
+<view layers="curve offset-cloud offset-curve voronoi latex" active="latex"/>
+<path layer="curve" stroke="black">
+144 608 m
+192 656
+320 672
+416 640 c
 </path>
-<path stroke="black" cap="1">
-224 672 m
-224 672 l
-h
+<use name="mark/disk(sx)" pos="170.542 627.342" size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="220.297 646.291" size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="285.25 656.041" size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="331.021 655.897" size="normal" stroke="black"/>
+<use name="mark/disk(sx)" pos="384.677 648.544" size="normal" stroke="black"/>
+<path layer="cloud" matrix="1 0 0 1 -309.458 83.342" stroke="black">
+35.7771 0 0 35.7771 480 544 e
 </path>
-<text transformations="translations" pos="224 672" stroke="black" type="label" width="8.329" height="4.297" depth="1.93" valign="baseline">$p_i$</text>
-<path stroke="black">
-64 0 0 64 224 672 e
+<path matrix="1 0 0 1 -259.703 102.291" stroke="black">
+35.7771 0 0 35.7771 480 544 e
 </path>
-<path stroke="black" arrow="normal/normal">
-224 672 m
-240 688 l
+<path matrix="1 0 0 1 -194.75 112.041" stroke="black">
+35.7771 0 0 35.7771 480 544 e
 </path>
-<path stroke="black">
-64 0 0 64 240 688 e
+<path matrix="1 0 0 1 -148.979 111.897" stroke="black">
+35.7771 0 0 35.7771 480 544 e
 </path>
-<text transformations="translations" pos="240 688" stroke="black" type="label" width="37.684" height="6.926" depth="1.93" valign="baseline">$p_i+\epsilon \delta p_i$</text>
+<path matrix="1 0 0 1 -95.323 104.544" stroke="black">
+35.7771 0 0 35.7771 480 544 e
+</path>
+<path layer="offset-cloud" stroke="red">
+186.922 659.149 m
+35.7663 0 0 -35.7663 220.297 646.291 250.663 665.189 a
+</path>
 <path stroke="red">
-276.572 635.501 m
-64 0 0 64 224 672 187.501 724.572 a
+250.672 665.194 m
+35.7686 0 0 -35.7686 285.25 656.041 308.219 683.46 a
 </path>
-<text transformations="translations" pos="248.558 731.101" stroke="red" type="label" width="12.026" height="6.812" depth="1.49" valign="baseline">$B_1$</text>
-<path stroke="red" cap="1">
-222.752 735.988 m
-222.752 735.988 l
-h
-</path>
-<path stroke="black" cap="1">
-208.587 734.116 m
-208.587 734.116 l
-h
-</path>
-<text transformations="translations" pos="208.587 734.116" stroke="black" type="label" width="5.242" height="4.297" depth="1.93" valign="baseline">$y$</text>
-<path stroke="black">
-224 672 m
-208.587 734.116 l
-199.358 771.016 l
-199.358 771.016 l
-</path>
-<path stroke="black">
-176 608 m
-192 768 l
-192 768 l
-</path>
-<path stroke="black">
-320 752 m
-224 592 l
-</path>
-<text transformations="translations" pos="198.746 775.69" stroke="black" type="label" width="8.525" height="6.808" depth="0" valign="baseline">$D$</text>
 <path stroke="red">
-177.955 627.549 m
-64 0 0 64 224 672 234.079 608.799 a
+308.224 683.467 m
+35.7741 0 0 -35.7741 331.021 655.897 361.026 675.377 a
 </path>
-<text transformations="translations" pos="202.811 611.61" stroke="red" type="label" width="12.026" height="6.812" depth="1.49" valign="baseline">$B_2$</text>
-<text transformations="translations" pos="209.932 749.132" stroke="black" type="label" width="18.062" height="7.473" depth="2.49" valign="baseline">$z(y)$</text>
+<path stroke="red">
+361.021 675.384 m
+35.7771 0 0 -35.7771 384.677 648.544 419.482 656.829 a
+</path>
+<path stroke="red">
+186.922 659.149 m
+35.7771 0 0 35.7771 170.542 627.342 134.875 624.54 a
+</path>
+<path stroke="red">
+203.93 614.488 m
+35.7678 0 0 35.7678 220.297 646.291 254.875 637.143 a
+</path>
+<path stroke="red">
+254.874 637.139 m
+35.7771 0 0 35.7771 285.25 656.041 308.054 628.474 a
+</path>
+<path stroke="red">
+308.054 628.474 m
+35.7701 0 0 35.7701 331.021 655.897 354.676 629.065 a
+</path>
+<path stroke="red">
+354.67 629.06 m
+35.7771 0 0 35.7771 384.677 648.544 403.624 618.196 a
+</path>
+<path stroke="red">
+203.93 614.488 m
+35.7771 0 0 -35.7771 170.542 627.342 160.315 593.058 a
+</path>
+<path layer="offset-curve" matrix="1 0 0 1 -6.04392 40.6978" stroke="black">
+144 608 m
+192 656
+320 672
+416 640 c
+</path>
+<path matrix="1 0 0 1 8.05864 -40.6971" stroke="black">
+144 608 m
+192 656
+320 672
+416 640 c
+</path>
+<group layer="voronoi">
+<path stroke="black">
+307.888 577.342 m
+308.293 706.041 l
+</path>
+<path stroke="black">
+347.588 577.342 m
+365.225 706.041 l
+</path>
+<path stroke="black">
+218.07 577.342 m
+169.056 706.041 l
+</path>
+<path stroke="black">
+263.855 577.342 m
+244.536 706.041 l
+</path>
+</group>
+<path layer="latex" stroke="black" arrow="normal/normal" rarrow="normal/normal">
+434.144 676.743 m
+424.691 641.156 l
+</path>
+<text transformations="translations" pos="435.812 658.393" stroke="black" type="label" width="4.771" height="4.289" depth="0" valign="baseline">$r$</text>
+<text matrix="1 0 0 1 0.951064 6.34043" transformations="translations" pos="273.146 633.371" stroke="black" type="label" width="4.044" height="4.289" depth="0" valign="baseline">$\epsilon$</text>
+<path stroke="black">
+285.25 656.041 m
+258.092 679.332 l
+</path>
+<path stroke="black">
+258.099 679.326 m
+261.329 653.919 l
+</path>
+<path stroke="black" rarrow="normal/normal">
+256.037 664.168 m
+205.137 688.548
+223.102 737.31 c
+</path>
+<text transformations="translations" pos="225.241 744.153" stroke="black" type="label" width="18.214" height="7.473" depth="2.49" valign="baseline">$r(x)$</text>
+<text transformations="translations" pos="275.713 674.861" stroke="black" type="label" width="4.771" height="4.289" depth="0" valign="baseline">$r$</text>
+<path stroke="black" arrow="normal/normal" rarrow="normal/normal">
+263.105 647.326 m
+284.662 650.496 l
+</path>
 </page>
 </ipe>
