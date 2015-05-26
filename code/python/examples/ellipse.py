@@ -6,6 +6,8 @@ import math
 import genpoints
 import unionballs
 
+outputdir = "./ellipse/"
+
 # Transform a list of couples to a list
 def to_list_points (lst):
     tmp = map(lambda (x, y): [x, y], lst)
@@ -47,7 +49,7 @@ points_y = [yellipse(t) for t in ts]
 
 plt.figure()
 plt.plot(points_x, points_y)
-plt.savefig("ellipse.png")
+plt.savefig(outputdir + "ellipse.png")
 plt.close()
 
 # Algorithm parameters
@@ -78,34 +80,34 @@ gradvolw = [k * g for g in gradvolw]
 plt.figure()
 plt.plot(ts, curvatures, 'b')
 plt.plot(ts, gradper, 'r')
-plt.savefig("curvatures_per.png")
+plt.savefig(outputdir + "curvatures_per.png")
 plt.close()
 
 plt.figure()
 plt.plot(ts, curvatures, 'b')
 plt.plot(ts, gradvol, 'r')
-plt.savefig("curvatures_vol.png")
+plt.savefig(outputdir + "curvatures_vol.png")
 plt.close()
 
 plt.figure()
 plt.plot(ts, curvatures, 'b')
 plt.plot(ts, gradvolw, 'r')
-plt.savefig("curvatures_volw.png")
+plt.savefig(outputdir + "curvatures_volw.png")
 plt.close()
 
 # Plot differences
 plt.figure()
 plt.plot(ts, err(gradper, curvatures))
-plt.savefig("errper.png")
+plt.savefig(outputdir + "errper.png")
 plt.close()
 
 plt.figure()
 plt.plot(ts, err(gradvol, curvatures))
-plt.savefig("errvol.png")
+plt.savefig(outputdir + "errvol.png")
 plt.close()
 
 plt.figure()
 plt.plot(ts, err(gradvolw, curvatures))
-plt.savefig("errvolw.png")
+plt.savefig(outputdir + "errvolw.png")
 plt.close()
 

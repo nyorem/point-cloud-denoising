@@ -77,16 +77,47 @@
 
 \begin{frame}
     \frametitle{Introduction}
-    % \framesubtitle{Résultats}
+    % \framesubtitle{Quelques notions}
 
-    Approximation de la courbure moyenne
-    \begin{theorem}[Lien gradient et courbure moyenne]
-        Soit une surface $ M $ de $ \mathbb{R}^3 $ et soit $ P $ un
-        $\epsilon$-échantillon de $ M $, on a:
-        $$ \frac{\partial A}{\partial p} \approx 4 r \vec{\kappa}(p) Vol(V(p, P) \cap
+    \begin{definition}[Offset d'un nuage de points]
+        Le $r$-offset d'une nuage de points $ P \subseteq \mathbb{R}^d $ est
+        défini par:
+        $$ P^r = \bigcup_{p \in P} B(p, r) $$
+    \end{definition}
+
+    \begin{definition}[$\epsilon$-échantillon]
+        Pour une hypersurface $ S $, on dit que $ P \subseteq \mathbb{R}^d $ est
+        un $\epsilon$-échantillon de $ S $ si:
+        $$ \bigcup_{p \in P} B(p, \epsilon) \subseteq S $$
+    \end{definition}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Introduction}
+    % \framesubtitle{Résultats théoriques}
+
+    \begin{theorem}[Approximation de l'aire d'une hypersurface]
+        Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et $ P $ un
+        $\epsilon$-échantillon de $ S $, alors:
+        $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
+        O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
+    \end{theorem}
+
+    \begin{theorem}[Gradient de l'aire]
+        Si $ A = Vol^d(P^r) $ alors en notant $ \nabla_{p_i} A $ la limite
+        suivante:
+        $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
+            \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
+        On a:
+        $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
+        où $ B = \partial B(p_i, r) \cap V(p_i, P) $.
+    \end{theorem}
+
+    \begin{theorem}[Approximation de la courbure moyenne]
+        Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et soit $ P $ un
+        $\epsilon$-échantillon de $ S $, on a:
+        $$ \nabla_p A \approx 2 r \vec{\kappa}(p) Vol(V(p, P) \cap
         M) $$
-        où $ A $  = volume de l'union des boules $ B(p, r) $ et $ V(p, P) $ =
-        cellule de Voronoi de $ p $.
     \end{theorem}
 \end{frame}
 
@@ -129,18 +160,7 @@
 
 \subsection{Estimation de courbure moyenne}
 \begin{frame}
-    \frametitle{Estimation de courbure moyenne}
-    % \framesubtitle{Comment?}
-
-    Comment?
-    \begin{itemize}
-        \item Norme du gradient $ \propto $ courbure moyenne
-        \item Moyen d'estimer la courbure moyenne d'un nuage de points
-            échantillonnant une surface
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
+    % TODO: ajout erreur
     \frametitle{Estimation de courbure moyenne}
     % \framesubtitle{Exemples}
 
@@ -155,6 +175,7 @@
 
 \subsection{Flot de courbure moyenne}
 \begin{frame}
+    % TODO: meilleures images
     \frametitle{Flot de courbure moyenne}
     % \framesubtitle{Exemples}
 
@@ -210,18 +231,33 @@
     Exemples:
     \begin{figure}
         \centering
-        \includegraphics[scale=0.25]{img/sphere-1000}
-        \includegraphics[scale=0.25]{img/sphere-sphere-1000-05}
+        \includegraphics[scale=0.22]{img/sphere-polyhedron-200}
+        \includegraphics[scale=0.2]{img/sphere-1000}
+        \includegraphics[scale=0.2]{img/sphere-sphere-1000-05}
         \caption{Estimation de normales sur une sphère}
     \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
     \frametitle{Flot anisotrope}
     % \framesubtitle{Exemples}
 
     Exemples:
-    % TODO
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.4]{img/sphere-cube-0}
+        \includegraphics[scale=0.3]{img/sphere-cube-10}
+        \includegraphics[scale=0.2]{img/sphere-cube-cube}
+        \caption{10 itération d'un flot avec un cube}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.4]{img/sphere-cube-0}
+        \includegraphics[scale=0.2]{img/sphere-bipyramid-10}
+        \includegraphics[scale=0.2]{img/sphere-bipyramid-bipyramid}
+        \caption{10 itération d'un flot avec une bipyramide}
+    \end{figure}
 \end{frame}
 
 % {{{1 PERSPECTIVES
@@ -232,11 +268,14 @@
     % \framesubtitle{Sous-titre}
 
     \begin{itemize}
+        \item Preuve que gradient de l'aire du bord converge vers la courbure
+            moyenne
         \item Améliorer calcul en 3D (utilisation d'arrangements 3D)
+        \item Mieux comprendre gradient du flot anisotrope
     \end{itemize}
 \end{frame}
 
-\plain{Merci!}
+% \plain{Merci!}
 
 \end{document}
 

@@ -1,8 +1,3 @@
-% TODO: fixer notations
-% Notations:
-% Surface = S
-% Nuage de points = P -> points p_i
-
 % partie logiciel:
 % 2D
 
@@ -134,7 +129,10 @@ And finally, a change of variable result:
     defined by $ f(x, t) = x + t \phi(x) \vec{n}_S(x) $ where $ \phi : \R^d \to
     \R^d $ is a smooth vector field then $ f $ is a diffeomorphism for $ r < reach(S) $.
 
-    Its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D \vec{n}_S (x)) $.
+    If we decompose this substitution on $ T_p(S) \times [-r, r] $, where $ T_p(S)
+    $ is the tangent space of $ S $ at $ p $, we get: $ D \phi = id + r D
+    \vec{n_S}(q) $.  So, its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D
+    \vec{n}_S (x)) $.
 
     Using the previous proposition, we get:
     $$ J_f(x) = \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) $$
@@ -350,8 +348,12 @@ The next proposition gives the gradient of the volume of union of balls :
     \end{equation}
     where $ B = \partial B(p_i, r) \cap V(p_i, P) $ is the visible boundary of
     the ball.
-    % TODO: ajouter référence article oudet minimizing convex...
 \end{proposition}
+
+Note that \cite{lachand2005minimizing} tackles the problem of minimizing a
+functional over a convex body. For doing this, the authors compute the
+derivatives of this functional: they use a similar technique we used for during
+the proof of the previous proposition.
 
 \begin{proof}
 
@@ -435,18 +437,18 @@ $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
 Now, we will relate the previously computed gradients to the mean curvature
 vector of an hypersurface.
 
-If we suppose that we have a point cloud that is an $\epsilon$-sampling of
-a smooth manifold $ M $, then the following proposition gives the link between
-the gradient of volume of an offset of $ M $ and the mean curvature vector.
+If we suppose that we have a point cloud that is an $\epsilon$-sampling of a
+smooth hypersurface $ S $, then the following proposition gives the link between
+the gradient of volume of an offset of $ S $ and the mean curvature vector.
 
 \begin{proposition}
     \label{prop:gradient-mean-curvature}
-    Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) manifold $ M $ and $ r \ge 0 $ such
-    that: $ \epsilon \leq r \leq reach(M) $, then:
+    Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) hypersurface
+    $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then:
     $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
     Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
-    $ \nabla_p A $ converges towards the mean curvature vector of $ M $ at $ p $.
-% TODO: ajouter dessins + lemme Amenta Bern (2)
+    $ \nabla_p A $ converges towards the mean curvature vector of $ S $ at $ p $.
+    % TODO: ajouter dessins
 \end{proposition}
 
 To prove that, we will need two lemmas extracted from \cite{amenta1999surface}
@@ -468,63 +470,75 @@ which will tell us how the Voronoi cells look:
 
 These two lemmas tell us that the Voronoi cells are skinny (first lemma) and
 long (second lemma).
-% TODO: lemmes Amenta Bern (2)
 
 \begin{proof}
 We will first do two approximations on \ref{eqn:gradient_area_2d}:
 \begin{enumerate}
-    \item the first one is to suppose that the offset of $ M $ is close enough to the offset of $ P $.
-    \item the second one is that if the sampling is dense enough then we can replace $ p $
-        by the projection of $ x $ on $ M $.
+    \item the first one is to suppose that the offset of $ S $ is close enough
+        to the offset of $ P $. Using the computation done in
+        \ref{prop:comp-vol-offsets}, we can say that the error made is in the
+        order of $ O(\frac{\epsilon^2}{r}) $.
+    \item the second one is that if the sampling is dense enough then we can
+        replace $ p $ by the projection of $ x $ on $ S $: $ \forall p \in S,~x
+        \in V(p, P),~p = p_S(x) + O(\epsilon) $, see figure
+        \ref{fig:voronoi-cylinder}.  For this approximation to hold, it is
+        necessary for the pointed out distance to be greater than $ \epsilon $
+        i.e. $ r \gg \epsilon $ which means that $ \frac{\epsilon}{r} $ needs to
+        vanish.
 \end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{img/voronoi-cylinder}
+    \caption{Shape of the Voronoi cells of densely sampled points}
+    \label{fig:voronoi-cylinder}
+\end{figure}
 
 Using these approximations, we get:
 \begin{align*}
-    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{M^r} \cap V(p,
-        P)} (x - p) dx + o(\epsilon^2) \\
-    &\stackrel{(2)}{=} \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx +
-    o(\epsilon) \\
+    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{S^r} \cap V(p,
+        P)} (x - p) dx + O(\epsilon^2) \\
+    &\stackrel{(2)}{=} \int_{\partial{S^r} \cap V(p, P)} (x - p_S(x)) dx +
+    O(\epsilon) \\
 \end{align*}
 
-Then, we will use the substitution $ q = p_M(x) \iff x = \phi(q) = q + \vec{n_M}(q) $
-where $ \vec{n_M}(q) $ is the normal vector of $ M $ at $ q $ on the upper part
-of $ \partial{M^r} \cap V(p, P) $. This substitution is a diffeomorphism because
-$ r $ is smaller than the reach of $ M $.
-
-We will need the Jacobian of this substitution. If we decompose this
-substitution on $ T_p(M) \times [-r, r] $, where $ T_p(M) $ is the tangent space
-of $ M $ at $ p $, we get: $ D \phi = id + r D \vec{n_M}(q) $.
+Then, we will use the substitution $ q = p_S(x) \iff x = \phi(q) = q +
+\vec{n_S}(q) $ where on the upper part of $ \partial{S^r} \cap V(p, P) $.
 
 Using the lemma \ref{lemma:diffeo}, we have that $ \phi $ is a diffeomorphism
-and that $ \det (D \phi) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+and that $ J_\phi(p) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
 
-Using an analogous substitution on the lower part of $ \partial{M^r} \cap V(p,
+Using an analogous substitution on the lower part of $ \partial{S^r} \cap V(p,
 P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
 
 By summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
 
 It follows that:
 \begin{align*}
-    \int_{\partial{M^r} \cap V(p, P)} (x - p_M(x)) dx &= \int_{M \cap V(p, P)}
-    r \times \vec{n_M}(q) ( \det (id + r D \vec{n_M}(q)) - \det (id - r D
-    \vec{n_M}(q)) ) dq \\
-    &= 2r \int_{M \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_M}(q) dq \\
+    \int_{\partial{S^r} \cap V(p, P)} (x - p_S(x)) dx &= \int_{S \cap V(p, P)}
+    r \times \vec{n_S}(q) ( \det (id + r D \vec{n_S}(q)) - \det (id - r D
+    \vec{n_S}(q)) ) dq \\
+    &= 2r \int_{S \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_S}(q) dq \\
 \end{align*}
 
 % TODO: surface C infinie, constantes depéndent de la dérivée de la courbure
-Finally, if we suppose that $ \vec{n_M}(q) = \vec{n_M}(p) $, $ \kappa_1(q) =
-\kappa_1(p) $ and $ \kappa_2(q) = \kappa_2(p) $, we have the following final
-result:
+Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
+$ \vec{n_S}(q) = \vec{n_S}(p) $, $ \kappa_1(q) = \kappa_1(p) $ and $ \kappa_2(q)
+= \kappa_2(p) $. All the other terms depend on the derivatives of the curvature
+which are negligible.
 
-$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_M}(p) \int_{M \cap V(p, P)} dq $$
+We deduce that:
+
+$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_S}(p)
+\int_{S \cap V(p, P)} dq $$
 
 So, using the mean curvature vector:
 
-$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(M \cap V(p, P)) $$
+$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(S \cap V(p, P)) $$
 
 Which means:
 
-$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(M \cap V(p, P)) - 1 |
+$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(S \cap V(p, P)) - 1 |
 \times|| \vec{\kappa}(p) ||$$
 
 \end{proof}

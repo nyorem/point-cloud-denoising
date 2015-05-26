@@ -21,3 +21,8 @@ def on_ellipse (a, b, N, sigma = 0):
         noise = map(tuple, np.random.normal(0, sigma, (N, 2)).tolist())
         return [sum_tuple(x, y) for (x, y) in zip(points, noise) ]
 
+# Read point cloud from an xy file
+def from_file (path):
+    tmp = np.loadtxt(path).tolist()
+    return [item for sublist in tmp for item in sublist]
+

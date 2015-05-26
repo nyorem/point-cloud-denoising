@@ -115,12 +115,10 @@ programming.
 
 The main difficulty here was to compute the intersection between a Voronoi cell
 and a circle. The Voronoi cell is computed using its dual graph: the Delaunay
-triangulation.
+triangulation. The intersection procedure was described previously.
 
-Then the automatic differentiation technique allowed us to only care about the
-computation of the area and not its gradient.
-
-% TODO
+We also used the automatic differentiation technique (see \ref{appendix:ad})
+allowed us to only care about the computation of the area and not its gradient.
 
 % {{{1 GRADIENT
 \section{Gradient}

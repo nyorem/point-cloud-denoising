@@ -54,4 +54,4 @@ papers/
 others/
 **/*.so
 **/*.pyc
-code/python/examples/*.png
+code/python/examples/**/*.png

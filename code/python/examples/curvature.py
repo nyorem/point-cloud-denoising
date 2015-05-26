@@ -7,6 +7,8 @@ import numpy as np
 import pylab as plt
 import unionballs
 
+outputdir = "./curvature/"
+
 # Transform a list of couples to a list
 def to_list_points (lst):
     tmp = map(lambda (x, y): [x, y], lst)
@@ -37,28 +39,17 @@ def curvature_polar(rho, rhop, rhopp, t):
     return (rho(t) * rho(t) + 2 * rhop(t) * rhop(t) - rho(t) * rhopp(t)) / math.pow(rho(t) * rho(t) + rhop(t) * rhop(t), 3/2);
 
 # Parameters
-N = 1000
-ts = [ (2 * k * math.pi) / N for k in range(N + 1) ]
+N = 200
+ts = [ (2 * k * math.pi) / N for k in range(N) ]
 radius = 0.5
 weighted = False
 
-def compute_polar(name, rho, rhop, rhopp):
-    points_x = [rho(t) * math.cos(t) for t in ts]
-    points_y = [rho(t) * math.sin(t) for t in ts]
-    points = np.array(to_list_points(zip(points_x, points_y)))
-
-    # Curvatures
-    curvatures_expected = [curvature_polar(rho, rhop, rhopp, t) for t in ts ]
-    curvatures_computed_vol = to_couples(unionballs.gradient_volume(points, radius, weighted).tolist(), normL2)
-    curvatures_computed_per = to_couples(unionballs.gradient_perimeter_boundary(points, radius, weighted).tolist(), normL2)
-    k = np.mean(curvatures_expected) / np.mean(curvatures_computed_per)
-    curvatures_computed_per = [k * g for g in curvatures_computed_per]
-
+def plot_curves (points_x, points_y, name, curvatures_expected, curvatures_computed_vol, curvatures_computed_per):
     # Plots
     ## Curve
     plt.figure()
     plt.plot(points_x, points_y)
-    plt.savefig(name + ".png")
+    plt.savefig(outputdir + name + ".png")
     plt.close()
 
     ## Curvatures
@@ -66,37 +57,36 @@ def compute_polar(name, rho, rhop, rhopp):
     plt.figure()
     plt.plot(ts, curvatures_expected, 'b')
     plt.plot(ts, curvatures_computed_vol, 'r')
-    plt.savefig("curvatures_" + name + "_vol.png")
+    plt.savefig(outputdir + "curvatures_" + name + "_vol.png")
     plt.close()
 
     ### Perimeter
     plt.figure()
     plt.plot(ts, curvatures_expected, 'b')
     plt.plot(ts, curvatures_computed_per, 'r')
-    plt.savefig("curvatures_" + name + "_per.png")
+    plt.savefig(outputdir + "curvatures_" + name + "_per.png")
     plt.close()
 
     ## Errors
     ### Volume
     plt.figure()
     plt.plot(ts, err(curvatures_computed_vol, curvatures_expected))
-    plt.savefig("err_" + name + "_vol.png")
+    plt.savefig(outputdir + "err_" + name + "_vol.png")
     plt.close()
 
     ### Perimeter
     plt.figure()
     plt.plot(ts, err(curvatures_computed_per, curvatures_expected))
-    plt.savefig("err_" + name + "_per.png")
+    plt.savefig(outputdir + "err_" + name + "_per.png")
     plt.close()
 
-def compute(name, x, y, xp, yp, xpp, ypp):
-    points_x = [x(t) for t in ts]
-    points_y = [y(t) for t in ts]
+def compute_polar(name, rho, rhop, rhopp):
+    points_x = [rho(t) * math.cos(t) for t in ts]
+    points_y = [rho(t) * math.sin(t) for t in ts]
     points = np.array(to_list_points(zip(points_x, points_y)))
+    curvatures_expected = [curvature_polar(rho, rhop, rhopp, t) for t in ts ]
 
     # Curvatures
-    curvatures_expected = [curvature(xp, yp, xpp, ypp, t) for t in ts ]
-
     curvatures_computed_vol = to_couples(unionballs.gradient_volume(points, radius, weighted).tolist(), normL2)
     k = np.mean(curvatures_expected) / np.mean(curvatures_computed_vol)
     curvatures_computed_vol = [k * g for g in curvatures_computed_vol]
@@ -105,40 +95,38 @@ def compute(name, x, y, xp, yp, xpp, ypp):
     k = np.mean(curvatures_expected) / np.mean(curvatures_computed_per)
     curvatures_computed_per = [k * g for g in curvatures_computed_per]
 
-    # Plots
-    ## Curve
-    plt.figure()
-    plt.plot(points_x, points_y)
-    plt.savefig(name + ".png")
-    plt.close()
+    # Plot
+    plot_curves(points_x, points_y, name, curvatures_expected, curvatures_computed_vol, curvatures_computed_per)
 
-    ## Curvatures
-    ### Volume
-    plt.figure()
-    plt.plot(ts, curvatures_expected, 'b')
-    plt.plot(ts, curvatures_computed_vol, 'r')
-    plt.savefig("curvatures_" + name + "_vol.png")
-    plt.close()
+def compute(name, x, y, xp, yp, xpp, ypp):
+    points_x = [x(t) for t in ts]
+    points_y = [y(t) for t in ts]
+    points = np.array(to_list_points(zip(points_x, points_y)))
+    curvatures_expected = [curvature(xp, yp, xpp, ypp, t) for t in ts ]
 
-    ### Perimeter
-    plt.figure()
-    plt.plot(ts, curvatures_expected, 'b')
-    plt.plot(ts, curvatures_computed_per, 'r')
-    plt.savefig("curvatures_" + name + "_per.png")
-    plt.close()
+    # Curvatures
+    curvatures_computed_vol = to_couples(unionballs.gradient_volume(points, radius, weighted).tolist(), normL2)
+    k = np.mean(curvatures_expected) / np.mean(curvatures_computed_vol)
+    curvatures_computed_vol = [k * g for g in curvatures_computed_vol]
 
-    ## Errors
-    ### Volume
-    plt.figure()
-    plt.plot(ts, err(curvatures_computed_vol, curvatures_expected))
-    plt.savefig("err_" + name + "_vol.png")
-    plt.close()
+    curvatures_computed_per = to_couples(unionballs.gradient_perimeter_boundary(points, radius, weighted).tolist(), normL2)
+    k = np.mean(curvatures_expected) / np.mean(curvatures_computed_per)
+    curvatures_computed_per = [k * g for g in curvatures_computed_per]
 
-    ### Perimeter
-    plt.figure()
-    plt.plot(ts, err(curvatures_computed_per, curvatures_expected))
-    plt.savefig("err_" + name + "_per.png")
-    plt.close()
+    # Plot
+    plot_curves(points_x, points_y, name, curvatures_expected, curvatures_computed_vol, curvatures_computed_per)
+
+# Ellipse
+a = 1.5
+b = 1
+xellipse = lambda t: a * math.cos(t)
+yellipse = lambda t: b * math.sin(t)
+xpellipse = lambda t: -a * math.sin(t)
+ypellipse = lambda t: b * math.cos(t)
+xppellipse = lambda t: -a * math.cos(t)
+yppellipse = lambda t: -b * math.sin(t)
+
+compute("ellipse", xellipse, yellipse, xpellipse, ypellipse, xppellipse, yppellipse)
 
 # Eight
 xeight = lambda t: 0.5 * math.sin(t) * (math.cos(t) + 1)
