@@ -51,6 +51,10 @@ class QVectorFieldItem : public QGraphicsItem {
             m_points.insert(m_points.begin(), pbegin, pbeyond);
         }
 
+        Vector_2 get (Point_2 const& p) {
+            return m_field[p];
+        }
+
         void clear () {
             m_points.clear();
             m_field.clear();

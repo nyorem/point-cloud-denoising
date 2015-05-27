@@ -4,7 +4,6 @@
 #include "random_ellipse_2.hpp"
 
 #include "CGAL_AD_typedefs.hpp"
-#include "GradientUtils.hpp"
 #include "PointCloudUtils.hpp"
 #include "volume_union_balls_2_debug.h"
 
@@ -125,8 +124,6 @@ void Scene::nSteps () {
                                  1, 0, 100, 10);
 
     for (int i = 0; i <= N; ++i) {
-        VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
-
         // TODO: remove (use python bindings)
         // Output centers positions
         std::stringstream filename_centers;
@@ -138,18 +135,15 @@ void Scene::nSteps () {
             centers << *pit << std::endl;
         }
 
-        // Compute the perimeter of the union and the gradient
-        FunctionUnion_ad f(m_radius, false);
-        f(points_vec);
-
         // Update the gradients
         computeGradients();
 
         // New point cloud: gradient descent
-        GradAdEval<FT_ad, Function_ad, VectorXd_ad> grad_ad_eval;
-        VectorXd_ad new_points_vec = step_gradient_descent(grad_ad_eval, f, points_vec, m_timestep);
         Points_2 new_points;
-        vectorToPointCloud<Point_2>(toValue(new_points_vec), std::back_inserter(new_points));
+        for (size_t j = 0; j < m_points->size(); ++j) {
+            Point_2 p = (*m_points)[j];
+            new_points.push_back(p - m_timestep * m_gradients->get(p));
+        }
 
         // Do not move the fixed points
         for (size_t j = 0; j < new_points.size(); ++j) {
@@ -159,6 +153,7 @@ void Scene::nSteps () {
             }
         }
 
+        // Update the points
         m_points->clear();
         m_points->insert(new_points.begin(), new_points.end());
 
@@ -171,18 +166,19 @@ void Scene::nSteps () {
         m_dt->insert(m_points->begin(), m_points->end());
 
         // Update the decomposition
-        m_decomposition->clear();
-        std::vector<Segment_2> segments;
-        volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments);
-        m_decomposition->insert(segments.begin(), segments.end());
+        /* m_decomposition->clear(); */
+        /* std::vector<Segment_2> segments; */
+        /* volume_union_balls_2_debug<FT>(m_points->begin(), m_points->end(), m_radius, segments); */
+        /* m_decomposition->insert(segments.begin(), segments.end()); */
     }
 }
 
 void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
-    // Compute the perimeter of the union and the gradient
-    FunctionUnion_ad f(m_radius, false);
+    // Compute the gradients
+    FunctionUnion_ad f(m_radius, true);
+    /* FunctionUnion_ad f(m_radius); */
     f(points_vec);
     Eigen::VectorXd grad = f.grad();
 

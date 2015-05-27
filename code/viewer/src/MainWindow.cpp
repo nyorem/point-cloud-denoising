@@ -176,9 +176,9 @@ MainWindow::MainWindow (int w, int h) : QWidget() {
             this, SLOT(toggleDecomposition()));
 
     // Hack to bring the window to the front
-    show();
-    raise();
-    activateWindow();
+    /* show(); */
+    /* raise(); */
+    /* activateWindow(); */
 
     // Parameters initialization
     // Ball radius

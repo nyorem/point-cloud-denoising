@@ -5,8 +5,7 @@
 % 3D 2: inclusion-exclusion
 % -> environ 3 pages + bouts de codes
 
-% courbe de décroissance de l'aire en fonction du pas de temps
-% exemples 2d lissage (carré)
+% courbe de décroissance de l'aire en fonction du temps
 
 \chapter{Introduction}
 
@@ -89,21 +88,30 @@ computational geometry.
     $ is defined such that $ || x - p_M(x) || = d(x, M) $.
 \end{definition}
 
-For example, if we consider a circle in the plane of radius $ R $, then every
-point in the plane has a unique projection on the circle except the center which
-is at distance $ R $ of every point on the circle: there is no closest point.
-Consequently, its reach is $ R $.
+The reach has some interesting properties (see \cite{merigot2009detection} for a
+more detailed study):
 
-Another more general example is that any convex set has infinite reach. This is
-because the projection on a closed convex set is uniquely defined.
+\begin{itemize}
+    \item For example, if we consider a circle in the plane of radius $ R $,
+        then every point in the plane has a unique projection on the circle
+        except the center which is at distance $ R $ of every point on the
+        circle: there is no closest point.  Consequently, its reach is $ R $.
 
-The reach is also related to the Local Feature Size (LFS) defined in
-\cite{amenta1999surface}: $ LFS(p) = d(p, \mathcal{M}) $ $ reach(M) =
-\min\limits_{p \in M}~LFS(p) $ where $ \mathcal{M}  $ is the medial axis of $ M
-$.
+    \item Another more general example is that any convex set has infinite
+        reach. This is because the projection on a closed convex set is always
+        uniquely defined.
 
-% TODO: exemples:
-% reach < min (rayons de courbure) et dessin inégalité contraire fausse
+    \item The reach is also related to the Local Feature Size (LFS) defined in
+        \cite{amenta1999surface}: $ LFS(p) = d(p, \mathcal{M}) $ $ reach(M) =
+        \min\limits_{p \in M}~LFS(p) $ where $ \mathcal{M}  $ is the medial axis
+        of $ M $.
+
+    \item The reach is also always upper bounded by the minimum radius of
+        curvature. There are no results on the lower bound. Indeed, consider the
+        following example: two spheres of radius $ R $ at distance $ \epsilon $,
+        then the radius of curvature is always $ R $ but the reach of the union
+        if $ \frac{\epsilon}{2} $.
+\end{itemize}
 
 Then, some facts about the curvature of embedded hypersurfaces:
 
@@ -122,7 +130,6 @@ Then, some facts about the curvature of embedded hypersurfaces:
 
 And finally, a change of variable result:
 
-% TODO: reference
 \begin{lemma}
     \label{lemma:diffeo}
     Given a smooth hypersurface $ S $, and a function $ f : S \times [0, r] \to \R^d $
@@ -158,8 +165,8 @@ Then, we can tackle the proof:
     $$ \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t}= \int_{S_0}
     \phi(x) \vec{\kappa}(x) dx $$
 
-    This equation tells us exactly that the variation of the area functional is
-    linked to the mean curvature.
+    This equation tells us exactly that if we perturbate a surface by $ \phi $
+    then the variation of the area functional is linked to the mean curvature.
 \end{proof}
 
 This proposition will be at the basis of our work. We will replace "hypersurface"
@@ -322,8 +329,6 @@ with a quantity proportional to the volume of the $r$-offset of a point cloud
 sampled on the surface.
 Now, we want to study the gradient of this newly computed quantity.
 
-% TODO
-
 % {{{1 CONVERGENCE OF THE GRADIENT
 \section{Convergence of the gradient}
 
@@ -448,7 +453,6 @@ the gradient of volume of an offset of $ S $ and the mean curvature vector.
     $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
     Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
     $ \nabla_p A $ converges towards the mean curvature vector of $ S $ at $ p $.
-    % TODO: ajouter dessins
 \end{proposition}
 
 To prove that, we will need two lemmas extracted from \cite{amenta1999surface}
@@ -521,11 +525,10 @@ It follows that:
     &= 2r \int_{S \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_S}(q) dq \\
 \end{align*}
 
-% TODO: surface C infinie, constantes depéndent de la dérivée de la courbure
 Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
 $ \vec{n_S}(q) = \vec{n_S}(p) $, $ \kappa_1(q) = \kappa_1(p) $ and $ \kappa_2(q)
 = \kappa_2(p) $. All the other terms depend on the derivatives of the curvature
-which are negligible.
+which are negligible at this point.
 
 We deduce that:
 
@@ -565,6 +568,7 @@ discretization converges towards the continuous gradient.
 \section{Other kinds of discretizations}
 
 % TODO: flot de l'aire du bord d'une surface = union de boules
+
 In this work, we were also interested in other discretizations. Instead of
 choosing the volume as the functional, we can also choose the area of the
 boundary or corresponding weighted versions (i.e. the gradient of the volume
@@ -577,10 +581,17 @@ For the former case (area of the boundary), we have the following lemma:
     > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(\partial S^r)}{2r} + O(r^2) $$
 \end{lemma}
 
-Finally, we were interested in replacing the ball that we use to make the
-Minkowski sum with by a convex polyhedron. A more detailed study of this problem
-will be done in the section dedicated to 3D.
+During this internship, we did not prove that the gradients of the area of the
+boundary of a union of balls are directly connected (like for the volume of the
+union) to the mean curvature of the sampled surface. But even if we did not
+made the prove, we made experiments to show this relation.
 
+Finally, we were interested in replacing the ball that we use to make the
+Minkowski sum with by a convex polyhedron in order to have an anisotropic
+smoothing. A more detailed study of this problem will be done in the section
+dedicated to the 3D case.
+
+% {{{1 OLD
 % % 01-intro
 
 % Point cloud smoothing is a well-studied problem: numerous methods exists and
@@ -639,12 +650,6 @@ will be done in the section dedicated to 3D.
 %         \frac{\partial f}{\partial t} = \sqrt{|\nabla f|^2 + 1} ~div(\frac{\nabla
 %         f}{\sqrt{|\nabla f|^2 + 1}}) $.
 % \end{itemize}
-
-% TODO:
-% - motivation
-% - discrétisation de l'aire d'une surface
-% - relation gradient énergie discrétisée et gradient énergie continue
-% - autres discrétisations
 
 % vim: set spelllang=en :
 

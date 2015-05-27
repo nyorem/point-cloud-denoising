@@ -34,7 +34,7 @@ points = np.array(genpoints.from_file("data/" + cloud + ".xy"))
 # cartman
 # radius = 15
 
-# squre
+# square
 radius = 30
 
 iter = 25

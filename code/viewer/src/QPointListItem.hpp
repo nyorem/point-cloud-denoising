@@ -43,6 +43,10 @@ class QPointListItem : public QGraphicsItem {
             return m_points[i];
         }
 
+        size_t size() const {
+            return m_points.size();
+        }
+
         void setRadius (float radius) {
             m_radius = radius;
         }

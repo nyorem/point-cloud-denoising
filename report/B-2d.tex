@@ -117,7 +117,7 @@ The main difficulty here was to compute the intersection between a Voronoi cell
 and a circle. The Voronoi cell is computed using its dual graph: the Delaunay
 triangulation. The intersection procedure was described previously.
 
-We also used the automatic differentiation technique (see \ref{appendix:ad})
+We also used the automatic differentiation technique (see \ref{appendix:ad}): it
 allowed us to only care about the computation of the area and not its gradient.
 
 % {{{1 GRADIENT
@@ -306,6 +306,19 @@ sampled on an ellipse: \ref{fig:ellipse_area_flow} and
     \label{fig:ellipse_perimeter_flow}
 \end{figure}
 
+We test the smoothing property of our flow on points sampled on a square, see
+\ref{fig:are_perimeter_flow_square}. We can clearly see that our discrete flow
+smooth the corners of the square.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{2d/square-0}
+    \includegraphics[scale=0.3]{2d/area/square-area-4-15-01}
+    \includegraphics[scale=0.3]{2d/perimeter/square-perimeter-10-15-05}
+    \caption{Area / perimeter flow on a square}
+    \label{fig:area_perimeter_flow_square}
+\end{figure}
+
 Next, we add some outliers around the ellipse and observe the effects of the two
 flows: see \ref{fig:ellipse_outliers_area_flow} and
 \ref{fig:ellipse_outliers_perimeter_flow}.
@@ -351,11 +364,13 @@ the point set while redistributing the points in an uniform way.
 % TODO: explain why
 This can be explained by looking on a simple case with two intersecting balls:
 \begin{itemize}
-    \item for the area: TODO
     \item for the perimeter: the gradients are directed towards the outside
         and so the balls will be merged because we can say, using the triangle
         inequality, that in order to minimize the perimeter the balls must come
         closer.
+    \item for the area: using the same reasoning, in order to minimize the area,
+        it is possible that the gradients are oriented in opposite directions
+        because the area gain may be more costly than moving the balls closer.
 \end{itemize}
 
 The chosen radius will also influence the smoothing: points which are too far
