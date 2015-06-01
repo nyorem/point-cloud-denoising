@@ -343,6 +343,29 @@ of \texttt{CGAL}.
 
 % TODO
 
+% {{{1 THEORY
+\section{Theory}
+
+We will need the definition of the radial function of a convex:
+
+\begin{definition}
+    For a convex $ K $, we define the radial function $ \rho_K $ defined by:
+    $$ \rho_K(x) = \sup \{ r \in \R,~rx \in K \} $$
+\end{definition}
+
+We will show that the function that we are trying to minimize is not the volume
+of the Minkowski sum but an other functional.
+
+Let us denote by $ A $ the following functional:
+
+$$ A= \int_S \int_{-\rho_K(-\vec{n}_S(x))}^{\rho_K(\vec{n_S}(x))} J_\phi(x) dt dx $$
+where $ \phi(x) = x + t(x) \vec{n}_S(x) $ for $ x \in S $ and $ t(x) \in
+[-\rho_K(-\vec{n}_S(x)), \rho_K(\vec{n_S}(x)) ] $.
+
+Then, we will show that, if $ K $ is symmetric, then:
+
+$$ \frac{1}{2r} A = \int_S \rho_K(\vec{n}_S(x)) dx $$
+
 % {{{1 EXPERIMENTS
 \section{Experiments}
 

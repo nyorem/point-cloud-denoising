@@ -7,6 +7,7 @@ import numpy as np
 import pylab as plt
 import os
 import genpoints
+import sys
 
 outputdir = "./test/"
 # outputdir = "./descent/"
@@ -21,25 +22,36 @@ def value(v):
 
 # List of points to consider
 # points = np.array(to_list_points(genpoints.on_ellipse(3.5, 1, 100, 0)))
-cloud = "square"
+# cloud = "ellipse"
+[cloud] = sys.argv[1:]
 points = np.array(genpoints.from_file("data/" + cloud + ".xy"))
 
 # Parameters
 # ellipse
 # radius = 0.3
 
-# bird
-# radius = 0.03
+# bird perimeter
+# radius = 0.5
+
+# shark perimeter
+# radius = 0.8
+
+# maple leaf perimeter
+# radius = 0.5
+
+# kenny perimeter
+radius = 15
+timestep_per = 5
 
 # cartman
 # radius = 15
 
 # square
-radius = 30
+# radius = 30
 
-iter = 25
+iter = 50
 timestep_vol = 0.1
-timestep_per = 0.05
+# timestep_per = 0.05
 timestep_weighted_vol = 0.0025
 timestep_weighted_per = 0.001
 
@@ -54,7 +66,10 @@ def find_min_max (points):
     return min(x), max(x), min(y), max(y)
 
 xmin, xmax, ymin, ymax = find_min_max(points)
+
 var = 10
+# bird
+# var = 0.1
 
 def step_gradient_descent_perimeter (points, radius,timestep, weighted = False):
     grad = unionballs.gradient_perimeter_boundary(points, radius, weighted)
@@ -114,8 +129,8 @@ def gradient_descent_volume (points, radius, timestep, fname, weighted = False):
     os.system("convert -delay 50 -loop 0 `ls " + fname + "*.png | sort -k1." + `l` + "n` " + fname + ".gif")
     plot_values(vals, fname + "_values.jpg")
 
-gradient_descent_volume(points, radius, timestep_vol, outputdir + "volume_" + cloud)
-# gradient_descent_perimeter(points, radius, timestep_per, outputdir + "perimeter_" + cloud)
+# gradient_descent_volume(points, radius, timestep_vol, outputdir + "volume_" + cloud)
+gradient_descent_perimeter(points, radius, timestep_per, outputdir + "perimeter_" + cloud)
 # gradient_descent_volume(points, radius, timestep_weighted_vol, outputdir + "volume-weighted_" + cloud, True)
 # gradient_descent_perimeter(points, radius, timestep_weighted_per, outputdir + "perimeter-weighted_" + cloud, True)
 

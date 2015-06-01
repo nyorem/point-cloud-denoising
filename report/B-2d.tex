@@ -5,32 +5,52 @@
 
 In this part, we will focus on a 2D point cloud and we will use for the energy
 the area of the $ r $-offset of a point cloud $ X $: the Minkowski sum with an
-euclidean ball $ B(0, r) $.
+euclidean ball $ B(0, r) $. We will also test other types of energies like the
+perimeter of the boundary, and weighted ones...
 
-We will also choose other types of energies like the perimeter of the boundary,
-the weighted area (the gradient of a Voronoi cell is weighted by its
-corresponding area) and the weighted perimeter.
-
-Firstly, we will show how to compute the area of the union of balls or more
-generally any quantity computed on the intersection of a Voronoi cell and a
-circle. Then, we will run different experiments to verify that the gradient of
+Firstly, we will show how to compute the area of the union of balls.
+Then, we will run different experiments to verify that the gradient of
 the union of balls is proportional to the mean curvature of the underlying
-hypersurface. Finally, we will run our programs on different point clouds with
+curve. Finally, we will run our programs on different point clouds with
 different parameters to show that it can simulate discrete mean curvature flows.
 
 % {{{1 AREA OF A UNION OF BALLS
 \section{Area of a union of balls}
 
+For this part, we will need the definition of the Voronoi diagram of set of
+points:
+
+\begin{definition}
+    Given a set of points $ P \in E $, we define the Voronoi cell of $ p \in P $
+    denoted by $ V(p, P) $:
+    $$ V(p, P) = \{ q \in E,~ \forall p' \neq p \in P,~|| p  - q || \leq || p' -
+    q || \} $$
+    In short, the Voronoi cell of $ p $ is composed of all the points which are
+    closer to $ p $ than to any other points in $ P $.
+
+    Then, the Voronoi diagram of $ P $ is composed of all the Voronoi cells of $
+    p \in P $. It is a partition of the space $ E $.
+\end{definition}
+
+For example, \ref{fig:voronoi-diagram-2d} is an example of a Voronoi diagram.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{voronoi-diagram-2d}
+    \caption{Points are in black and the boundary of the Voronoi cells are in
+        red}
+    \label{fig:voronoi-diagram-2d}
+\end{figure}
+
+Now, we can say that, because the Voronoi diagram is a partition, we have, for a
+point cloud $ P $ :
+
+$$ Vol^d(P^r) = Vol^d(\bigcup_p B(p, r)) = \sum_p Vol^d(V(p, P) \cap B(p, r)) $$
+
 In order to compute this energy, we need to know how to estimate the area of the
-intersection of a ball and a Voronoi cell. Indeed, the area of the union of
-balls is the same as the sum of the areas of the restrictions of the balls to
-their Voronoi cell (because the Voronoi cells partition the plane).
-
-This is the same work as the one done in \cite{cazals2011computing} except that
-we restrict ourselves to 2D which is simpler than in 3D.
-
-For doing that, we need to decompose the intersection into triangles and
-spherical caps.
+intersection of a ball and a Voronoi cell. In 2D, the boundary of the
+intersection between a Voronoi cell and a ball is composed of segments and
+circular arcs.
 
 \ref{fig:inter_voronoi_ball_2d} illustrates the different cases for the
 intersection of a Voronoi cell and a ball in 2D.
@@ -72,12 +92,15 @@ the following:
 
 Then, we will need to know the vertices of the boundary of the intersection (the
 points forming the bold boundary in \ref{fig:inter_voronoi_ball_2d}). There are
-two types of those points: some are Voronoi vertices and some are intersections
-of Voronoi edges and circles. To each of these points, we attach a boolean
-saying whether the point is an interior point or an intersection one. We also
+two types of those points: some are Voronoi vertices (in red) and some are
+intersections of Voronoi edges and circles (in blue). We will refer to the red
+points as the interior points. To each of these points, we attach a boolean
+saying whether the point is an interior one or an intersection one. We also
 attach the corresponding Voronoi edge.
 
-Then, we loop over the Voronoi edges $ e = pq $ of a vertex $ v $:
+Then, we loop over the boundary of the Voronoi cell of $ v $, for any edge $ e =
+pq $. Depending on whether the points $ p $ and $ q $ are interior or not, the
+contribution to the area of $ e $ will be different:
 \begin{itemize}
     \item if $ p $ and $ q $ are interior points, we add the triangle $ pvq $.
     \item if $ p $ or $ q $ is interior point, we add the triangle $ pvq $.
@@ -307,7 +330,7 @@ sampled on an ellipse: \ref{fig:ellipse_area_flow} and
 \end{figure}
 
 We test the smoothing property of our flow on points sampled on a square, see
-\ref{fig:are_perimeter_flow_square}. We can clearly see that our discrete flow
+\ref{fig:area_perimeter_flow_square}. We can clearly see that our discrete flow
 smooth the corners of the square.
 
 \begin{figure}[h]
@@ -317,6 +340,18 @@ smooth the corners of the square.
     \includegraphics[scale=0.3]{2d/perimeter/square-perimeter-10-15-05}
     \caption{Area / perimeter flow on a square}
     \label{fig:area_perimeter_flow_square}
+\end{figure}
+
+We also verify that the area of the union of balls is decreasing, see
+\ref{fig:area_time_decrease}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{2d/values-square-area}
+    \includegraphics[scale=0.3]{2d/values-ellipse-perimeter}
+    \caption{Evolution of the area on different point clouds with the perimeter
+        flow : square / ellipse}
+    \label{fig:area_time_decrease}
 \end{figure}
 
 Next, we add some outliers around the ellipse and observe the effects of the two
