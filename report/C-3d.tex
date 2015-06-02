@@ -3,12 +3,15 @@
 % {{{1 PROBLEM
 \section{Problem}
 
-In this part, we will be interested in doing the same job in 3D as in 2D except
+In this part, we will be interested in doing the same work in 3D as in 2D except
 that we will use a convex polyhedron instead of an euclidean ball in the
-Minkowski sum.
+Minkowski sum. This will allow us to construct an anisotropic flow where the
+flow will have different effects depending on the direction, like the normals of
+the chosen convex polyhedron or not.
 
 This choice will raise a number of issues such as the construction of the
-Voronoi diagram of a point set under a polyhedral norm.
+Voronoi diagram of a point set under a polyhedral norm and the computation of
+the volume of the intersection of a Voronoi cell and a convex polyhedron.
 
 % {{{1 POLYHEDRAL NORM
 \section{Polyhedral norm}
@@ -24,9 +27,14 @@ Indeed, if $ x \in B_N(0, 1) $, then :
 $$ N(x) \leq 1 \Longleftrightarrow \forall i, (x | v_i) \leq 1 $$
 
 So, the unit ball is defined by linear constraints. Thus, it is an intersection
-of halfspaces and so is a convex polyhedron. Hence, computing the $ r $-offset
+of halfspaces and so is a convex polyhedron $ K $. Hence, computing the $ r $-offset
 of a point cloud under a polyhedral norm $ N $ is the same as computing the
-Minkowski sum of a point cloud and a convex polyhedron.
+Minkowski sum (see the definition \ref{def:minkowski-sum}) of a point cloud and $ K $.
+
+Conversely, if the convex polyhedron $ K $ is given then the vectors $ v_i $
+previously defined are the outwards normals of the facets of $ K $.
+
+We will denote by $ B_K(0, 1) $ the unit ball defined by the convex polyhedron $ K $.
 
 % {{{1 CONSTRUCTION OF THE VORONOI DIAGRAM FOR A POLYHEDRAL NORM
 \section{Construction of the Voronoi diagram for a polyhedral norm}
@@ -145,7 +153,7 @@ P)) $ by $ \mu(B_N(p, r) \cap V(p, P)) $.
 
 It is an approximation because, for example, if we want to compute the perimeter
 of the boundary of squares in 2D, there is a difference between what we want to compute
-and what we actually compute is (see \ref{fig:3d-inclusion-exclusion-squares-1}
+and what we actually compute is (see the figures \ref{fig:3d-inclusion-exclusion-squares-1}
 and \ref{fig:3d-inclusion-exclusion-squares-2}).
 
 \begin{figure}[h]
@@ -209,7 +217,7 @@ We will need the following definition:
     triangulation whose characteristic radii is smaller than $\alpha$.
 \end{definition}
 
-Now, we will approximate \ref{eqn:incl_excl_simplices} by replacing $ Nerve(B)
+Now, we will approximate the equation \ref{eqn:incl_excl_simplices} by replacing $ Nerve(B)
 $ by $ Del(P, r) $.
 
 % TODO: explain why approximation
@@ -343,29 +351,6 @@ of \texttt{CGAL}.
 
 % TODO
 
-% {{{1 THEORY
-\section{Theory}
-
-We will need the definition of the radial function of a convex:
-
-\begin{definition}
-    For a convex $ K $, we define the radial function $ \rho_K $ defined by:
-    $$ \rho_K(x) = \sup \{ r \in \R,~rx \in K \} $$
-\end{definition}
-
-We will show that the function that we are trying to minimize is not the volume
-of the Minkowski sum but an other functional.
-
-Let us denote by $ A $ the following functional:
-
-$$ A= \int_S \int_{-\rho_K(-\vec{n}_S(x))}^{\rho_K(\vec{n_S}(x))} J_\phi(x) dt dx $$
-where $ \phi(x) = x + t(x) \vec{n}_S(x) $ for $ x \in S $ and $ t(x) \in
-[-\rho_K(-\vec{n}_S(x)), \rho_K(\vec{n_S}(x)) ] $.
-
-Then, we will show that, if $ K $ is symmetric, then:
-
-$$ \frac{1}{2r} A = \int_S \rho_K(\vec{n}_S(x)) dx $$
-
 % {{{1 EXPERIMENTS
 \section{Experiments}
 
@@ -378,8 +363,8 @@ We can choose for the polyhedron a sufficiently discretized sphere. We expect
 the result to be the same as in the 2D case: gradients oriented like the outward
 normal with a norm proportional to the mean curvature.
 
-\ref{fig:3d-mean-curvature-sphere-cube} gives an example where the point cloud
-is a sphere and the polyhedron is a cube.
+The figures \ref{fig:3d-mean-curvature-sphere-cube} give an example where the
+point cloud is a sphere and the polyhedron is a cube.
 
 \begin{figure}[h]
     \centering
@@ -405,8 +390,8 @@ We remark that the gradients are oriented like the outward normals.
 
 We also did some experiments for checking the convergence of the flow.
 
-\ref{fig:3d-flow-sphere-cube} gives an example where the point cloud is a sphere
-and the polyhedron is a cube.
+The figures \ref{fig:3d-flow-sphere-cube} give an example where the point cloud
+is a sphere and the polyhedron is a cube.
 
 \begin{figure}[h]
     \centering
@@ -435,3 +420,49 @@ and the polyhedron is a cube.
 % - résultats
 
 % vim: set spelllang=en :
+% {{{1 THEORY
+\section{Theory}
+
+In this section, we will show that the function that we are trying to minimize
+is not the volume of the Minkowski sum but an other functional close to the
+first one.
+
+We will need the definition of the radial function of a convex set:
+
+\begin{definition}
+    For a convex set $ K $, we define the radial function $ \rho_K $ by:
+    $$ \rho_K(x) = \sup \{ r \in \R,~rx \in K \} $$
+\end{definition}
+
+Let us denote by $ A $ the following functional:
+
+$$ A(S) = \int_S \int_{-r \rho_K(-\vec{n}_S(x))}^{r \rho_K(\vec{n_S}(x))} J_\phi(x)
+dt dx $$
+
+where $ K $ is the chosen convex polyhedron and $ S $ the underlying smooth
+surface we sample points on.
+
+$ \phi $ is the usual change of variable: $ \phi(x) = x + t \vec{n}_S(x) $ for $
+x \in S $ and $ t \in [-r \rho_K(-\vec{n}_S(x)), r \rho_K(\vec{n_S}(x)) ] $.
+
+We have, in 3D, using the lemma \ref{lemma:diffeo}:
+
+\begin{align*}
+    A(S) &= \int_S \int_{-r \rho_K(-\vec{n}_S(x))}^{r \rho_K(\vec{n_S}(x))}
+    \left[ 1 + (\kappa_1(x) + \kappa_2(x)) t + \kappa_1(x) \kappa_2(x) t^2
+    \right] dt dx \\
+    &= \int_S (r \rho_K(\vec{n_S}(x)) + r \rho_K(-\vec{n_S}(x))) dx + O(r^2)
+\end{align*}
+
+Now, if $ K $ is symmetric, i.e. if $ x \in K $ then $ -x \in K $ which implies
+that $ \rho_K(\vec{n_S}(x)) = -\rho_K(-\vec{n_S}(x) $, then we get:
+
+$$ A = 2r \int_S \rho_K(\vec{n}_S(x)) dx + O(r^3) $$
+
+So:
+
+$$ \frac{1}{2r} A = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2) $$
+
+Then, the functional we minimized is $ A $ and not the volume if the Minkowski
+sum.
+

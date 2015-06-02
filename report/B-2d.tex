@@ -4,9 +4,9 @@
 \section{Problem}
 
 In this part, we will focus on a 2D point cloud and we will use for the energy
-the area of the $ r $-offset of a point cloud $ X $: the Minkowski sum with an
-euclidean ball $ B(0, r) $. We will also test other types of energies like the
-perimeter of the boundary, and weighted ones...
+the area of the $ r $-offset of a point cloud $ X $: the union of the balls
+centered on the point cloud with radius $r$. We will also test other types of
+energies like the perimeter of the boundary, and weighted ones...
 
 Firstly, we will show how to compute the area of the union of balls.
 Then, we will run different experiments to verify that the gradient of
@@ -32,7 +32,8 @@ points:
     p \in P $. It is a partition of the space $ E $.
 \end{definition}
 
-For example, \ref{fig:voronoi-diagram-2d} is an example of a Voronoi diagram.
+For example, the figure \ref{fig:voronoi-diagram-2d} is an example of a Voronoi
+diagram.
 
 \begin{figure}[h]
     \centering
@@ -45,15 +46,15 @@ For example, \ref{fig:voronoi-diagram-2d} is an example of a Voronoi diagram.
 Now, we can say that, because the Voronoi diagram is a partition, we have, for a
 point cloud $ P $ :
 
-$$ Vol^d(P^r) = Vol^d(\bigcup_p B(p, r)) = \sum_p Vol^d(V(p, P) \cap B(p, r)) $$
+$$ Area(P^r) = Area \left( \bigcup_p B(p, r) \right) = \sum_p Area(V(p, P) \cap B(p, r)) $$
 
-In order to compute this energy, we need to know how to estimate the area of the
+In order to compute this quantity, we need to know how to estimate the area of the
 intersection of a ball and a Voronoi cell. In 2D, the boundary of the
 intersection between a Voronoi cell and a ball is composed of segments and
 circular arcs.
 
-\ref{fig:inter_voronoi_ball_2d} illustrates the different cases for the
-intersection of a Voronoi cell and a ball in 2D.
+The figures \ref{fig:inter_voronoi_ball_2d} illustrate the different cases for
+the intersection of a Voronoi cell and a ball in 2D.
 
 \begin{figure}[h]
     \centering
@@ -80,23 +81,27 @@ intersection of a Voronoi cell and a ball in 2D.
    \label{fig:inter_voronoi_ball_2d}
 \end{figure}
 
-We used \texttt{CGAL} to compute the Delaunay triangulation of our point set.
-Given this triangulation, we can compute the Voronoi cell of a point by doing
-the following:
+We use \texttt{CGAL} to compute the Delaunay triangulation of our point set: it
+is the dual graph of the Voronoi diagram. A triangle in the Delaunay
+triangulation corresponds to a vertex in the Voronoi diagram, an edge
+corresponds to an edge, a vertex corresponds to a face...
+
+Given this triangulation, we can compute the vertices composing the boundary of
+the  Voronoi cell (in bold in the figures \ref{fig:inter_voronoi_ball_2d}) of a
+point by doing the following:
 \begin{enumerate}
     \item Access the neighbouring faces of a vertex using the
         \texttt{incident\_faces} method.
-    \item Compute the Voronoi vertices of these faces using the \texttt{dual}
-        method.
+    \item Compute the Voronoi vertices (circumcenters) of these faces using the
+        \texttt{dual} method.
 \end{enumerate}
 
-Then, we will need to know the vertices of the boundary of the intersection (the
-points forming the bold boundary in \ref{fig:inter_voronoi_ball_2d}). There are
-two types of those points: some are Voronoi vertices (in red) and some are
-intersections of Voronoi edges and circles (in blue). We will refer to the red
-points as the interior points. To each of these points, we attach a boolean
-saying whether the point is an interior one or an intersection one. We also
-attach the corresponding Voronoi edge.
+There are two types of points on the boundary: some are Voronoi vertices (in
+red) and some are intersections of Voronoi edges and circles (in blue). We will
+refer to the red points as the interior points.
+To each of the points, we attach a boolean saying whether the point is an
+interior one or an intersection one. We also attach to each point its
+corresponding Voronoi edge.
 
 Then, we loop over the boundary of the Voronoi cell of $ v $, for any edge $ e =
 pq $. Depending on whether the points $ p $ and $ q $ are interior or not, the
@@ -121,7 +126,9 @@ Some special cases need to be handled:
         are tangential), then we add $ \pi r^2 $.
 \end{itemize}
 
-We used the same techniques for computing the perimeter of the boundary of the
+This algorithm allows us to compute exactly the area of a union of balls.
+
+We use the same techniques for computing the perimeter of the boundary of the
 intersection except that if there are no intersection then the perimeter is null
 and instead of adding triangles areas or angular sectors, we add lengths of
 circular arcs.
@@ -140,16 +147,21 @@ The main difficulty here was to compute the intersection between a Voronoi cell
 and a circle. The Voronoi cell is computed using its dual graph: the Delaunay
 triangulation. The intersection procedure was described previously.
 
-We also used the automatic differentiation technique (see \ref{appendix:ad}): it
-allowed us to only care about the computation of the area and not its gradient.
+We also used the automatic differentiation technique (see the appendix
+\ref{appendix:ad}): it allowed us to only care about the computation of the area
+and not its gradient.
 
 % {{{1 GRADIENT
 \section{Gradient}
 
-Then, we used the automatic differentiation technique described in
+In this section, we will study the gradient of the area of union of balls, the
+perimeter of the boundary
+
+We used the automatic differentiation technique described in the appendix
 \ref{appendix:ad} to compute the gradient of the previously computed area.
 
-See \ref{fig:gradients_area_2d} for a few examples of such gradients for different input point sets.
+See the figures \ref{fig:gradients_area_2d} for a few examples of such gradients
+for different input point sets.
 
 \begin{figure}[h]
     \centering
@@ -183,7 +195,7 @@ See \ref{fig:gradients_area_2d} for a few examples of such gradients for differe
 \end{figure}
 
 We did the same thing using the gradient of the perimeter of the boundary on the
-same point clouds (see \ref{fig:gradients_perimeter_2d}).
+same point clouds (see the figures \ref{fig:gradients_perimeter_2d}).
 
 \begin{figure}[h]
     \centering
@@ -218,18 +230,18 @@ same point clouds (see \ref{fig:gradients_perimeter_2d}).
 
 In the previous screenshots, we can see that the gradients are (if the radius of
 the balls are big enough and if the sampling is sufficiently uniform) in the
-same direction that the normals to the underlying surface. Also, the norm of
+same direction as the normals to the underlying surface. Also, the norm of
 these gradients is related to the mean curvature of the approximated surface
-(see proposition \ref{prop:gradient-mean-curvature}).
+(see proposition the proposition \ref{prop:gradient-mean-curvature}).
 
 % {{{1 MEAN CURVATURE ESTIMATION
 \section{Mean curvature estimation}
 
-We can use the previous result to estimate mean curvature on a point set using
+We can use the previous results to estimate mean curvature on a point set using
 the norm of the gradients of the area of the union of balls.
 
-We did our tests on a sampled ellipse whose major and minor axes are $ a $ and $ b $. We
-can parametrize this ellipse by :
+We run our tests on a sampled ellipse whose major and minor axes are $ a $ and $
+b $. We can parametrize this ellipse by :
 $$
 \begin{cases}
     x(t) &= a \cos (t) \\
@@ -248,7 +260,7 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
-\ref{fig:2d-curvature-ellipse-area} and \ref{fig:2d-curvature-ellipse-perimeter}
+Figures \ref{fig:2d-curvature-ellipse-area} and \ref{fig:2d-curvature-ellipse-perimeter}
 represent the computed gradients mapped to a colour ramp (from green to red), we
 see that the gradients are more important where the curvature is higher and are
 collinear to the outward normals.
@@ -269,7 +281,7 @@ collinear to the outward normals.
 
 Now, we study the absolute difference between the computed and expected
 curvatures for different choices of gradients (area, perimeter of the boundary,
-weighted...), see \ref{fig:2d-curvature-error-ellipse-area} and
+weighted...), see the figures \ref{fig:2d-curvature-error-ellipse-area} and
 \ref{fig:2d-curvature-error-ellipse-perimeter}.
 
 \begin{figure}[h]
@@ -287,28 +299,24 @@ weighted...), see \ref{fig:2d-curvature-error-ellipse-area} and
 % {{{1 DISCRETE MEAN CURVATURE FLOW
 \section{Discrete Mean Curvature Flow}
 
-Then, as said in the introduction, we will approximate the mean curvature flow
-by applying a gradient descent algorithm where the considered energy is the area
-(or the perimeter of the boundary) of the union of balls.
+Now, we will be interested in approximating the continuous mean curvature flow
+by applying a gradient descent algorithm in order to minimize a functional $ E
+$.
 
 This gradient descent will be done using a constant timestep (Euler explicit
 scheme).
 
-We needed to choose "good" weights for the gradient descent. Indeed, in a normal
-mean curvature flow, all the points move with the same distance related to the
-curvature. But here, this may not be the case since the energy depends on the
-curvature of our restricted region.
-
-One way to avoid this problem is to weight the gradient by the perimeter of the
-visible part of the restricted region. But by doing that, we can divide by $ 0 $
-so we need to choose the time step according to these weights in order to avoid
-the case where a point does not see anything.
+We will also be interested in weighted versions of functionals: we can weight
+the gradient of the area by the perimeter of the visible part (the circular arcs
+composing the intersection of the Voronoi cell and the ball) of the restricted
+region. But by doing that, we can divide by $ 0 $ so we need to choose a small
+time step in order to avoid the case where a point does not see anything.
 
 % TODO
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
-sampled on an ellipse: \ref{fig:ellipse_area_flow} and
+sampled on an ellipse: figures \ref{fig:ellipse_area_flow} and
 \ref{fig:ellipse_perimeter_flow}.
 
 % TODO: ajouter convergence vers cercle
@@ -330,8 +338,8 @@ sampled on an ellipse: \ref{fig:ellipse_area_flow} and
 \end{figure}
 
 We test the smoothing property of our flow on points sampled on a square, see
-\ref{fig:area_perimeter_flow_square}. We can clearly see that our discrete flow
-smooth the corners of the square.
+the figure \ref{fig:area_perimeter_flow_square}. We can clearly see that our
+discrete flow smooth the corners of the square.
 
 \begin{figure}[h]
     \centering
@@ -343,7 +351,7 @@ smooth the corners of the square.
 \end{figure}
 
 We also verify that the area of the union of balls is decreasing, see
-\ref{fig:area_time_decrease}.
+the figure \ref{fig:area_time_decrease}.
 
 \begin{figure}[h]
     \centering
@@ -355,7 +363,7 @@ We also verify that the area of the union of balls is decreasing, see
 \end{figure}
 
 Next, we add some outliers around the ellipse and observe the effects of the two
-flows: see \ref{fig:ellipse_outliers_area_flow} and
+flows: see the figures \ref{fig:ellipse_outliers_area_flow} and
 \ref{fig:ellipse_outliers_perimeter_flow}.
 
 \begin{figure}[h]
@@ -373,7 +381,7 @@ flows: see \ref{fig:ellipse_outliers_area_flow} and
 \end{figure}
 
 Then, we added some Gaussian noise on these points to test the robustness of our
-algorithm, see \ref{fig:ellipse_noise_area_flow} and
+algorithm, see the figures \ref{fig:ellipse_noise_area_flow} and
 \ref{fig:ellipse_noise_perimeter_flow}.
 
 \begin{figure}[h]
@@ -414,11 +422,11 @@ more the radius is big, the more points will move in big groups. Indeed, the
 radius indicates how to take the neighbours of a point into account, the more
 neighbours we take into account the more "global" the movement will be.
 
-We also tried to add varying oscillations to our ellipse in order to see the
+We also add varying oscillations to our ellipse in order to see the
 adaptive part of the algorithm. We generate oscillations with one or two
 amplitudes.
 
-For one constant amplitude, see \ref{fig:ellipse_osc_perimeter_flow} and
+For one constant amplitude, see the figures \ref{fig:ellipse_osc_perimeter_flow} and
 \ref{fig:ellipse_osc_area_flow} and for two different amplitudes see
 \ref{fig:ellipse_osc2_area_flow} and \ref{fig:ellipse_osc2_perimeter_flow}.
 
@@ -456,10 +464,10 @@ For one constant amplitude, see \ref{fig:ellipse_osc_perimeter_flow} and
 
 % TODO: explain why
 
-An other experiment we did is to take points on a line segment and to fix its
+An other experiment we did was to take points on a line segment and to fix its
 endpoints. Then, we apply our flow on this point set. We expect the flow to
 smooth the point set: points should get closer and closer to an uniformly
-sampled set of points. See \ref{fig:line_fixed_area} and
+sampled set of points. See the figures \ref{fig:line_fixed_area} and
 \ref{fig:line_fixed_perimeter} for the results.
 
 \begin{figure}[h]
@@ -484,11 +492,12 @@ sampled set of points. See \ref{fig:line_fixed_area} and
 In this chapter, we saw how to simulate discrete mean curvature flows by using
 the gradient of the volume of the $r$-offset of a point cloud.
 
-The methods used in this chapter are hard to extend in 3D (see
-\cite{cazals2011computing}).
+The methods used in this chapter are hard to extend in 3D but have already been
+done: see \cite{cazals2011computing}.
 
-Also, we want to use polyhedral (anisotropic) norms, thing that the previous
-method does not allow.
+Also, we want to use polyhedral (anisotropic) norms, a thing that the previous
+method does not allow since it only deals with intersection of a Voronoi cell
+and a ball and we need a way to intersect a Voronoi cell and a polygon.
 
 % TODO:
 % - description

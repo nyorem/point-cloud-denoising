@@ -7,7 +7,7 @@
 
 \chapter{Introduction}
 
-Point clouds are a useful object in all the domains related to computer-based
+Point clouds are useful objects in all the domains related to computer-based
 processing like image processing or computer graphics because they can
 represent any 3D object by only storing coordinates of points on this object. We
 can obtain them from, for example, digitizing device such as a 3D scanner. A 3D
@@ -53,14 +53,18 @@ that point. The more curved is the surface, the more important the displacement
 will be. The evolution of the surface can be modelled using a partial
 differential equation. We will obtain a family of surfaces indexed by the time,
 this family is called the mean curvature flow (MCF) of the initial surface.
-The MCF can be seen as the geometric equivalent of the heat equation.
+
+The MCF can be seen as the geometric equivalent of the heat equation: indeed,
+the Laplacian is replaced by the mean curvature vector. Both of them are sums of
+eigenvalues of some matrices: the Hessian for the first one and the Shape
+operator for the second.
 
 % TODO: heat
 
 The MCF is well-known for its smoothing properties (see
-\cite{ciomaga2010level}). For example, \ref{fig:mean-curvature-flow-ex} is an
-illustration of the mean curvature flow on a noised surface (extracted from
-\cite{clarenz2000anisotropic}).
+\cite{ciomaga2010level}). For example, the figure
+\ref{fig:mean-curvature-flow-ex} is an illustration of the mean curvature flow
+on a noised surface (extracted from \cite{clarenz2000anisotropic}).
 
 \begin{figure}[h]
     \centering
@@ -88,10 +92,10 @@ compute the gradient of $ E $. There are multiple possibilities of doing it:
 using exact formulae if they exist, using finite differences...
 
 In this report, we will use an original technique called \textit{Automatic
-    Differentiation}. This technique is described in more details in
-\ref{appendix:ad}. In short, it is a technique allowing us to compute the
-derivatives of any computer program. It exploits the fact that any program can
-be thought as a sequence of basic arithmetic operations and elementary
+    Differentiation}. This technique is described in more details in the
+appendix \ref{appendix:ad}. In short, it is a technique allowing us to compute
+the derivatives of any computer program. It exploits the fact that any program
+can be thought as a sequence of basic arithmetic operations and elementary
 functions. Now, using the chain rule and number type overloading we can compute
 derivatives of any order without changing too much the cost of the original
 function.  This will allow us to only take care of the computation of $ E(P) $

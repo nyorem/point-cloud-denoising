@@ -18,10 +18,11 @@
 
 \title[Lissage adaptatif de nuage de points]{Lissage adaptatif de nuage de
     points}
-\author[MEYRON Jocelyn]{MEYRON Jocelyn\\\scriptsize{Encadré par:\\ATTALI Dominique\\MÉRIGOT
-    Quentin}}
+\author[MEYRON Jocelyn]{MEYRON Jocelyn\\\scriptsize{Encadré par:\\
+        ATTALI Dominique, GIPSA-lab\\
+        MÉRIGOT Quentin, CEREMADE, Université Paris-Dauphine}}
 \institute{GIPSA-lab}
-\date{\today}
+\date{5 juin 2015}
 
 \begin{document}
 
@@ -38,21 +39,53 @@
 
 \begin{frame}
     \frametitle{Introduction}
+    % \framesubtitle{Introduction}
+
+    Quoi?
+    \begin{itemize}
+        \item Objet étudié: nuage de points
+        \item Facile à acquérir: scanner 3D
+        \item Création de modèles plus complets: maillages
+        \item Problème: erreur de mesure, présence de bruit $ \to $ lissage
+    \end{itemize}
+
+    Comment?
+    \begin{itemize}
+        \item Pas de paramétrisation: outils de traitement d'image inaccessibles
+        \item Autre idée: flot de courbure moyenne
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
     % \framesubtitle{Flot de courbure moyenne}
 
     Flot de courbure moyenne:
     \begin{itemize}
         \item Faire évoluer une surface en bougeant chaque point: dans la
-            direction de la normale et d'une quantité égale à la courbure
-            moyenne en ce point
+            direction de la normale intérieure et d'une quantité égale à la
+            courbure moyenne en ce point
+        \item Équivalent à minimiser l'aire de la surface
         \item Propriétés lissantes
+        \item Problème: surface inconnue $ \to $ uniquement échantillons
     \end{itemize}
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.27]{img/mean-curvature-flow-rabbit}
-        \caption{Flot de courbure moyenne sur une surface bruitée}
+        \includegraphics[scale=0.22]{img/mean-curvature-flow-rabbit}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction}
+    % \framesubtitle{Comment?}
+
+    \begin{itemize}
+        \item Approximation de l'aire de la surface: union de boules
+        \item Minimisation: descente du gradient
+        \item Calcul du gradient: différentiation automatique
+        \item Autres énergies: aire du bord, pondération, anisotropie
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -61,65 +94,64 @@
 
     \emph{Objectifs}
     \begin{enumerate}
-        \item Flot de courbure moyenne sur des nuages de points: calculer une
-            fonctionnelle de l'union des boules (aire, périmètre du bord) et
-            faire une descente de gradient
+        \item Flot de courbure moyenne sur des nuages de points
         \item Flot de courbure moyenne anisotrope: remplacer l'union des boules
             par la somme de Minkowski avec un polyèdre convexe
     \end{enumerate}
 
     \emph{Applications:}
     \begin{enumerate}
-        \item Débruitage
-        \item Simulation de croissance de cristaux
+        \item Estimation de courbure moyenne
+        \item Lissage / Débruitage
+        \item Simulation de croissance de cristaux (cas anisotrope)
     \end{enumerate}
 \end{frame}
 
-\begin{frame}
-    \frametitle{Introduction}
-    % \framesubtitle{Quelques notions}
+% \begin{frame}
+%     \frametitle{Introduction}
+%     % \framesubtitle{Quelques notions}
 
-    \begin{definition}[Offset d'un nuage de points]
-        Le $r$-offset d'une nuage de points $ P \subseteq \mathbb{R}^d $ est
-        défini par:
-        $$ P^r = \bigcup_{p \in P} B(p, r) $$
-    \end{definition}
+%     \begin{definition}[Offset d'un nuage de points]
+%         Le $r$-offset d'une nuage de points $ P \subseteq \mathbb{R}^d $ est
+%         défini par:
+%         $$ P^r = \bigcup_{p \in P} B(p, r) $$
+%     \end{definition}
 
-    \begin{definition}[$\epsilon$-échantillon]
-        Pour une hypersurface $ S $, on dit que $ P \subseteq \mathbb{R}^d $ est
-        un $\epsilon$-échantillon de $ S $ si:
-        $$ \bigcup_{p \in P} B(p, \epsilon) \subseteq S $$
-    \end{definition}
-\end{frame}
+%     \begin{definition}[$\epsilon$-échantillon]
+%         Pour une hypersurface $ S $, on dit que $ P \subseteq \mathbb{R}^d $ est
+%         un $\epsilon$-échantillon de $ S $ si:
+%         $$ \bigcup_{p \in P} B(p, \epsilon) \subseteq S $$
+%     \end{definition}
+% \end{frame}
 
-\begin{frame}[allowframebreaks]
-    \frametitle{Introduction}
-    % \framesubtitle{Résultats théoriques}
+% \begin{frame}[allowframebreaks]
+%     \frametitle{Introduction}
+%     % \framesubtitle{Résultats théoriques}
 
-    \begin{theorem}[Approximation de l'aire d'une hypersurface]
-        Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et $ P $ un
-        $\epsilon$-échantillon de $ S $, alors:
-        $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
-        O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
-    \end{theorem}
+%     \begin{theorem}[Approximation de l'aire d'une hypersurface]
+%         Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et $ P $ un
+%         $\epsilon$-échantillon de $ S $, alors:
+%         $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
+%         O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
+%     \end{theorem}
 
-    \begin{theorem}[Gradient de l'aire]
-        Si $ A = Vol^d(P^r) $ alors en notant $ \nabla_{p_i} A $ la limite
-        suivante:
-        $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
-            \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
-        On a:
-        $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
-        où $ B = \partial B(p_i, r) \cap V(p_i, P) $.
-    \end{theorem}
+%     \begin{theorem}[Gradient de l'aire]
+%         Si $ A = Vol^d(P^r) $ alors en notant $ \nabla_{p_i} A $ la limite
+%         suivante:
+%         $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
+%             \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
+%         On a:
+%         $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
+%         où $ B = \partial B(p_i, r) \cap V(p_i, P) $.
+%     \end{theorem}
 
-    \begin{theorem}[Approximation de la courbure moyenne]
-        Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et soit $ P $ un
-        $\epsilon$-échantillon de $ S $, on a:
-        $$ \nabla_p A \approx 2 r \vec{\kappa}(p) Vol(V(p, P) \cap
-        M) $$
-    \end{theorem}
-\end{frame}
+%     \begin{theorem}[Approximation de la courbure moyenne]
+%         Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et soit $ P $ un
+%         $\epsilon$-échantillon de $ S $, on a:
+%         $$ \nabla_p A \approx 2 r \vec{\kappa}(p) Vol(V(p, P) \cap
+%         M) $$
+%     \end{theorem}
+% \end{frame}
 
 % {{{1 2D
 \section{Cas 2D}
@@ -140,8 +172,21 @@
     \begin{figure}
         \centering
         \includegraphics[scale=0.28]{img/ellipse-balls-15}
-        \caption{Union de boules autour d'une ellipse}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Calcul du volume}
+    % \framesubtitle{Flot de courbure moyenne}
+
+    Diagramme de Voronoi
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.28]{img/voronoi-diagram-2d}
+    \end{figure}
+
+    Alors:
+    $$ Vol^d(P^r) = Vol^d \left( \bigcup_p B(p, r) \right) = \sum_p Vol^d(V(p, P) \cap B(p, r)) $$
 \end{frame}
 
 \begin{frame}
@@ -151,6 +196,7 @@
     Outils:
     \begin{itemize}
         \item CGAL: bibliothèque C++ de géométrie algorithmique
+        \item Eigen: bibliothèque C++ d'algèbre linéaire
         \item Différentiation automatique: calcul de dérivées de fonctions (au
             sens informatique du terme) en surchargeant le type de nombre,
             remplacement de $ x $ par $ x + y\epsilon $ avec $ \epsilon^2 = 0 $
@@ -221,6 +267,18 @@
         \item Cube (Norme $ L_{\infty} $)
         \item Bipyramide (Norme $ L_1 $)
     \end{itemize}
+
+    Calcul d'intersection:
+    \begin{itemize}
+        \item Cellule de Voronoi et polyèdre convexe
+        \item Intersection de demi-espaces
+        \item Dualité
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/circle-cube-inter}
+    \end{figure}
 \end{frame}
 
 \subsection{Flot}
@@ -228,13 +286,12 @@
     \frametitle{Estimation de normales}
     % \framesubtitle{Exemples}
 
-    Exemples:
+    Sur une sphère:
     \begin{figure}
         \centering
         \includegraphics[scale=0.22]{img/sphere-polyhedron-200}
         \includegraphics[scale=0.2]{img/sphere-1000}
         \includegraphics[scale=0.2]{img/sphere-sphere-1000-05}
-        \caption{Estimation de normales sur une sphère}
     \end{figure}
 \end{frame}
 
@@ -242,21 +299,20 @@
     \frametitle{Flot anisotrope}
     % \framesubtitle{Exemples}
 
-    Exemples:
+    Cube: 10 itérations
     \begin{figure}
         \centering
         \includegraphics[scale=0.4]{img/sphere-cube-0}
         \includegraphics[scale=0.3]{img/sphere-cube-10}
         \includegraphics[scale=0.2]{img/sphere-cube-cube}
-        \caption{10 itération d'un flot avec un cube}
     \end{figure}
 
+    Bipyramide: 10 itérations
     \begin{figure}
         \centering
         \includegraphics[scale=0.4]{img/sphere-cube-0}
         \includegraphics[scale=0.2]{img/sphere-bipyramid-10}
         \includegraphics[scale=0.2]{img/sphere-bipyramid-bipyramid}
-        \caption{10 itération d'un flot avec une bipyramide}
     \end{figure}
 \end{frame}
 
@@ -276,6 +332,11 @@
 \end{frame}
 
 % \plain{Merci!}
+\begin{frame}
+    \begin{center}
+        \huge{Merci!}
+    \end{center}
+\end{frame}
 
 \end{document}
 
