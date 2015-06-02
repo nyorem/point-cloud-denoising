@@ -184,9 +184,9 @@ for different input point sets.
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{2d/area/square-76-001-100}
-        \includegraphics[scale=0.32]{2d/area/square-76-001-100-gradients}
-        \subcaption{Gradients of the area for 100 samples on a square}
+        \includegraphics[scale=0.32]{2d/area/square-40-001-100}
+        \includegraphics[scale=0.32]{2d/area/square-40-001-100-gradients}
+        \subcaption{Gradients of the area for 40 samples on a square}
         \label{fig:gradients_area_2d_square}
     \end{minipage}
 
@@ -218,9 +218,9 @@ same point clouds (see the figures \ref{fig:gradients_perimeter_2d}).
 
     \begin{minipage}{0.8\linewidth}
         \centering
-        \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100}
-        \includegraphics[scale=0.32]{2d/perimeter/square-76-001-100-gradients}
-        \subcaption{Gradients of the perimeter for 100 samples on a square}
+        \includegraphics[scale=0.32]{2d/perimeter/square-40-001-100}
+        \includegraphics[scale=0.32]{2d/perimeter/square-40-001-100-gradients}
+        \subcaption{Gradients of the perimeter for 40 samples on a square}
         \label{fig:gradients_perimeter_2d_square}
     \end{minipage}
 
@@ -326,15 +326,28 @@ sampled on an ellipse: figures \ref{fig:ellipse_area_flow} and
     \includegraphics[scale=0.3]{2d/ellipse-balls-15}
     \subcaption{Minkowski sum of an ellipse and balls of radius $ 15 $}
 
-    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15}
-    \includegraphics[scale=0.4]{2d/area/ellipse-100-01-15-100}
+    \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15}
+    \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-100}
     \subcaption{Area flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.1 $}
     \label{fig:ellipse_area_flow}
 
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15}
-    \includegraphics[scale=0.4]{2d/perimeter/ellipse-100-01-15-100}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15}
+    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15-100}
     \subcaption{Perimeter flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.5 $}
     \label{fig:ellipse_perimeter_flow}
+
+    \includegraphics[scale=0.22]{2d/perimeter/shark-0}
+    \includegraphics[scale=0.22]{2d/perimeter/shark-24}
+    \includegraphics[scale=0.22]{2d/perimeter/shark-49}
+    \subcaption{Perimeter flow of a shark: 0 / 25 / 50 iterations with a
+        timestep of $ 0.05 $}
+
+    \includegraphics[scale=0.22]{2d/perimeter/bird-0}
+    \includegraphics[scale=0.22]{2d/perimeter/bird-24}
+    \includegraphics[scale=0.22]{2d/perimeter/bird-49}
+    \subcaption{Perimeter flow of a bird: 0 / 25 / 50 iterations with a
+        timestep of $ 0.05 $}
+    \label{fig:shark_perimeter_flow}
 \end{figure}
 
 We test the smoothing property of our flow on points sampled on a square, see
@@ -350,33 +363,37 @@ discrete flow smooth the corners of the square.
     \label{fig:area_perimeter_flow_square}
 \end{figure}
 
-We also verify that the area of the union of balls is decreasing, see
-the figure \ref{fig:area_time_decrease}.
+We also verify that the area of the union of balls decreases with the number of
+iterations, see the figure \ref{fig:area_time_decrease}.
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{2d/values-square-area}
     \includegraphics[scale=0.3]{2d/values-ellipse-perimeter}
-    \caption{Evolution of the area on different point clouds with the perimeter
+    \caption{Evolution of the area on different point clouds with the area
         flow : square / ellipse}
     \label{fig:area_time_decrease}
 \end{figure}
 
 Next, we add some outliers around the ellipse and observe the effects of the two
 flows: see the figures \ref{fig:ellipse_outliers_area_flow} and
-\ref{fig:ellipse_outliers_perimeter_flow}.
+\ref{fig:ellipse_outliers_perimeter_flow}. We see that the outliers are
+"swallowed" by the initial point set in both cases. But, for the area flow, a
+hole is created at the same place where the outliers were added.
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers}
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers-40}
-    \subcaption{Area flow of an ellipse with outliers: 0 / 40 iterations with a timestep of $ 0.1 $}
+    \subcaption{Area flow of an ellipse with outliers: 0 / 40 iterations with a
+        timestep of $ 0.1 $}
     \label{fig:ellipse_outliers_area_flow}
 
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers-100}
-    \subcaption{Perimeter flow of an ellipse with outliers: 0 / 100 iterations with a timestep of $ 1 $}
+    \subcaption{Perimeter flow of an ellipse with outliers: 0 / 100 iterations
+        with a timestep of $ 1 $}
     \label{fig:ellipse_outliers_perimeter_flow}
 \end{figure}
 
@@ -407,11 +424,11 @@ the point set while redistributing the points in an uniform way.
 % TODO: explain why
 This can be explained by looking on a simple case with two intersecting balls:
 \begin{itemize}
-    \item for the perimeter: the gradients are directed towards the outside
+    \item \textit{for the perimeter}: the gradients are directed towards the outside
         and so the balls will be merged because we can say, using the triangle
         inequality, that in order to minimize the perimeter the balls must come
         closer.
-    \item for the area: using the same reasoning, in order to minimize the area,
+    \item \textit{for the area}: using the same reasoning, in order to minimize the area,
         it is possible that the gradients are oriented in opposite directions
         because the area gain may be more costly than moving the balls closer.
 \end{itemize}
@@ -485,6 +502,17 @@ sampled set of points. See the figures \ref{fig:line_fixed_area} and
 \end{figure}
 
 % TODO: explain why
+
+In short, the two flows (area and perimeter of the boundary) have the following
+common properties:
+\begin{itemize}
+    \item Smooth the point set: remove the outliers / noise
+    \item Can be used to estimate the mean curvature
+\end{itemize}
+
+But, there are differences between the two flows. The main one is that the area
+flow has the tendency to create holes in the point cloud. This difference is
+removed when we use the weighted versions of the flows.
 
 % {{{1 ASSESSMENT
 \section{Assessment}

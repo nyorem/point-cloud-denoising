@@ -75,16 +75,25 @@ class QVectorFieldItem : public QGraphicsItem {
                 Vector_2 v = mit->second;
                 // Normalize the vector
                 /* v = v / CGAL::sqrt(v.squared_length()); */
+
                 // area unweighted
-                /* Point_2 q = p + 50 * v; */
+                /* Point_2 q = p + 20 * v; */
+                // square
+                /* Point_2 q = p + 2 * v; */
+
                 // area weighted
                 /* Point_2 q = p + 1000 * v; */
+
                 // perimeter unweighted
-                /* Point_2 q = p + 100 * v; */
+                Point_2 q = p + 100 * v;
+                // square
+                /* Point_2 q = p + 10 * v; */
+
                 // perimeter weighted
                 /* Point_2 q = p + 1000 * v; */
+
                 // area weighted perimeter
-                Point_2 q = p + 50 * v;
+                /* Point_2 q = p + 50 * v; */
 
                 double r, g, b;
                 misc::ramp(CGAL::sqrt(v.squared_length()) / m_maxNorm, r, g, b);
