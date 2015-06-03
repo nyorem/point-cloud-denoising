@@ -3,13 +3,14 @@
 % {{{1 MEAN CURVATURE FLOW
 \section{Mean Curvature Flow}
 
-Given a family of hypersurfaces $ S_t $ of $ \R^d $, we say that $ S_t $ is
-evolving by mean curvature if it satisfies the following equation:
+Given a family of hypersurfaces $ S_t $ of $ \R^d $ given by $ x(u) $, we say
+that $ S_t $ is evolving by mean curvature if it satisfies the following
+equation:
 
-$$ \partiald{x}{t} = \vec{\kappa}(x) $$
+$$ \partiald{x(u)}{t} = \vec{\kappa}(u) $$
 
-Where $ \vec{\kappa}(x) $ is the mean curvature vector of $ S_t $ at $ x $ and
-$ \partiald{x}{t} $ is the normal velocity.
+Where $ \vec{\kappa}(u) $ is the mean curvature vector of $ S_t $ at $ u $ and
+$ \partiald{x(u)}{t} $ is the normal velocity at $ u $.
 
 Put in more simple words, it says that at each step we move each point of the
 hypersurface $ S_t $ in the direction of the inward normal by an amount given by
@@ -77,6 +78,7 @@ Then, some facts about the curvature of embedded hypersurfaces:
 
     We will also denote by $ \vec{\kappa}(x) $ the mean curvature vector at $ x
     $: $ \vec{\kappa}(x) = \sum_{i=1}^{d-1} \kappa_i(x) \vec{n}_S(x) $.
+    \label{prop:curvatures-surface}
 \end{proposition}
 
 And finally, a change of variable result:
