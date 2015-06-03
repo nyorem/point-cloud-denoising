@@ -1,10 +1,15 @@
 % {{{1 PRELUDE
 \documentclass{beamer}
 
+% Packages
 \usepackage[francais]{babel}
 % \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+
+% Custom commands
+\newcommand{\R}{\mathbb{R}}
 
 \usetheme{Frankfurt}
 
@@ -16,7 +21,7 @@
     \end{frame}
 }
 
-\title[Lissage adaptatif de nuage de points]{Lissage adaptatif de nuage de
+\title[Lissage adaptatif de nuages de points]{Lissage adaptatif de nuages de
     points}
 \author[MEYRON Jocelyn]{MEYRON Jocelyn\\\scriptsize{Encadré par:\\
         ATTALI Dominique, GIPSA-lab\\
@@ -37,7 +42,7 @@
 % {{{1 INTRODUCTION
 \section{Introduction}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
     \frametitle{Introduction}
     % \framesubtitle{Introduction}
 
@@ -49,11 +54,24 @@
         \item Problème: erreur de mesure, présence de bruit $ \to $ lissage
     \end{itemize}
 
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/noise-2d}
+        \includegraphics[scale=0.2]{img/mesh-3d-dolphin}
+    \end{figure}
+
+    \newpage
     Comment?
     \begin{itemize}
-        \item Pas de paramétrisation: outils de traitement d'image inaccessibles
+        \item Pas de paramétrisation: voisins?
+        \item Outils de traitement d'image inaccessibles: Transformée de Fourier
         \item Autre idée: flot de courbure moyenne
     \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{img/mean-curvature-flow-cube}
+    \end{figure}
 \end{frame}
 
 \begin{frame}
@@ -62,8 +80,8 @@
 
     Flot de courbure moyenne:
     \begin{itemize}
-        \item Faire évoluer une surface en bougeant chaque point: dans la
-            direction de la normale intérieure et d'une quantité égale à la
+        \item Faire évoluer une surface en bougeant chaque point dans la
+            direction de la normale et d'une quantité égale à la
             courbure moyenne en ce point
         \item Équivalent à minimiser l'aire de la surface
         \item Propriétés lissantes
@@ -82,9 +100,15 @@
 
     \begin{itemize}
         \item Approximation de l'aire de la surface: union de boules
-        \item Minimisation: descente du gradient
+        \item Minimisation d'une énergie $ E : \R^{dN} \to \R $: descente de gradient
         \item Calcul du gradient: différentiation automatique
-        \item Autres énergies: aire du bord, pondération, anisotropie
+            \begin{itemize}
+                \item Gradients: variation de l'énergie quand on bouge chacun
+                    des points
+                \item Surcharge du type de nombre, opérations et fonctions
+                    usuelles, dérivation composée
+            \end{itemize}
+        \item Autres énergies: aire du bord, pondération, anisotrope
     \end{itemize}
 \end{frame}
 
@@ -96,14 +120,13 @@
     \begin{enumerate}
         \item Flot de courbure moyenne sur des nuages de points
         \item Flot de courbure moyenne anisotrope: remplacer l'union des boules
-            par la somme de Minkowski avec un polyèdre convexe
+            par une union de polyèdres convexes
     \end{enumerate}
 
     \emph{Applications:}
     \begin{enumerate}
         \item Estimation de courbure moyenne
         \item Lissage / Débruitage
-        \item Simulation de croissance de cristaux (cas anisotrope)
     \end{enumerate}
 \end{frame}
 
@@ -163,9 +186,9 @@
 
     Flot de courbure moyenne sur des nuages de points: descente de gradient
     \begin{itemize}
-        \item Calcul du volume (ou du périmètre du bord) de l'union de boules
+        \item Calcul de l'énergie $ E $ volume (ou périmètre du bord) de l'union de boules
         \item Calcul du gradient
-        \item Déplacement des points (Euler explicite): $ p'_i = p_i - \tau \nabla f (p_i) $ où $
+        \item Déplacement des points (Euler explicite): $ p'_i = p_i - \tau \nabla E (p_i) $ où $
             \tau $ est une constante
     \end{itemize}
 
@@ -179,30 +202,30 @@
     \frametitle{Calcul du volume}
     % \framesubtitle{Flot de courbure moyenne}
 
-    Diagramme de Voronoi
+    Diagramme de Voronoi avec \texttt{CGAL}
     \begin{figure}
         \centering
         \includegraphics[scale=0.28]{img/voronoi-diagram-2d}
     \end{figure}
 
     Alors:
-    $$ Vol^d(P^r) = Vol^d \left( \bigcup_p B(p, r) \right) = \sum_p Vol^d(V(p, P) \cap B(p, r)) $$
+    $$ E \left( \bigcup_p B(p, r) \right) = \sum_p E(V(p, P) \cap B(p, r)) $$
 \end{frame}
 
-\begin{frame}
-    \frametitle{Problème}
-    % \framesubtitle{Outils}
+% \begin{frame}
+%     \frametitle{Problème}
+%     % \framesubtitle{Outils}
 
-    Outils:
-    \begin{itemize}
-        \item CGAL: bibliothèque C++ de géométrie algorithmique
-        \item Eigen: bibliothèque C++ d'algèbre linéaire
-        \item Différentiation automatique: calcul de dérivées de fonctions (au
-            sens informatique du terme) en surchargeant le type de nombre,
-            remplacement de $ x $ par $ x + y\epsilon $ avec $ \epsilon^2 = 0 $
-        \item Qt
-    \end{itemize}
-\end{frame}
+%     Outils:
+%     \begin{itemize}
+%         \item CGAL: bibliothèque C++ de géométrie algorithmique
+%         \item Eigen: bibliothèque C++ d'algèbre linéaire
+%         \item Différentiation automatique: calcul de dérivées de fonctions (au
+%             sens informatique du terme) en surchargeant le type de nombre,
+%             remplacement de $ x $ par $ x + y\epsilon $ avec $ \epsilon^2 = 0 $
+%         \item Qt
+%     \end{itemize}
+% \end{frame}
 
 \subsection{Estimation de courbure moyenne}
 \begin{frame}
@@ -211,17 +234,18 @@
     % \framesubtitle{Exemples}
 
     Exemples: courbure d'une ellipse
+    % TODO: annoter dessin
     \begin{figure}
         \centering
         \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-area}
         \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-perimeter}
-        \caption{Aire / périmètre du bord}
+        \caption{E = Aire / E = Périmètre du bord}
     \end{figure}
 \end{frame}
 
 \subsection{Flot de courbure moyenne}
 \begin{frame}
-    % TODO: meilleures images
+    % TODO: utiliser nuage bruitée à la place
     \frametitle{Flot de courbure moyenne}
     % \framesubtitle{Exemples}
 
@@ -244,13 +268,15 @@
 
     Flot anisotrope:
     \begin{itemize}
-        \item Somme de Minkowski avec un polyèdre convexe
-        \item Directions privilégiées
+        \item Union de polyèdres convexes
+        \item Choix du polyèdre $ \to $ influence les directions selon
+            lesquelles les points vont être déplacés
     \end{itemize}
 
     Différentes méthodes:
     \begin{itemize}
-        \item Naïve (approchée)
+        \item Naïve (approchée): intersection cellule de Voronoi et polyèdre
+            convexe
         \item Formules d'inclusion-exclusion (approchée)
         \item Arrangements 3D (exacte?)
     \end{itemize}
@@ -263,7 +289,8 @@
 
     Polyèdres:
     \begin{itemize}
-        \item Discrétisation d'une sphère: estimation de normales
+        \item Discrétisation d'une sphère: estimation de normales et courbure
+            moyenne
         \item Cube (Norme $ L_{\infty} $)
         \item Bipyramide (Norme $ L_1 $)
     \end{itemize}
@@ -295,7 +322,7 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}[allowframebreaks]
+\begin{frame}
     \frametitle{Flot anisotrope}
     % \framesubtitle{Exemples}
 
@@ -324,10 +351,11 @@
     % \framesubtitle{Sous-titre}
 
     \begin{itemize}
-        \item Preuve que gradient de l'aire du bord converge vers la courbure
+        \item Convergence du gradient de l'aire du bord vers la courbure
             moyenne
-        \item Améliorer calcul en 3D (utilisation d'arrangements 3D)
-        \item Mieux comprendre gradient du flot anisotrope
+        \item Compréhension du gradient du flot anisotrope
+        \item Amélioration du calcul en 3D (utilisation d'arrangements 3D?)
+        \item Simulation de croissance de cristaux (cas anisotrope)
     \end{itemize}
 \end{frame}
 

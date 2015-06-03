@@ -137,18 +137,10 @@ FT inclusion_exclusion_minkowski_sum_pointcloud_convex_polyhedron (PointIterator
 
     FT area = 0;
     // Vertices
-    std::list<Vertex_handle> vertices;
-    as.get_alpha_shape_vertices(std::back_inserter(vertices),
-                                Alpha_shape_3::INTERIOR);
-    as.get_alpha_shape_vertices(std::back_inserter(vertices),
-                                Alpha_shape_3::REGULAR);
-    as.get_alpha_shape_vertices(std::back_inserter(vertices),
-                                Alpha_shape_3::SINGULAR);
-    std::cout << "vertices " << vertices.size() << std::endl;
-    for (typename std::list<Vertex_handle>::const_iterator vit = vertices.begin();
-         vit != vertices.end();
+    for (typename Alpha_shape_3::Finite_vertices_iterator vit = as.finite_vertices_begin();
+         vit != as.finite_vertices_end();
          ++vit) {
-        Point_3 p = as.point(*vit);
+        Point_3 p = vit->point();
         std::list<Plane_3> planes = planes_map[p];
         Polyhedron_face_tag P;
         CGAL::halfspace_intersection_with_constructions_3(planes.begin(),

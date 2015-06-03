@@ -1,4 +1,5 @@
 \chapter{Theory}
+\label{chapter:theory}
 
 % {{{1 MEAN CURVATURE FLOW
 \section{Mean Curvature Flow}
@@ -155,8 +156,8 @@ neighbourhood:
 
 \begin{definition}
     For any $ r > 0 $, the tubular neighbourhood of an hypersurface $ S $
-    denoted by $ S^r $ is the set of all points $ x \in \R^d $ such that there
-    exists $ y \in S $ and $ d(x, y) \leq r $.
+    denoted by $ S^r $ is defined in the same way as for point clouds:
+    $$ S^r = \bigcup_{x \in S} B(x, r) $$
 \end{definition}
 
 Using these notions, we can relate the area of an hypersurface to the volume of
@@ -167,20 +168,18 @@ its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volu
     If $ S $ is a smooth hypersurface whose reach is positive and $ reach(S) > r
     > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(S^r)}{2r} + O(r^2) $$
 
-    The constants in the reset of the development only depend on the curvature
+    The constants in the error term of the development only depend on the curvature
     of $ S $.
 \end{proposition}
 
 \begin{proof}
-    We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $.
-
-    Now, we will do the following change of variable: $ \phi : S \times [-r, r]
-\rightarrow S^r $ where $ \phi(x, t) = x + t \vec{n}_K(x) $.
-
-    Using this substitution and the lemma \ref{lemma:diffeo} with $ \phi = 1 $:
+    We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $. Now, we will do the following
+    change of variable: $ f : S \times [-r, r] \rightarrow S^r $ where $ f(x, t)
+    = x + t \vec{n}_K(x) $. Using this substitution and lemma \ref{lemma:diffeo}
+    with $ \phi = 1 $:
 
     \begin{align*}
-        Vol^d(S^r) &= \int_S \int_{-r}^r J_{\phi}(p) dt dp \\
+        Vol^d(S^r) &= \int_S \int_{-r}^r J_f(p) dt dp \\
         &= \int_S \int_{-r}^r \prod_{i=1}^{d-1} (1 + t \kappa_i(p)) dt dp \\
         &= \int_S \int_{-r}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
                 < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
@@ -242,7 +241,7 @@ The following proposition bounds the error of this approximation:
     Now, we will use the same formula as in the previous proofs:
 
     \begin{align*}
-        Vol^d(S^r) - Vol^d(P^r) &= \int_{A^r \textbackslash P^r} 1 dp \\
+        Vol^d(S^r) - Vol^d(P^r) &= \int_{S^r \textbackslash P^r} 1 dp \\
         &= \int_S \int_{r(x)}^r \det(id + t D \vec{n}_S(p)) dt dp \\
         &= \int_S \int_{r(x)}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
                 < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
@@ -289,18 +288,26 @@ Now, we want to study the gradient of this newly computed quantity.
 In this section, we will derive formulae for the gradients of the volume of
 union of balls in $ \R^d $.
 
+First, we will define what we mean by "gradients":
+
+\begin{definition}
+    If $ F : \R^d \times \ldots \times \R^d \to \R $ is a function over
+    $d$-dimensional point clouds, then we define $ \nabla_{p_i} F \in \R^d $ by:
+
+    $$ \lim\limits_{\epsilon \to 0} \frac{F(p_1, \ldots, p_{i-1}, p_i + \epsilon
+        \delta p_i, p_{i+1}, \ldots, p_N) - F(p_1, \ldots, p_N)}{\epsilon} $$
+
+    In other words, $ \nabla_{p_i} F $ represents the variation of $ F $ if
+    we move the ith point by an amount $ \delta p_i $.
+\end{definition}
+
 The next proposition gives the gradient of the volume of union of balls :
 \begin{proposition}
     Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (p_i) $.
     Then, if we denote by $ A $ the volume of the union of balls, we are
-    interested in the variation of A by moving one point at a time.
+    interested in computing the gradients (defined previously) of $ A $.
 
-    More precisely, we want to compute the following quantity: if we move the
-    ith point by an amount $ \delta p_i $, what is the variation of $ A $:
-    $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
-        \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
-
-    We will denote this quantity $ \nabla_{p_i} A $. Then we have:
+    We have:
     \begin{equation}
         \label{eqn:gradient_area_2d}
         \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx
@@ -311,8 +318,8 @@ The next proposition gives the gradient of the volume of union of balls :
 
 Note that \cite{lachand2005minimizing} tackles the problem of minimizing a
 functional over a convex body. For doing this, the authors compute the
-derivatives of this functional: they use a similar technique we used for during
-the proof of the previous proposition.
+derivatives of this functional: we use a similar technique to prove our
+proposition.
 
 \begin{proof}
 
