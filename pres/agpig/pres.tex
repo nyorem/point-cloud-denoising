@@ -56,15 +56,17 @@
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.2]{img/noise-2d}
-        \includegraphics[scale=0.2]{img/mesh-3d-dolphin}
+        \includegraphics[scale=0.25]{img/noise-2d}
+        \includegraphics[scale=0.2]{img/elephant-point-cloud}
+        \includegraphics[scale=0.2]{img/elephant-mesh}
     \end{figure}
 
     \newpage
     Comment?
     \begin{itemize}
+        \item Outils de traitement d'image inaccessibles: Transformée de
+            Fourier...
         \item Pas de paramétrisation: voisins?
-        \item Outils de traitement d'image inaccessibles: Transformée de Fourier
         \item Autre idée: flot de courbure moyenne
     \end{itemize}
 
@@ -90,6 +92,7 @@
 
     \begin{figure}
         \centering
+        \includegraphics[scale=0.25]{img/osculating-circle}
         \includegraphics[scale=0.22]{img/mean-curvature-flow-rabbit}
     \end{figure}
 \end{frame}
@@ -205,36 +208,21 @@
     Diagramme de Voronoi avec \texttt{CGAL}
     \begin{figure}
         \centering
-        \includegraphics[scale=0.28]{img/voronoi-diagram-2d}
+        \includegraphics[scale=0.28]{img/voronoi-curve-2d}
+        \hfill
+        \includegraphics[scale=0.28]{img/voronoi-offset-2d}
     \end{figure}
 
     Alors:
     $$ E \left( \bigcup_p B(p, r) \right) = \sum_p E(V(p, P) \cap B(p, r)) $$
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Problème}
-%     % \framesubtitle{Outils}
-
-%     Outils:
-%     \begin{itemize}
-%         \item CGAL: bibliothèque C++ de géométrie algorithmique
-%         \item Eigen: bibliothèque C++ d'algèbre linéaire
-%         \item Différentiation automatique: calcul de dérivées de fonctions (au
-%             sens informatique du terme) en surchargeant le type de nombre,
-%             remplacement de $ x $ par $ x + y\epsilon $ avec $ \epsilon^2 = 0 $
-%         \item Qt
-%     \end{itemize}
-% \end{frame}
-
 \subsection{Estimation de courbure moyenne}
 \begin{frame}
-    % TODO: ajout erreur
     \frametitle{Estimation de courbure moyenne}
     % \framesubtitle{Exemples}
 
     Exemples: courbure d'une ellipse
-    % TODO: annoter dessin
     \begin{figure}
         \centering
         \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-area}
@@ -245,16 +233,37 @@
 
 \subsection{Flot de courbure moyenne}
 \begin{frame}
-    % TODO: utiliser nuage bruitée à la place
     \frametitle{Flot de courbure moyenne}
     % \framesubtitle{Exemples}
 
-    Exemples: flot d'une ellipse
+    Exemples: flot d'une ellipse bruitée
     \begin{figure}
         \centering
-        \includegraphics[scale=0.3]{img/ellipse-100-01-15}
-        \includegraphics[scale=0.3]{img/ellipse-100-01-15-100}
-        \caption{0 / 100 itérations}
+        \includegraphics[scale=0.22]{img/ellipse-200-noised-var-1-area}
+        \includegraphics[scale=0.22]{img/ellipse-noised-area-5-01}
+
+        \includegraphics[scale=0.22]{img/ellipse-200-noised-var-1-perimeter}
+        \includegraphics[scale=0.22]{img/ellipse-noised-perimeter-7-2}
+        \caption{Aire / Périmètre du bord}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Flot de courbure moyenne}
+    % \framesubtitle{Exemples}
+
+    Résultats:
+    \begin{itemize}
+        \item Aire et périmètre du bord: lissage
+        \item Aire: création de trous
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.22]{img/ellipse-outliers}
+        \includegraphics[scale=0.22]{img/ellipse-outliers-area}
+        \includegraphics[scale=0.22]{img/ellipse-outliers-perimeter}
+        \caption{Nuage de points avec outliers / aire / périmètre du bord}
     \end{figure}
 \end{frame}
 
@@ -282,7 +291,6 @@
     \end{itemize}
 \end{frame}
 
-\subsection{Exemples}
 \begin{frame}
     \frametitle{Exemples}
     % \framesubtitle{Polyèdres}
@@ -308,7 +316,7 @@
     \end{figure}
 \end{frame}
 
-\subsection{Flot}
+\subsection{Flot anisotrope}
 \begin{frame}
     \frametitle{Estimation de normales}
     % \framesubtitle{Exemples}
@@ -354,6 +362,7 @@
         \item Convergence du gradient de l'aire du bord vers la courbure
             moyenne
         \item Compréhension du gradient du flot anisotrope
+        \item Tests avec des ellipsoïdes
         \item Amélioration du calcul en 3D (utilisation d'arrangements 3D?)
         \item Simulation de croissance de cristaux (cas anisotrope)
     \end{itemize}

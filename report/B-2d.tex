@@ -271,9 +271,7 @@ We see that the error is less important for the area.
 
 Now, we will be interested in approximating the continuous mean curvature flow
 by applying a gradient descent algorithm in order to minimize a functional $ E
-$.
-
-This gradient descent will be done using a constant timestep (Euler explicit
+$. This gradient descent will be done using a constant timestep (Euler explicit
 scheme).
 
 We will also be interested in weighted versions of functionals: we can weight
@@ -282,42 +280,52 @@ composing the intersection of the Voronoi cell and the ball) of the restricted
 region. But by doing that, we can divide by $ 0 $ so we need to choose a small
 time step in order to avoid the case where a point does not see anything.
 
+We will test different properties we expect the flows have:
+\begin{itemize}
+    \item Smooth point clouds: remove outliers, noise
+    \item Minimize the area of a union of balls
+\end{itemize}
+
 % TODO
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
-sampled on an ellipse: figures \ref{fig:ellipse_area_flow} and
-\ref{fig:ellipse_perimeter_flow}.
+sampled on an ellipse: figures \ref{fig:ellipse_flows}. We also run the
+perimeter flow on other point clouds such as a bird (figure
+\ref{fig:bird_perimeter_flow}) or a shark (figure
+\ref{fig:shark_perimeter_flow}).
 
 % TODO: ajouter convergence vers cercle
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-balls-15}
-    \subcaption{Minkowski sum of an ellipse and balls of radius $ 15 $}
-
-    \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15}
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-100}
-    \subcaption{Area flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.1 $}
-    \label{fig:ellipse_area_flow}
-
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15-100}
-    \subcaption{Perimeter flow of an ellipse: 0 / 100 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_perimeter_flow}
+    \caption{Area / perimeter flow of an ellipse: 100 iterations}
+    \label{fig:ellipse_flows}
+\end{figure}
 
-    \includegraphics[scale=0.22]{2d/perimeter/shark-0}
-    \includegraphics[scale=0.22]{2d/perimeter/shark-24}
-    \includegraphics[scale=0.22]{2d/perimeter/shark-49}
-    \subcaption{Perimeter flow of a shark: 0 / 25 / 50 iterations with a
-        timestep of $ 0.05 $}
+\begin{figure}[h]
+    \centering
 
-    \includegraphics[scale=0.22]{2d/perimeter/bird-0}
-    \includegraphics[scale=0.22]{2d/perimeter/bird-24}
-    \includegraphics[scale=0.22]{2d/perimeter/bird-49}
-    \subcaption{Perimeter flow of a bird: 0 / 25 / 50 iterations with a
-        timestep of $ 0.05 $}
-    \label{fig:shark_perimeter_flow}
+    \begin{subfigure}[b]{\textwidth}
+        \includegraphics[scale=0.25]{2d/perimeter/shark-0}
+        \includegraphics[scale=0.25]{2d/perimeter/shark-24}
+        \includegraphics[scale=0.25]{2d/perimeter/shark-49}
+        \subcaption{Shark: 0 / 25 / 50 iterations}
+        \label{fig:shark_perimeter_flow}
+    \end{subfigure}
+
+    \begin{subfigure}[b]{\textwidth}
+        \includegraphics[scale=0.25]{2d/perimeter/bird-0}
+        \includegraphics[scale=0.25]{2d/perimeter/bird-24}
+        \includegraphics[scale=0.25]{2d/perimeter/bird-49}
+        \caption{Bird: 0 / 25 / 50 iterations}
+        \label{fig:bird_perimeter_flow}
+    \end{subfigure}
+
+    \caption{Examples of perimeter flows}
 \end{figure}
 
 We test the smoothing property of our flow on points sampled on a square, see

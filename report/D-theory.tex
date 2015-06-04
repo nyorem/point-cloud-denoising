@@ -4,22 +4,25 @@
 % {{{1 MEAN CURVATURE FLOW
 \section{Mean Curvature Flow}
 
-Given a family of hypersurfaces $ S_t $ of $ \R^d $ given by $ x(u) $, we say
-that $ S_t $ is evolving by mean curvature if it satisfies the following
-equation:
+Given an initial hypersurface $ S_0 \subseteq \R^d $, we define a  family of
+hypersurfaces $ S_t $ of $ \R^d $ by $ S_t = \phi_t(S_0) $, where $ \phi_t : S_0
+\to \R^d $. We say that $ S_t $ is evolving by mean curvature if it satisfies
+the following equation:
 
-$$ \partiald{x(u)}{t} = \vec{\kappa}(u) $$
+$$ \partiald{\phi_t(x)}{t} = \vec{\kappa_{S_t}}(x) $$
 
-Where $ \vec{\kappa}(u) $ is the mean curvature vector of $ S_t $ at $ u $ and
-$ \partiald{x(u)}{t} $ is the normal velocity at $ u $.
+where $ \vec{\kappa_{S_t}}(x) $ is the mean curvature vector (see
+\ref{prop:curvatures-surface}) of $ S_t $ at $ x $ and
+$ \partiald{\phi_t(x)}{t} $ is the normal velocity at $ x $.
 
 Put in more simple words, it says that at each step we move each point of the
 hypersurface $ S_t $ in the direction of the inward normal by an amount given by
 the mean curvature.
 
-Now, we will prove that the mean curvature flow belongs to a more general
-category of geometric flows: the gradient flows. Given an energy $ f $, we say
-that $ S $ evolves according to the gradient flow of $ f $ if we have:
+Now, we will recall that the mean curvature flow belongs to a more general
+category of geometric flows: the gradient flows (see
+\cite{ilmanen1998lectures}). Given an energy $ f $, we say that $ S $ evolves
+according to the gradient flow of $ f $ if we have:
 
 $$ \partiald{x}{t} = \nabla f(x) $$
 
@@ -27,18 +30,20 @@ Indeed, the next proposition shows the relation between the mean curvature flow
 and the area functional.
 
 \begin{proposition}
-    The mean curvature flow is the gradient flow of the area functional.
+    The gradient of the area functional is the mean curvature vector.
+    \label{prop:gradient-area-functional}
 \end{proposition}
 
-To prove this proposition, we will need some background on hypersurfaces.
+To prove this proposition, we will need some background on hypersurfaces. First,
+the notion of the reach of an hypersurface: it is widely used in computational
+geometry.
 
-First, the notion of the reach of an hypersurface: it is widely used in
-computational geometry.
 \begin{definition}
-    The reach of a manifold $ M $ denoted by $ reach(M) $ is the largest $ r
-    \geq 0 $ for which for any $ p \in M^r $, there exists a unique $ q \in M $
-    such that $ q = p_M(p) $ where $ p_M $ is the projection on $ M $. $ p_M(x)
-    $ is defined such that $ || x - p_M(x) || = d(x, M) $.
+    For a set $ M \subseteq \R^d $ and $ x \in R^d $, we define the projection
+    of $ x $ on $ M $ denoted by $ p_M(x) $: it is the unique $ y $ that
+    satisfies $ || x - y || = d(x, M) $. The reach of a set $ M \subseteq \R^d $
+    denoted by $ reach(M) $ is the largest $ r \geq 0 $ for which for any $ p
+    \in M^r $, there exists a unique $ q \in M $ such that $ q = p_M(p) $.
 \end{definition}
 
 The reach has some interesting properties (see \cite{merigot2009detection} for a
@@ -60,7 +65,8 @@ more detailed study):
         of $ M $.
 
     \item The reach is also always upper bounded by the minimum radius of
-        curvature. There are no results on the lower bound. Indeed, consider the
+        curvature. There are no converse result giving a lower bound on the
+        reach in term of the curvature. Indeed, consider the
         following example: two spheres of radius $ R $ at distance $ \epsilon $,
         then the radius of curvature is always $ R $ but the reach of the union
         if $ \frac{\epsilon}{2} $.
@@ -68,19 +74,25 @@ more detailed study):
 
 Then, some facts about the curvature of embedded hypersurfaces:
 
-\begin{proposition}
-    For an hypersurface $ S \subseteq \R^d $, the map $ x \in S \rightarrow
-    \vec{n}_S(x) $ where $ \vec{n}_S(x) $ is the normal vector of $ S $ at $ x $ is
-    called the Gauss map while its derivative is called the shape operator.
+\begin{definition}
+    For an hypersurface $ S \subseteq \R^d $, we have:
 
-    Then, we have that the shape operator is diagonalizable and its eigenvalues
-    are the $ d-1 $ principal curvatures at $ x $: $ \kappa_1(x), \ldots,
-    \kappa_{d-1}(x) $.
+   \begin{itemize}
+       \item the map $ x \in S \rightarrow \vec{n}_S(x) $ where $ \vec{n}_S(x)
+           $ is the normal vector of $ S $ at $ x $ is called the Gauss map
+           and its derivative is called the shape operator.
 
-    We will also denote by $ \vec{\kappa}(x) $ the mean curvature vector at $ x
-    $: $ \vec{\kappa}(x) = \sum_{i=1}^{d-1} \kappa_i(x) \vec{n}_S(x) $.
-    \label{prop:curvatures-surface}
-\end{proposition}
+       \item the shape operator is diagonalizable and its eigenvalues are the $
+           d-1 $ principal curvatures at $ x $: $ \kappa_1(x), \ldots,
+           \kappa_{d-1}(x) $.
+
+       \item we will also denote $ \vec{\kappa}(x) $ the mean curvature vector
+           at $ x $: $ \vec{\kappa}(x) = \sum_{i=1}^{d-1} \kappa_i(x)
+           \vec{n}_S(x) $.
+   \end{itemize}
+
+   \label{prop:curvatures-surface}
+\end{definition}
 
 And finally, a change of variable result:
 
@@ -88,11 +100,12 @@ And finally, a change of variable result:
     \label{lemma:diffeo}
     Given a smooth hypersurface $ S $, and a function $ f : S \times [0, r] \to \R^d $
     defined by $ f(x, t) = x + t \phi(x) \vec{n}_S(x) $ where $ \phi : \R^d \to
-    \R^d $ is a smooth vector field then $ f $ is a diffeomorphism for $ r < reach(S) $.
+    \R^d $ is a smooth function on $ S $ then $ f $ is a diffeomorphism if: $ r
+    \max\limits_S \phi < reach(S) $ and $ \min\limits_S \phi > 0 $.
 
     If we decompose this substitution on $ T_p(S) \times [-r, r] $, where $ T_p(S)
-    $ is the tangent space of $ S $ at $ p $, we get: $ D \phi = id + r D
-    \vec{n_S}(q) $.  So, its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D
+    $ is the tangent space of $ S $ at $ p $, we get: $ Df(x) = id + r \phi(x) D
+    \vec{n_S}(x) $.  So, its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D
     \vec{n}_S (x)) $.
 
     Using the previous proposition, we get:
@@ -102,13 +115,15 @@ And finally, a change of variable result:
 We will denote by $ Vol^d(S) $ the $d$-dimensional volume of an object $ S
 $.
 
-Then, we can tackle the proof:
+Then, we can tackle the proof of the proposition
+\ref{prop:gradient-area-functional}.
 
-\begin{proof}
+\begin{proof}[Sketch of proof]
     We parametrize the evolving surface $ S_t $ by $ S_t = \{ x + t \phi(x)
     \vec{n}(x), x \in S_0\} $ where $ \phi : \R^d \rightarrow \R^d $ is a smooth
     vector field. We denote by $ A = Vol^{d-1} $ the area functional.
     Then, we have, using the lemma \ref{lemma:diffeo}:
+
     \begin{align*}
         Vol^{d-1}(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(x) dx \\
         &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) \\
@@ -119,12 +134,14 @@ Then, we can tackle the proof:
     $$ \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t}= \int_{S_0}
     \phi(x) \vec{\kappa}(x) dx $$
 
-    This equation tells us exactly that if we perturbate a surface by $ \phi $
+    This equation tells us exactly that if we perturb a surface by $ \phi $
     then the variation of the area functional is linked to the mean curvature.
+    In other words, $ \vec{\kappa} $ is the $ L^2 $ gradient of the area
+    functional.
 \end{proof}
 
-This proposition will be at the basis of our work. We will replace "hypersurface"
-with "point cloud sampled on an hypersurface" and try to approximate the area of
+This proposition will be at the basis of our work. We will discretize the
+hypersurface by taking points sampled on it and try to approximate the area of
 the hypersurface by something which can be computed using only the point cloud.
 
 % {{{1 DISCRETIZATION OF THE AREA
@@ -192,9 +209,7 @@ its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volu
 
 This proposition is related to the Minkowski content. It is used to measure the
 area of the boundary of a set: the $ d-1 $ dimensional volume in dimension $ d
-$.
-
-It is defined as follows:
+$. It is defined as follows:
 $$ \lim\limits_{\epsilon \to 0} \frac{\mu(S^{\epsilon}) - \mu(S)}{\epsilon} $$
 
 This is exactly what we computed: a Taylor expansion of $ Vol^d(S^r) $.
@@ -219,10 +234,9 @@ The following proposition bounds the error of this approximation:
 \end{proposition}
 
 \begin{proof}
-    Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $.
-
-    Then, we parametrize $ P^r $ by $ f : S \rightarrow P^r $ where $ f(x) = x +
-    r(x) \vec{n}_S(x) $ for $ r(x) \in [0, r] $ (see
+    Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $. Then, we
+    parametrize $ P^r $ by $ f : S \rightarrow P^r $ where $ f(x) = x + r(x)
+    \vec{n}_S(x) $ for $ r(x) \in [0, r] $ (see
     \ref{fig:offset-parametrization}).
 
     \begin{figure}[h]
@@ -266,9 +280,7 @@ the area of $ S $ by the volume of $ P^r $:
 
 \begin{proof}
     We will use the propositions \ref{prop:comp-vol-offsets} and
-    \ref{prop:comp-offset-area}.
-
-    We have, using the triangle inequaltiy:
+    \ref{prop:comp-offset-area}. We have, using the triangle inequaltiy:
     \begin{align*}
         \left| \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) \right| \leq& \left| \frac{Vol^d(P^r)}{2r} -
             \frac{Vol^d(S^r)}{2r} \right| + \left| \frac{Vol^d(S^r)}{2r} -
@@ -286,9 +298,7 @@ Now, we want to study the gradient of this newly computed quantity.
 \section{Convergence of the gradient}
 
 In this section, we will derive formulae for the gradients of the volume of
-union of balls in $ \R^d $.
-
-First, we will define what we mean by "gradients":
+union of balls in $ \R^d $. First, we will define what we mean by "gradients":
 
 \begin{definition}
     If $ F : \R^d \times \ldots \times \R^d \to \R $ is a function over
@@ -305,9 +315,9 @@ The next proposition gives the gradient of the volume of union of balls :
 \begin{proposition}
     Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (p_i) $.
     Then, if we denote by $ A $ the volume of the union of balls, we are
-    interested in computing the gradients (defined previously) of $ A $.
+    interested in computing the gradients (defined previously) of $ A $. We
+    have:
 
-    We have:
     \begin{equation}
         \label{eqn:gradient_area_2d}
         \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx
@@ -361,10 +371,10 @@ $ with the circle of center $ p_i + \epsilon \delta p_i $ of radius $ r $. We
 also parametrize the half-line $ D $ by: $ x + t \frac{x - p_i}{||x - p_i||} $
 where $ t \ge 0 $.
 
-Let us find this intersection point by assuming that $ t $ is small
-such that $ t^2 = t \delta p_i = o(||\delta p_i||^2) $.
+Let us find this intersection point by assuming that $ t $ is small such that $
+t^2 = t \delta p_i = o(||\delta p_i||^2) $. We need to find $ D \cap C(p_i +
+\delta p_i, r) $. Let $ t \ge 0 $ then , we have :
 
-We need to find $ D \cap C(p_i + \delta p_i, r) $. Let $ t \ge 0 $ then , we have :
 \begin{equation}
     || x + t \frac{x - p_i}{||x - p_i||} - (p_i + \epsilon \delta p_i) ||^2 = r^2
     \tag{$\star$}
@@ -401,11 +411,10 @@ $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
 \end{proof}
 
 Now, we will relate the previously computed gradients to the mean curvature
-vector of an hypersurface.
-
-If we suppose that we have a point cloud that is an $\epsilon$-sampling of a
-smooth hypersurface $ S $, then the following proposition gives the link between
-the gradient of volume of an offset of $ S $ and the mean curvature vector.
+vector of an hypersurface. If we suppose that we have a point cloud that is an
+$\epsilon$-sampling of a smooth hypersurface $ S $, then the following
+proposition gives the link between the gradient of volume of an offset of $ S $
+and the mean curvature vector.
 
 \begin{proposition}
     \label{prop:gradient-mean-curvature}
@@ -468,15 +477,13 @@ Using these approximations, we get:
 \end{align*}
 
 Then, we will use the substitution $ q = p_S(x) \iff x = \phi(q) = q +
-\vec{n_S}(q) $ where on the upper part of $ \partial{S^r} \cap V(p, P) $.
-
-Using the lemma \ref{lemma:diffeo}, we have that $ \phi $ is a diffeomorphism
-and that $ J_\phi(p) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+\vec{n_S}(q) $ where on the upper part of $ \partial{S^r} \cap V(p, P) $. Using
+the lemma \ref{lemma:diffeo}, we have that $ \phi $ is a diffeomorphism and that
+$ J_\phi(p) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
 
 Using an analogous substitution on the lower part of $ \partial{S^r} \cap V(p,
-P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $.
-
-By summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
+P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $. By
+summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
 
 It follows that:
 \begin{align*}
@@ -489,9 +496,7 @@ It follows that:
 Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
 $ \vec{n_S}(q) = \vec{n_S}(p) $, $ \kappa_1(q) = \kappa_1(p) $ and $ \kappa_2(q)
 = \kappa_2(p) $. All the other terms depend on the derivatives of the curvature
-which are negligible at this point.
-
-We deduce that:
+which are negligible at this point. We deduce that:
 
 $$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_S}(p)
 \int_{S \cap V(p, P)} dq $$
