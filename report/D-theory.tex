@@ -1,23 +1,43 @@
 \chapter{Theory}
 \label{chapter:theory}
 
+In this chapter, all the objects will be considered, for a matter of
+simplification, to be smooth i.e. $ C^\infty $. Also, we will use the term
+"surface" to refer to any smooth compact hypersurface of $ \R^d $. We will also
+call the "area" of a surface $ \surface $ denoted by $ A(S) $ its $ (d-1)
+$-volume. The $d$-dimensional volume will be denoted by $ Vol^d $.
+
 % {{{1 MEAN CURVATURE FLOW
 \section{Mean Curvature Flow}
 
-Given an initial hypersurface $ S_0 \subseteq \R^d $, we define a  family of
-hypersurfaces $ S_t $ of $ \R^d $ by $ S_t = \phi_t(S_0) $, where $ \phi_t : S_0
-\to \R^d $. We say that $ S_t $ is evolving by mean curvature if it satisfies
-the following equation:
+In order to define what we call the Mean Curvature Flow, we will
+first need the notion of the deformation of a surface:
 
-$$ \partiald{\phi_t(x)}{t} = \vec{\kappa_{S_t}}(x) $$
+\begin{definition}
+    For a surface $ S_0 \subseteq \R^d $, we call a deformation of $ S_0 $ a
+    smooth function $ X : S_0 \times I \to \R^d $ where $ I \subseteq \R $
+    (which represents the time) with the following properties:
+    \begin{itemize}
+        \item $ X(S_0, .) = id $.
+        \item for any $ t \in I $, we denote $ X_t = X(S_0, t) $ and $ S_t =
+            X_t(S_0) $. $ S_t $ is an embedding of $ S_0 $ in $ \R^d $.
+    \end{itemize}
+\end{definition}
 
-where $ \vec{\kappa_{S_t}}(x) $ is the mean curvature vector (see
-\ref{prop:curvatures-surface}) of $ S_t $ at $ x $ and
-$ \partiald{\phi_t(x)}{t} $ is the normal velocity at $ x $.
+Then, the mean curvature flow is a deformation $ X : S_0 \times [0, t] \to \R^d
+$ of a surface $ S_0 $ such that:
+
+\begin{equation}
+    \partiald{X_t(x)}{t} = \meanv{S_t}(x)
+\end{equation}
+
+where $ \meanv{S_t}(x) $ is the mean curvature vector (see the proposition
+\ref{prop:curvatures-surface}) of $ S_t $ at $ x $ and $ \partiald{X_t(x)}{t} $
+is the normal velocity at $ x $.
 
 Put in more simple words, it says that at each step we move each point of the
-hypersurface $ S_t $ in the direction of the inward normal by an amount given by
-the mean curvature.
+hypersurface $ S_t $ in the direction of the normal by an amount given by
+the mean curvature at this point.
 
 Now, we will recall that the mean curvature flow belongs to a more general
 category of geometric flows: the gradient flows (see
@@ -30,46 +50,65 @@ Indeed, the next proposition shows the relation between the mean curvature flow
 and the area functional.
 
 \begin{proposition}
-    The gradient of the area functional is the mean curvature vector.
+    For a surface $ S_0 \subseteq \R^d $ and a deformation $ X : S_0 \times [0, T]
+    \to \R^d $ defined by $ X(p, t) = p + t V(p) $ where $ V : \R^d \to \R^d $ is a
+    vector field, we have:
+    \begin{equation}
+        \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t} = \int_{S_0} V(p)
+        \meanv{S_0}(p) dp
+    \end{equation}
     \label{prop:gradient-area-functional}
 \end{proposition}
 
-To prove this proposition, we will need some background on hypersurfaces. First,
-the notion of the reach of an hypersurface: it is widely used in computational
-geometry.
+This proposition allows us to identity the gradient of $ A $ to the vector
+field associated to the mean curvature vector on $ S_0 $.
+
+To prove this proposition, we will need the next two definitions: the projection
+on a hypersurface and the reach of an hypersurface.
 
 \begin{definition}
-    For a set $ M \subseteq \R^d $ and $ x \in R^d $, we define the projection
-    of $ x $ on $ M $ denoted by $ p_M(x) $: it is the unique $ y $ that
-    satisfies $ || x - y || = d(x, M) $. The reach of a set $ M \subseteq \R^d $
-    denoted by $ reach(M) $ is the largest $ r \geq 0 $ for which for any $ p
-    \in M^r $, there exists a unique $ q \in M $ such that $ q = p_M(p) $.
+    For a compact set $ K \subseteq \R^d $, we define the projection of $ x \in
+    \R^d $ on $ K $ to be any point $ p \in K $ such that $ || x - p || = d(x,
+    K) $.
+    The set of all the projections of $ x $ on $ K $ is a subset of $ K $
+    that we will denote by $ proj_K(x) $.
+\end{definition}
+
+\begin{definition}
+    For a compact set $ K \subseteq \R^d $, we define its reach by:
+    \begin{equation}
+        reach(K) = \max \{ r \geq 0,~\forall x \in R^d \text{ s.t. } d(x, K) \leq
+        r,~ card(proj_K(x)) = 1 \}
+    \end{equation}
+    In other words, the reach is the maximum $ r $ we can take such that the
+    projection of any $ x  $ at distance smaller than $ r $ of $ K $ is uniquely
+    defined on $ K $.
 \end{definition}
 
 The reach has some interesting properties (see \cite{merigot2009detection} for a
 more detailed study):
 
 \begin{itemize}
-    \item For example, if we consider a circle in the plane of radius $ R $,
-        then every point in the plane has a unique projection on the circle
-        except the center which is at distance $ R $ of every point on the
-        circle: there is no closest point.  Consequently, its reach is $ R $.
+    \item For example, if we consider a circle in the plane of center $ c $ and
+        of radius $ R $, then every point in the plane has a unique projection on
+        the circle except $ c $ which is at distance $ R $ from every point on the
+        circle: $ proj_C(c) = C $. Consequently, its reach is $ R $.
 
     \item Another more general example is that any convex set has infinite
         reach. This is because the projection on a closed convex set is always
         uniquely defined.
 
-    \item The reach is also related to the Local Feature Size (LFS) defined in
-        \cite{amenta1999surface}: $ LFS(p) = d(p, \mathcal{M}) $ $ reach(M) =
-        \min\limits_{p \in M}~LFS(p) $ where $ \mathcal{M}  $ is the medial axis
-        of $ M $.
+    \item The reach is also related to the Local Feature Size (LFS) introduced
+        in \cite{amenta1999surface} for surface reconstruction problems: $
+        LFS(p) = d(p, \mathcal{M}) $ $ reach(M) = \min\limits_{p \in M}~LFS(p) $
+        where $ \mathcal{M}  $ is the medial axis of $ M $.
 
     \item The reach is also always upper bounded by the minimum radius of
         curvature. There are no converse result giving a lower bound on the
         reach in term of the curvature. Indeed, consider the
         following example: two spheres of radius $ R $ at distance $ \epsilon $,
         then the radius of curvature is always $ R $ but the reach of the union
-        if $ \frac{\epsilon}{2} $.
+        is $ \frac{\epsilon}{2} $.
 \end{itemize}
 
 Then, some facts about the curvature of embedded hypersurfaces:
@@ -78,65 +117,128 @@ Then, some facts about the curvature of embedded hypersurfaces:
     For an hypersurface $ S \subseteq \R^d $, we have:
 
    \begin{itemize}
-       \item the map $ x \in S \rightarrow \vec{n}_S(x) $ where $ \vec{n}_S(x)
-           $ is the normal vector of $ S $ at $ x $ is called the Gauss map
-           and its derivative is called the shape operator.
+       \item the map $ p \in S \rightarrow \vec{n}_S(p) $ where $ \vec{n}_S(p)
+           $ is the normal vector of $ S $ at $ p $ is called the Gauss map
+           and its differential is called the shape operator. The shape operator
+           at $ p $ is a linear map from $ T_p(S) $ to $ T_p(S) $. $ T_p(S) $ is
+           the tangent space of $ S $ at $ p $: it is the space which is
+           orthogonal to $ \vec{n}_S(p) $. For example, in 3D, $ T_p(S) $ is the
+           tangent plane of $ S $ at $ p $.
 
-       \item the shape operator is diagonalizable and its eigenvalues are the $
-           d-1 $ principal curvatures at $ x $: $ \kappa_1(x), \ldots,
-           \kappa_{d-1}(x) $.
+       \item the shape operator is diagonalizable: its eigenvectors $ P_S^i(p) $
+           are called the principal curvature directions and its eigenvalues are
+           the $ d-1 $ principal curvatures at $ p $: $ k^1_S(p), \ldots,
+           k^{d-1}_S(p) $. So, in the basis formed by $ P_S^i(p) $, the
+           matrix of the shape operator is $ diag(k^1_S(p), \ldots,
+           k^{d-1}_S(p)) $.
 
-       \item we will also denote $ \vec{\kappa}(x) $ the mean curvature vector
-           at $ x $: $ \vec{\kappa}(x) = \sum_{i=1}^{d-1} \kappa_i(x)
-           \vec{n}_S(x) $.
+       \item we will also denote $ \meanv{S}(p) $ the mean curvature vector of $
+           S $ at $ p $: $ \meanv{S}(p) = \sum_{i=1}^{d-1} k^i_S(p)
+           \vec{n}_S(p) $.
    \end{itemize}
 
    \label{prop:curvatures-surface}
 \end{definition}
 
-And finally, a change of variable result:
+We will need the notion the $r$-offset of a compact set $ K $:
+
+\begin{definition}
+    For $ r > 0 $ and a compact set $ K $, we define the $r$-offset of $ K $
+    denoted by $ K^r $ by:
+    $$ K^r = \bigcup_{p \in K} B(p, r) $$
+\end{definition}
+
+This definition is interesting since the only assumption about $ K $ is that it
+is compact, it can either represent a point cloud or a surface.
+
+And finally, we will need the following two lemmas which allow us to compute the
+differential of deformations of surfaces.
+
+\begin{lemma}
+    \label{lemma:deformation}
+
+    Given a surface $ S $, and a smooth function $ \phi : S \to \R $, we define a
+    deformation of $ S $: $ X(p, t) = p + t \phi(p) \vec{n}_S(p) $. Then, we
+    have:
+
+    \begin{itemize}
+        \item if $ t \leq \frac{reach(S)}{\max \phi} $ then $ X_t $ is an
+            embedding of $ S $ in $ \R^d $.
+        \item the differential of $ X_t $ at $ p $ is a linear map from $ T_p(S)
+            $ to $ \R^d $ and:
+            \begin{equation}
+                D X_t(p) = p + t D \phi(p) \vec{n}_S(p) + t \phi(p) D \vec{n}_S(p)
+            \end{equation}
+            In a basis composed of the principal curvature directions of $ S $
+            at $ p $ and $ \vec{n}_S(p) $, then we have:
+            \begin{equation}
+                D X_t(p) =
+                \begin{pmatrix}
+                    1 + t \phi(p) k^1_S(p) & \cdots & 0 & \multirow{4}{*}{1 + t D \phi(p)} \\
+                    \vdots                 & \ddots & \vdots                      \\
+                    \vdots                 &        & 1 + t \phi(p) k^{d-1}_S(p)  \\
+                    0                      & \hdots & 0                           \\
+                \end{pmatrix}
+            \end{equation}
+        \item For any function $ \chi : X_t(S) \to \R $, we have the following
+            change of variable result:
+            \begin{equation}
+                \int_{X_t(S)} \chi(x) dx = \int_S \chi(X_t(p)) J_{X_t}(p) dp
+            \end{equation}
+            where $ J_{X_t}(p) = (1 + t \phi(p) k^1_S(p)) \hdots (1 + t \phi(p)
+            k^{d-1}_S(p)) $ is the Jacobian of $ X_t $ at $ p \in S $.
+    \end{itemize}
+\end{lemma}
 
 \begin{lemma}
     \label{lemma:diffeo}
-    Given a smooth hypersurface $ S $, and a function $ f : S \times [0, r] \to \R^d $
-    defined by $ f(x, t) = x + t \phi(x) \vec{n}_S(x) $ where $ \phi : \R^d \to
-    \R^d $ is a smooth function on $ S $ then $ f $ is a diffeomorphism if: $ r
-    \max\limits_S \phi < reach(S) $ and $ \min\limits_S \phi > 0 $.
 
-    If we decompose this substitution on $ T_p(S) \times [-r, r] $, where $ T_p(S)
-    $ is the tangent space of $ S $ at $ p $, we get: $ Df(x) = id + r \phi(x) D
-    \vec{n_S}(x) $.  So, its Jacobian is given by: $ J_f(x) = \det(id + t \phi(x) D
-    \vec{n}_S (x)) $.
+    Given a surface $ S $, $ r = reach(S) $, and a deformation $ f : S \times
+    [-r, r] \to \R^d $ defined by $ F(p, t) = p + t \vec{n}_S(x) $, then:
 
-    Using the previous proposition, we get:
-    $$ J_f(x) = \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) $$
+    \begin{itemize}
+        \item $ F $ is a diffeomorphism from $ S \times [-r, r] $ to $ S^r $
+        \item the differential of $ F $ at $ p $ is a linear map from $ T_p(S)
+            \times \R $ to $ \R^d $. In the basis formed by the principal
+            curvature directions at $ p $ and the normal $ \vec{n}_S(p) $, we have:
+            \begin{equation}
+                D F(p, t) = diag(1 + t k^1_S(p), \ldots, 1 + t k^{d-1}_S(p), 1)
+            \end{equation}
+            So its Jacobian is:
+            \begin{equation}
+                J_F(p, t) = \prod_{i=1}^{d-1} (1 + t k^i_S(p))
+            \end{equation}
+        \item For any function $ \chi : S^r \to \R $, we have the following
+            change of variable result:
+            \begin{equation}
+                \int_{S^r} \chi(x) dx = \int_S \int_{-r}^r \chi(F(p, t)) J_F(p,
+                t) dt dp
+            \end{equation}
+    \end{itemize}
 \end{lemma}
-
-We will denote by $ Vol^d(S) $ the $d$-dimensional volume of an object $ S
-$.
 
 Then, we can tackle the proof of the proposition
 \ref{prop:gradient-area-functional}.
 
 \begin{proof}[Sketch of proof]
-    We parametrize the evolving surface $ S_t $ by $ S_t = \{ x + t \phi(x)
-    \vec{n}(x), x \in S_0\} $ where $ \phi : \R^d \rightarrow \R^d $ is a smooth
-    vector field. We denote by $ A = Vol^{d-1} $ the area functional.
-    Then, we have, using the lemma \ref{lemma:diffeo}:
+    We use the deformation $ X : S_0 \times [0, T] $ where $ X(p, t) = p + t
+    \phi(p) \vec{n}_{S_0}(p) $ for $ \phi : S_0 \to \R $ is a smooth
+    function. Then, we have, using the lemma \ref{lemma:deformation} with $ \chi
+    = 1 $:
 
     \begin{align*}
-        Vol^{d-1}(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(x) dx \\
-        &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(x) \kappa_i(x)) \\
-        &= \int_{S_0} 1dx + t \int_{S_0} \phi(x) \vec{\kappa}(x) dx + O(t^2)
+        A(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(p) dp \\
+        &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(p) k^i_{S_0}(p)) \\
+        &= \int_{S_0} 1 dp + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(T^2)
     \end{align*}
 
     So:
     $$ \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t}= \int_{S_0}
-    \phi(x) \vec{\kappa}(x) dx $$
+    \phi(p) \meanv{S_0}(p) dp $$
 
     This equation tells us exactly that if we perturb a surface by $ \phi $
     then the variation of the area functional is linked to the mean curvature.
-    In other words, $ \vec{\kappa} $ is the $ L^2 $ gradient of the area
+    In other words, $ \meanv{S_0} $ is the $ L^2 $ gradient of the area
     functional.
 \end{proof}
 
@@ -150,16 +252,8 @@ the hypersurface by something which can be computed using only the point cloud.
 In this section, we will try to compute an approximation of the area of an
 hypersurface with only knowing points sampled on it.
 
-First, we will introduce the $r$-offset of a point cloud:
-
-\begin{definition}
-    For $ r > 0 $ and a point cloud $ P $, we define the $r$-offset of $ P $
-    denoted by $ P^r $ by:
-    $$ P^r = \bigcup_{p \in P} B(p, r)$$
-\end{definition}
-
-It can also be seen as the Minkowski sum of $ P $ and the euclidean ball $ B(0,
-r) $.
+First, the $r$-offset can also be seen as the Minkowski sum of $ K $ and the
+euclidean ball $ B(0, r) $.
 
 \begin{definition}
     For any sets $ A $ and $ B $ of a vector space, we define the Minkowski sum
@@ -168,32 +262,26 @@ r) $.
     \label{def:minkowski-sum}
 \end{definition}
 
-Then, we will define a similar notion for hypersurfaces called the tubular
-neighbourhood:
-
-\begin{definition}
-    For any $ r > 0 $, the tubular neighbourhood of an hypersurface $ S $
-    denoted by $ S^r $ is defined in the same way as for point clouds:
-    $$ S^r = \bigcup_{x \in S} B(x, r) $$
-\end{definition}
-
 Using these notions, we can relate the area of an hypersurface to the volume of
 its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volume}.
 
 \begin{proposition}
     \label{prop:comp-offset-area}
     If $ S $ is a smooth hypersurface whose reach is positive and $ reach(S) > r
-    > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(S^r)}{2r} + O(r^2) $$
+    > 0 $, then:
+    \begin{equation}
+        A(S) = \frac{Vol^d(S^r)}{2r} + O(r^2)
+    \end{equation}
 
     The constants in the error term of the development only depend on the curvature
     of $ S $.
 \end{proposition}
 
 \begin{proof}
-    We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $. Now, we will do the following
-    change of variable: $ f : S \times [-r, r] \rightarrow S^r $ where $ f(x, t)
-    = x + t \vec{n}_K(x) $. Using this substitution and lemma \ref{lemma:diffeo}
-    with $ \phi = 1 $:
+    We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $. Now, we will use the
+    following deformation: $ X(p, t) = p + t \vec{n}_{S}(p) $ Using this
+    substitution and lemma \ref{lemma:diffeo} with $ \phi = 1 $ and $ \chi = 1
+    $:
 
     \begin{align*}
         Vol^d(S^r) &= \int_S \int_{-r}^r J_f(p) dt dp \\
@@ -201,10 +289,10 @@ its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volu
         &= \int_S \int_{-r}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
                 < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
         &= 2r \int_S 1 dp + \int_K \int_{-r}^r \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) dt dp \\
-        &= 2r Vol^{d-1}(S) + O(r^2)
+        &= 2r A(S) + O(r^2)
     \end{align*}
 
-    So: $ \frac{Vol^d(S^r)}{2r} = Vol^{d-1}(S) + O(r^2) $.
+    So: $ \frac{Vol^d(S^r)}{2r} = A(S) + O(r^2) $.
 \end{proof}
 
 This proposition is related to the Minkowski content. It is used to measure the
@@ -229,14 +317,16 @@ The following proposition bounds the error of this approximation:
     \label{prop:comp-vol-offsets}
     For an hypersurface $ S $ with positive reach and an $\epsilon$-sampling $ P
     \subseteq S $, we have:
-    $$ 0 \leq Vol^d(S^r) - Vol^d(P^r) \leq \frac{\epsilon^2}{r} Vol^{d-1}(S) +
-    O(\frac{\epsilon^4}{r^2}) $$
+    \begin{equation}
+        0 \leq Vol^d(S^r) - Vol^d(P^r) \leq \frac{\epsilon^2}{r} A(S) +
+        O(\frac{\epsilon^4}{r^2})
+    \end{equation}
 \end{proposition}
 
 \begin{proof}
     Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $. Then, we
-    parametrize $ P^r $ by $ f : S \rightarrow P^r $ where $ f(x) = x + r(x)
-    \vec{n}_S(x) $ for $ r(x) \in [0, r] $ (see
+    parametrize $ P^r $ by $ f : S \to P^r $ where $ f(p) = p + r(p)
+    \vec{n}_S(p) $ for $ r(x) \in [0, r] $ (see
     \ref{fig:offset-parametrization}).
 
     \begin{figure}[h]
@@ -256,11 +346,11 @@ The following proposition bounds the error of this approximation:
 
     \begin{align*}
         Vol^d(S^r) - Vol^d(P^r) &= \int_{S^r \textbackslash P^r} 1 dp \\
-        &= \int_S \int_{r(x)}^r \det(id + t D \vec{n}_S(p)) dt dp \\
-        &= \int_S \int_{r(x)}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
-                < i_k} \kappa_{i_1}(p) \ldots \kappa_{i_k}(p) \right) dt dp \\
-        &= \int_S (r - r(x)) dp + O((r - r(x))^2) \\
-        &\leq \frac{\epsilon^2}{r} Vol^{d-1}(S) + O(\frac{\epsilon^4}{r^2})
+        &= \int_S \int_{r(p)}^r J_f(p, t) dt dp \\
+        &= \int_S \int_{r(p)}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
+                < i_k} k^{i_1}_S(p) \ldots S^{i_k}_S(p) \right) dt dp \\
+        &= \int_S (r - r(p)) dp + O((r - r(p))^2) \\
+        &\leq \frac{\epsilon^2}{r} A(S) + O(\frac{\epsilon^4}{r^2})
     \end{align*}
 \end{proof}
 
@@ -271,8 +361,10 @@ the area of $ S $ by the volume of $ P^r $:
     \label{prop:approx-volume-area}
     Given an hypersurface $ S $, an $\epsilon$-sampling of $ S $: $ P $, we
     have:
-    $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
-    O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
+    \begin{equation}
+        | \frac{Vol^d(P^r)}{2r} - A(S) | \leq \frac{\epsilon^2}{2r^2} +
+        O(\frac{\epsilon^4}{r^3}) + O(r^2)
+    \end{equation}
 
     So, when $ \frac{\epsilon}{r} $ and $ r $ vanish then $
     \frac{Vol^d(P^r)}{2r} $ converges towards the area of $ S $.
@@ -280,12 +372,12 @@ the area of $ S $ by the volume of $ P^r $:
 
 \begin{proof}
     We will use the propositions \ref{prop:comp-vol-offsets} and
-    \ref{prop:comp-offset-area}. We have, using the triangle inequaltiy:
+    \ref{prop:comp-offset-area}. We have, using the triangle inequality:
     \begin{align*}
-        \left| \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) \right| \leq& \left| \frac{Vol^d(P^r)}{2r} -
+        \left| \frac{Vol^d(P^r)}{2r} - A(S) \right| \leq& \left| \frac{Vol^d(P^r)}{2r} -
             \frac{Vol^d(S^r)}{2r} \right| + \left| \frac{Vol^d(S^r)}{2r} -
-            Vol^{d-1}(S) \right| \\
-        \leq& \frac{\epsilon^2}{2r^2} Vol^{d-1}(S) + O(\frac{\epsilon^4}{r^3}) + O(r^2) \\
+            A(S) \right| \\
+        \leq& \frac{\epsilon^2}{2r^2} A(S) + O(\frac{\epsilon^4}{r^3}) + O(r^2) \\
     \end{align*}
 \end{proof}
 
@@ -314,13 +406,13 @@ union of balls in $ \R^d $. First, we will define what we mean by "gradients":
 The next proposition gives the gradient of the volume of union of balls :
 \begin{proposition}
     Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (p_i) $.
-    Then, if we denote by $ A $ the volume of the union of balls, we are
-    interested in computing the gradients (defined previously) of $ A $. We
+    Then, if we denote by $ A^r $ the volume of the union of balls of radius $ r
+    $, we are interested in computing the gradients (defined previously) of $ A $. We
     have:
 
     \begin{equation}
         \label{eqn:gradient_area_2d}
-        \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx
+        \nabla_{p_i} A^r = \int_{B} \frac{x - p_i}{||x - p_i||} dx
     \end{equation}
     where $ B = \partial B(p_i, r) \cap V(p_i, P) $ is the visible boundary of
     the ball.
@@ -343,11 +435,11 @@ $$ \lim\limits_{\epsilon \to 0} \frac{A_{\epsilon} - A_0}{\epsilon} $$
 For computing this quantity, we will define the following sets:
 \begin{itemize}
     \item $ B_1 = \{ x \in B, (x - p_i | \delta p_i) \geq 0\} $
-    \item $ A_1^{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
+    \item $ A^1_{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
         "upper" gained area (see \ref{fig:demo-gradient} for a drawing of the
         situation in 2D)
     \item $ B_2 = \{ x \in B, (x - p_i | \delta p_i) \leq 0\} $
-    \item $ A_2^{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
+    \item $ A^2_{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
         "lower" lost area.
 \end{itemize}
 
@@ -358,13 +450,13 @@ For computing this quantity, we will define the following sets:
     \label{fig:demo-gradient}
 \end{figure}
 
-Then, we have: $ A_\epsilon = A_0 + Vol(A_1^\epsilon) - Vol(A_2^\epsilon) +
+Then, we have: $ A_\epsilon = A_0 + Vol(A^1_\epsilon) - Vol(A^2_\epsilon) +
 O(\epsilon^2) $
 % TODO
 
-Now, we will approximate $ Vol(A_1^\epsilon) $ write that $ Vol(A_1^\epsilon) =
+Now, we will approximate $ Vol(A^1_\epsilon) $ write that $ Vol(A^1_\epsilon) =
 \int_{B_1} || x - z(x) || dx + o(||\delta p_i||) $. We do the same things for $
-A_2^\epsilon $.
+A^2_\epsilon $.
 
 For any $ x \in B $, we define $ z(x) $ as the intersection of the half-line $ D
 $ with the circle of center $ p_i + \epsilon \delta p_i $ of radius $ r $. We
@@ -397,16 +489,17 @@ Then, $ z(y) = x + t^{\star} \frac{x - p_i}{||x - p_i||} $ and $ || x - z(x) || 
 t^{\star} $.
 
 We deduce that :
-$$ Vol(A_1^\epsilon) = \int_{B_1} \left[ \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
-o(||\delta p_i||^2) \right] dx $$
+$$ Vol(A^1_\epsilon) = \int_{B_1} \left[ \epsilon \left( \frac{x - p_i}{||x -
+            p_i||} | \delta p_i \right) + o(||\delta p_i||^2) \right] dx $$
 
 And:
 
-$$ Vol(A_1^\epsilon) - Vol(A_2^\epsilon) = \int_{B} \left[ \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right)
-+ o(||\delta p_i||^2) \right] dx $$
+$$ Vol(A^1_\epsilon) - Vol(A^2_\epsilon) = \int_{B} \left[ \epsilon \left(
+        \frac{x - p_i}{||x - p_i||} | \delta p_i \right) + o(||\delta p_i||^2)
+\right] dx $$
 
 Finally, we have, by linearity:
-$$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
+$$ \nabla_{p_i} A^r = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
 
 \end{proof}
 
@@ -417,12 +510,14 @@ proposition gives the link between the gradient of volume of an offset of $ S $
 and the mean curvature vector.
 
 \begin{proposition}
-    \label{prop:gradient-mean-curvature}
     Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) hypersurface
     $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then:
-    $$ || \nabla_p A - \vec{\kappa}(p) || \leq TODO $$
+    \begin{equation}
+        || \nabla_p A^r - \meanv{S}(p) || \leq TODO
+    \end{equation}
     Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
-    $ \nabla_p A $ converges towards the mean curvature vector of $ S $ at $ p $.
+    $ \nabla_p A^r $ converges towards the mean curvature vector of $ S $ at $ p $.
+    \label{prop:gradient-mean-curvature}
 \end{proposition}
 
 To prove that, we will need two lemmas extracted from \cite{amenta1999surface}
@@ -446,7 +541,7 @@ These two lemmas tell us that the Voronoi cells are skinny (first lemma) and
 long (second lemma).
 
 \begin{proof}
-We will first do two approximations on \ref{eqn:gradient_area_2d}:
+We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
 \begin{enumerate}
     \item the first one is to suppose that the offset of $ S $ is close enough
         to the offset of $ P $. Using the computation done in
@@ -476,50 +571,48 @@ Using these approximations, we get:
     O(\epsilon) \\
 \end{align*}
 
-Then, we will use the substitution $ q = p_S(x) \iff x = \phi(q) = q +
-\vec{n_S}(q) $ where on the upper part of $ \partial{S^r} \cap V(p, P) $. Using
-the lemma \ref{lemma:diffeo}, we have that $ \phi $ is a diffeomorphism and that
-$ J_\phi(p) = (1 + \kappa_1(q)) (1 + \kappa_2(q)) $.
+Then, we will use the substitution $ q = p_S(x) \iff x = F^{+}(q) = q +
+r \vec{n}_S(q) $ on the upper part of $ \partial{S^r} \cap V(p, P) $. Using
+the lemma \ref{lemma:diffeo}, we have that $ F^{+} $ is a diffeomorphism and that
+$ J_{F^+}(q) = (1 + r k^1_S(q)) \hdots (1 + r k^{d-1}_S(q)) $.
 
 Using an analogous substitution on the lower part of $ \partial{S^r} \cap V(p,
-P) $, we get : $ \det (D \phi) = (1 - \kappa_1(q)) (1 - \kappa_2(q)) $. By
-summing the two, we obtain: $ 2 (\kappa_1(q) + \kappa_2(q)) $.
+P) $, we get : $ J_{F^-}(q) = (1 - r k^1_S(q)) \hdots (1 - r k^{d-1}_S(q)) $. By
+subtracting the two, we obtain: $ 2 r \mean{S}(q) + O(r^2) $.
 
 It follows that:
 \begin{align*}
     \int_{\partial{S^r} \cap V(p, P)} (x - p_S(x)) dx &= \int_{S \cap V(p, P)}
-    r \times \vec{n_S}(q) ( \det (id + r D \vec{n_S}(q)) - \det (id - r D
-    \vec{n_S}(q)) ) dq \\
-    &= 2r \int_{S \cap V(p, P)} (\kappa_1(q) + \kappa_2(q)) \vec{n_S}(q) dq \\
+    \vec{n_S}(q) ( J_{F^+}(q) -J_{F^-}(q) ) dq \\
+    &= 2r \int_{S \cap V(p, P)} \meanv{S}(q) dq + O(r^2) \\
 \end{align*}
 
 Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
-$ \vec{n_S}(q) = \vec{n_S}(p) $, $ \kappa_1(q) = \kappa_1(p) $ and $ \kappa_2(q)
-= \kappa_2(p) $. All the other terms depend on the derivatives of the curvature
-which are negligible at this point. We deduce that:
+$ \vec{n_S}(q) = \vec{n_S}(p) $, $ \meanv{S}(q) = \meanv{S}(p) $. All the other
+terms depend on the derivatives of the curvature which are negligible at this
+point. We deduce that:
 
-$$ \nabla_p A = \partiald{A}{p} = 2r (\kappa_1(p) + \kappa_2(p)) \vec{n_S}(p)
-\int_{S \cap V(p, P)} dq $$
+$$ \nabla_p A^r = 2r \meanv{S}(p) \int_{S \cap V(p, P)} 1 dq $$
 
 So, using the mean curvature vector:
 
-$$ \nabla_p A = 2r \vec{\kappa}(p) Vol(S \cap V(p, P)) $$
+$$ \nabla_p A^r = 2r \meanv{S}(p) Vol(S \cap V(p, P)) $$
 
 Which means:
 
-$$ ||\nabla_p A - \vec{\kappa}(p) || \leq | 2r Vol(S \cap V(p, P)) - 1 |
-\times|| \vec{\kappa}(p) ||$$
+$$ ||\nabla_p A^r - \meanv{S}(p) || \leq | 2r Vol(S \cap V(p, P)) - 1 |
+\times|| \meanv{S}(p) ||$$
 
 \end{proof}
 
 We can summarize the situation with the following diagram:
 
 \begin{displaymath}
-    \xymatrix{A_r \ar[d]^{\nabla} \ar[r] & A \ar[d]^{\nabla} \\
-        \nabla A_r \ar[r] & \nabla A }
+    \xymatrix{A^r \ar[d]^{\nabla} \ar[r] & A \ar[d]^{\nabla} \\
+        \nabla A^r \ar[r] & \nabla A }
 \end{displaymath}
 
-$ A_r $ represents the discretization of the area of an hypersurface: it
+$ A^r $ represents the discretization of the area of an hypersurface: it
 is $ \frac{Vol^d(P^r)}{2r} $ which converges towards the continuous area (see
 proposition \ref{prop:approx-volume-area}). There is also a convergence property
 for the gradients: the discretized gradient converges towards the continuous one
@@ -544,7 +637,10 @@ Voronoi cell and a ball).
 For the former case (area of the boundary), we have the following lemma:
 \begin{lemma}
     If $ S $ is a smooth hypersurface whose reach is positive and $ reach(S) > r
-    > 0 $, then: $$ Vol^{d-1}(S) = \frac{Vol^d(\partial S^r)}{2r} + O(r^2) $$
+    > 0 $, then:
+    \begin{equation}
+        A(S) = \frac{Vol^d(\partial S^r)}{2r} + O(r^2)
+    \end{equation}
 \end{lemma}
 
 During this internship, we did not prove that the gradients of the area of the

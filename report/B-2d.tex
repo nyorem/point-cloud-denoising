@@ -280,20 +280,17 @@ composing the intersection of the Voronoi cell and the ball) of the restricted
 region. But by doing that, we can divide by $ 0 $ so we need to choose a small
 time step in order to avoid the case where a point does not see anything.
 
-We will test different properties we expect the flows have:
-\begin{itemize}
-    \item Smooth point clouds: remove outliers, noise
+We will test the different properties we expect the flows to have:
+\begin{enumerate}
+    \item Smooth the point clouds: remove outliers, noise
     \item Minimize the area of a union of balls
-\end{itemize}
+\end{enumerate}
 
 % TODO
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
-sampled on an ellipse: figures \ref{fig:ellipse_flows}. We also run the
-perimeter flow on other point clouds such as a bird (figure
-\ref{fig:bird_perimeter_flow}) or a shark (figure
-\ref{fig:shark_perimeter_flow}).
+sampled on an ellipse: figures \ref{fig:ellipse_flows}.
 
 % TODO: ajouter convergence vers cercle
 \begin{figure}[h]
@@ -305,6 +302,13 @@ perimeter flow on other point clouds such as a bird (figure
     \caption{Area / perimeter flow of an ellipse: 100 iterations}
     \label{fig:ellipse_flows}
 \end{figure}
+
+\paragraph{Smoothing}
+
+We also run the perimeter flow on point clouds such as a bird (figure
+\ref{fig:bird_perimeter_flow}), a shark (figure \ref{fig:shark_perimeter_flow})
+and a square (figure \ref{fig:area_perimeter_flow_square}) to observe the
+smoothing effect of the flows.
 
 \begin{figure}[h]
     \centering
@@ -328,10 +332,6 @@ perimeter flow on other point clouds such as a bird (figure
     \caption{Examples of perimeter flows}
 \end{figure}
 
-We test the smoothing property of our flow on points sampled on a square, see
-the figure \ref{fig:area_perimeter_flow_square}. We can clearly see that our
-discrete flow smooth the corners of the square.
-
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.3]{2d/square-0}
@@ -341,56 +341,33 @@ discrete flow smooth the corners of the square.
     \label{fig:area_perimeter_flow_square}
 \end{figure}
 
-We also verify that the area of the union of balls decreases with the number of
-iterations, see the figure \ref{fig:area_time_decrease}.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.3]{2d/values-square-area}
-    \includegraphics[scale=0.3]{2d/values-ellipse-perimeter}
-    \caption{Evolution of the area on different point clouds with the area
-        flow : square / ellipse}
-    \label{fig:area_time_decrease}
-\end{figure}
-
 Next, we add some outliers around the ellipse and observe the effects of the two
-flows: see the figures \ref{fig:ellipse_outliers_area_flow} and
-\ref{fig:ellipse_outliers_perimeter_flow}. We see that the outliers are
-"swallowed" by the initial point set in both cases. But, for the area flow, a
-hole is created at the same place where the outliers were added.
+flows: see the figure \ref{fig:ellipse_outliers_flow}. We see that the outliers
+are "swallowed" by the initial point set in both cases. But, for the area flow,
+a hole is created at the same place where the outliers were added.
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers}
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-outliers-40}
-    \subcaption{Area flow of an ellipse with outliers: 0 / 40 iterations with a
-        timestep of $ 0.1 $}
-    \label{fig:ellipse_outliers_area_flow}
-
-    \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-1-15-outliers-100}
-    \subcaption{Perimeter flow of an ellipse with outliers: 0 / 100 iterations
-        with a timestep of $ 1 $}
-    \label{fig:ellipse_outliers_perimeter_flow}
+    \caption{Area / perimeter flow of an ellipse with outliers}
+    \label{fig:ellipse_outliers_flow}
 \end{figure}
 
-Then, we added some Gaussian noise on these points to test the robustness of our
-algorithm, see the figures \ref{fig:ellipse_noise_area_flow} and
-\ref{fig:ellipse_noise_perimeter_flow}.
+Furthermore, we added Gaussian noise on these points to test the robustness
+of our algorithm, see the figure \ref{fig:ellipse_noise_flow}.
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
     \includegraphics[scale=0.3]{2d/area/ellipse-noise-5-75}
-    \subcaption{Area flow on a noised ellipse: 0 / 75 iterations with a timestep of $ 0.05 $}
-    \label{fig:ellipse_noise_area_flow}
-
-    \includegraphics[scale=0.3]{2d/ellipse-noise-5-0}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-noise-5-75}
-    \subcaption{Perimeter flow on a noised ellipse: 0 / 75 iterations with a timestep of $ 0.5 $}
-    \label{fig:ellipse_noise_perimeter_flow}
+    \caption{Area /perimeter flow on a noised ellipse}
+
+    \label{fig:ellipse_noise_flow}
 \end{figure}
 
 We notice that the gradient flow of the area may create holes in the point set
@@ -417,28 +394,21 @@ bigger radius is, the more points will move in big groups. Indeed, the
 radius indicates how to take the neighbours of a point into account. The more
 neighbours we take into account, the more "global" the movement will be.
 
-We also add varying oscillations to our ellipse in order to see the
-adaptive part of the algorithm. We generate oscillations with one or two
-amplitudes.
-
-For one constant amplitude, see the figures \ref{fig:ellipse_osc_perimeter_flow} and
-\ref{fig:ellipse_osc_area_flow} and for two different amplitudes see
-\ref{fig:ellipse_osc2_area_flow} and \ref{fig:ellipse_osc2_perimeter_flow}.
+We also add varying oscillations to our ellipse in order to see the adaptive
+part of the algorithm. We generate oscillations with one or two amplitudes. For
+one constant amplitude, see the figure \ref{fig:ellipse_osc_flow}. For two
+different amplitudes see \ref{fig:ellipse_osc2_flow}.
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
     \includegraphics[scale=0.3]{2d/area/ellipse-osc-25-15-25}
-    \subcaption{Area flow on an ellipse with oscillations (one amplitude) : 0 /
-        25 iterations with a timestep of $ 0.05 $ and a radius of $ 15 $}
-    \label{fig:ellipse_osc_area_flow}
-
-    \includegraphics[scale=0.3]{2d/ellipse-osc-25-15-0}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc-25-15-50}
-    \subcaption{Perimeter flow on an ellipse with oscillations (one amplitude):
-        0 / 55 iterations with a timestep of $ 0.5 $ and a radius of $ 15 $}
-    \label{fig:ellipse_osc_perimeter_flow}
+    \caption{Area / perimeter flow on an ellipse with oscillations (one
+        amplitude)}
+
+    \label{fig:ellipse_osc_flow}
 \end{figure}
 
 \begin{figure}[h]
@@ -446,40 +416,44 @@ For one constant amplitude, see the figures \ref{fig:ellipse_osc_perimeter_flow}
 
     \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
     \includegraphics[scale=0.3]{2d/area/ellipse-osc2-20-15-25}
-    \subcaption{Area flow on an ellipse with oscillations (two amplitudes): 0 /
-        25 iterations with a timestep of $ 0.05 $ and a radius of $ 15 $}
-    \label{fig:ellipse_osc2_area_flow}
-
-    \includegraphics[scale=0.3]{2d/ellipse-osc2-20}
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-osc2-20-15-55}
-    \subcaption{Perimeter flow on an ellipse with oscillations (two amplitudes)
-        : 0 / 55 iterations with a timestep of $ 0.5 $ and a radius of $ 15 $}
-    \label{fig:ellipse_osc2_perimeter_flow}
+    \caption{Area /perimeter flow on an ellipse with oscillations (two
+        amplitudes)}
+
+    \label{fig:ellipse_osc2_flow}
 \end{figure}
 
 % TODO: explain why
 
-In another experiment we took points on a line segment and fixed the two points
-of the extremities. Then, we applied our flow on this point set. We expect the
-flow to smooth the point set: points should get closer and closer to an
-uniformly sampled set of points. See the figures \ref{fig:line_fixed_area} and
-\ref{fig:line_fixed_perimeter} for the results.
+Lastly, we generate points on a line segment and fixed the two points of the
+extremities. Then, we apply our flow on this point set. We expect the flow to
+smooth the point set: points should get closer and closer to an uniformly
+sampled set of points. See the figure \ref{fig:line_fixed_flow}.
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.5]{2d/area/line-01-15-0}
     \includegraphics[scale=0.5]{2d/area/line-01-15-50}
-    \subcaption{Area flow of points on a segment: 0 / 50 iterations with a timestep of $ 0.1 $}
-    \label{fig:line_fixed_area}
-
-    \includegraphics[scale=0.5]{2d/perimeter/line-05-15-0}
     \includegraphics[scale=0.5]{2d/perimeter/line-05-15-50}
-    \subcaption{Perimeter flow of points on a segment: 0 / 50 iterations with a timestep of $ 0.5 $}
-    \label{fig:line_fixed_perimeter}
+    \caption{Area / perimeter flow of points on a segment: 0 / 50 iterations}
+
+    \label{fig:line_fixed_flow}
 \end{figure}
 
-% TODO: explain why
+\paragraph{Minimization}
+
+We also check that the area of a union of balls decreases with the number of
+iterations, see the figure \ref{fig:area_time_decrease}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{2d/values-square-area}
+    \includegraphics[scale=0.3]{2d/values-ellipse-perimeter}
+    \caption{Evolution of the area on different point clouds with the area
+        flow : square / ellipse}
+    \label{fig:area_time_decrease}
+\end{figure}
 
 % {{{1 CONCLUSION
 \section{Conclusion}
