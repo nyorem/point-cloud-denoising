@@ -11,7 +11,13 @@ $-volume. The $d$-dimensional volume will be denoted by $ Vol^d $.
 \section{Mean Curvature Flow}
 
 In order to define what we call the Mean Curvature Flow, we will
-first need the notion of the deformation of a surface:
+first need the notions of an embedding and the deformation of a surface:
+
+\begin{definition}
+    $ X $ is a smooth embedding of $ Y $ if there exists a differentiable
+    function $ f : X \to Y $ such that: $ f $ is injective and the differential
+    of $ f $ is injective.
+\end{definition}
 
 \begin{definition}
     For a surface $ S_0 \subseteq \R^d $, we call a deformation of $ S_0 $ a
@@ -174,7 +180,7 @@ differential of deformations of surfaces.
             \begin{equation}
                 D X_t(p) =
                 \begin{pmatrix}
-                    1 + t \phi(p) k^1_S(p) & \cdots & 0 & \multirow{4}{*}{1 + t D \phi(p)} \\
+                    1 + t \phi(p) k^1_S(p) & \cdots & 0 & \multirow{4}{*}{$ 1 + t D \phi(p) $} \\
                     \vdots                 & \ddots & \vdots                      \\
                     \vdots                 &        & 1 + t \phi(p) k^{d-1}_S(p)  \\
                     0                      & \hdots & 0                           \\
