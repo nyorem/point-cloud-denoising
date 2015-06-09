@@ -48,7 +48,10 @@ diagram.
 
 Now, we can say that, because the Voronoi diagram defines a partition, we have:
 
-$$ Area(P^r) = Area \left( \bigcup_p B(p, r) \right) = \sum_p Area(V(p, P) \cap B(p, r)) $$
+\begin{equation}
+    Area(P^r) = Area \left( \bigcup_p B(p, r) \right) = \sum_p Area(V(p, P) \cap B(p, r))
+    \label{eqn:area-union-balls}
+\end{equation}
 
 % {{{3 ALGORITHM
 \paragraph{Algorithm}
@@ -130,10 +133,10 @@ Some special cases need to be handled:
 \begin{itemize}
     \item the boundary of the Voronoi cell is entirely outside the ball (i.e.
         there are no intersection), then we add $ \pi r^2 $ to the area of the
-        union (see \ref{fig:inter_voronoi_ball_2d:b}).
+        union (see Figure \ref{fig:inter_voronoi_ball_2d:b}).
     \item the boundary consists of two intersection points $ p $ and $ q $, then
         we add the triangle $ pvq $ and the angular sector $ \vec{vp}, \vec{vq}
-        $ (see \ref{fig:inter_voronoi_ball_2d:c}).
+        $ (see Figure \ref{fig:inter_voronoi_ball_2d:c}).
     \item there is only one point on the boundary (can happen if adjacent balls
         are tangential), then we add $ \pi r^2 $.
 \end{itemize}
@@ -159,8 +162,8 @@ The main difficulty here was to compute the intersection between a Voronoi cell
 and a circle. The Voronoi cell is computed using its dual graph: the Delaunay
 triangulation. The intersection procedure was described previously.
 
-We also used the automatic differentiation technique (see the appendix
-\ref{appendix:ad}): it allowed us to only worry about the computation of the
+We also used the automatic differentiation technique (see Appendix
+\appendixref{appendix:ad}): it allowed us to only worry about the computation of the
 area and not of its gradient.
 
 % {{{1 EXPERIMENTS
@@ -174,7 +177,7 @@ perimeter of the boundary. We used the automatic differentiation technique
 described in the appendix \ref{appendix:ad} to compute the gradient of the
 previously computed area.
 
-See the figures \ref{fig:gradients_area_2d} for a few examples of such gradients
+See Figures \ref{fig:gradients_area_2d} for a few examples of such gradients
 for different input point sets. The colour of the vector depend on the norm of
 the gradient: the bigger the gradient is, the redder the vector will be.
 
@@ -188,7 +191,7 @@ the gradient: the bigger the gradient is, the redder the vector will be.
 \end{figure}
 
 We did the same thing using the gradient of the perimeter of the boundary on the
-same point clouds (see the figures \ref{fig:gradients_perimeter_2d}).
+same point clouds (see Figures \ref{fig:gradients_perimeter_2d}).
 
 \begin{figure}[h]
     \centering
@@ -203,7 +206,7 @@ In the previous screenshots, we observe that the gradients are in the same
 direction as the normals to the underlying curve. This is the case if the radius
 of the balls are big enough and if the sampling is sufficiently uniform. Also,
 the norm of these gradients is related to the mean curvature of the underlying
-curve (see proposition \ref{prop:gradient-mean-curvature}).
+curve (see Proposition \ref{prop:gradient-mean-curvature}).
 
 % {{{2 MEAN CURVATURE ESTIMATION
 \subsection{Mean curvature estimation}
@@ -224,8 +227,10 @@ $$
 $$
 
 We recall the formula for computing the curvature of a parametrized curve:
-$$ \kappa(t) = \frac{x'(t) y''(t) - y'(t) x''(t)}{(x'^2(t) +
-    y'^2(t))^{\frac{3}{2}} } $$
+\begin{equation}
+    \kappa(t) = \frac{x'(t) y''(t) - y'(t) x''(t)}{(x'^2(t) +
+        y'^2(t))^{\frac{3}{2}} }
+\end{equation}
 
 For an ellipse, we obtain:
 $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
@@ -252,7 +257,7 @@ of the underlying curve.
 
 Now, we study the absolute difference between the computed and expected
 curvatures for different choices of gradients (area, perimeter of the boundary,
-weighted...), see the figure \ref{fig:2d-curvature-error-ellipse}.
+weighted...), see Figure \ref{fig:2d-curvature-error-ellipse}.
 
 \begin{figure}[h]
     \centering
@@ -342,7 +347,7 @@ smoothing effect of the flows.
 \end{figure}
 
 Next, we add some outliers around the ellipse and observe the effects of the two
-flows: see the figure \ref{fig:ellipse_outliers_flow}. We see that the outliers
+flows: see Figure \ref{fig:ellipse_outliers_flow}. We see that the outliers
 are "swallowed" by the initial point set in both cases. But, for the area flow,
 a hole is created at the same place where the outliers were added.
 
@@ -357,7 +362,7 @@ a hole is created at the same place where the outliers were added.
 \end{figure}
 
 Furthermore, we added Gaussian noise on these points to test the robustness
-of our algorithm, see the figure \ref{fig:ellipse_noise_flow}.
+of our algorithm, see Figure \ref{fig:ellipse_noise_flow}.
 
 \begin{figure}[h]
     \centering
@@ -396,8 +401,8 @@ neighbours we take into account, the more "global" the movement will be.
 
 We also add varying oscillations to our ellipse in order to see the adaptive
 part of the algorithm. We generate oscillations with one or two amplitudes. For
-one constant amplitude, see the figure \ref{fig:ellipse_osc_flow}. For two
-different amplitudes see \ref{fig:ellipse_osc2_flow}.
+one constant amplitude, see Figure \ref{fig:ellipse_osc_flow}. For two
+different amplitudes see Figure \ref{fig:ellipse_osc2_flow}.
 
 \begin{figure}[h]
     \centering
@@ -428,7 +433,7 @@ different amplitudes see \ref{fig:ellipse_osc2_flow}.
 Lastly, we generate points on a line segment and fixed the two points of the
 extremities. Then, we apply our flow on this point set. We expect the flow to
 smooth the point set: points should get closer and closer to an uniformly
-sampled set of points. See the figure \ref{fig:line_fixed_flow}.
+sampled set of points. See Figure \ref{fig:line_fixed_flow}.
 
 \begin{figure}[h]
     \centering
@@ -444,7 +449,7 @@ sampled set of points. See the figure \ref{fig:line_fixed_flow}.
 \paragraph{Minimization}
 
 We also check that the area of a union of balls decreases with the number of
-iterations, see the figure \ref{fig:area_time_decrease}.
+iterations, see Figure \ref{fig:area_time_decrease}.
 
 \begin{figure}[h]
     \centering
@@ -474,9 +479,6 @@ removed when we use the weighted versions of the flows.
 
 % In this chapter, we saw how to simulate discrete mean curvature flows by using
 % the gradient of the volume of the $r$-offset of a point cloud.
-
-% The methods used in this chapter are hard to extend in 3D but have already been
-% done: see \cite{cazals2011computing}.
 
 % Also, we want to use polyhedral (anisotropic) norms, a thing that the previous
 % method does not allow since it only deals with intersection of a Voronoi cell

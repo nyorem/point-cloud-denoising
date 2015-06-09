@@ -1,200 +1,146 @@
 \chapter{3D case}
+\label{chapter:3d}
 
 % {{{1 PROBLEM
 \section{Problem}
 
-In this part, we will be interested in doing the same work in 3D as in 2D except
-that we will use a convex polyhedron instead of an euclidean ball in the
-Minkowski sum. This will allow us to construct an anisotropic flow where the
-flow will have different effects depending on the direction, like the normals of
-the chosen convex polyhedron or not.
+In this part, we will focus on point clouds in 3D that sample a surface.  We can
+do the same work as the one done in 2D that is to say smooth the point cloud
+using a mean curvature flow approach: compute the gradients of the volume of a
+union of balls. The computation of the volume has already been done in
+\cite{cazals2011computing}. But, since the expected results are the
+same (see Chapter \ref{chapter:theory}): smoothing of the point cloud and a
+discretization of the mean curvature flow, we preferred to focus to an other
+kind of flow: an anisotropic one.
 
-This choice will raise a number of issues such as the construction of the
-Voronoi diagram of a point set under a polyhedral norm and the computation of
-the volume of the intersection of a Voronoi cell and a convex polyhedron.
+The idea of this flow is to replace the union of balls with a union of convex
+polyhedra. The choice of the polyhedron will directly influence the directions
+in which the points will be moved.
+
+For doing that, we will replace the euclidean ball $ B(0, r) $ with a convex
+polyhedron which can be considered as the unit ball for a certain norm $ N $
+which we call a polyhedral norm (see Section \ref{sec:polyhedral-norm}). Then,
+the formula \ref{eqn:area-union-balls} will be valid if we replace $ B(p, r) $
+with $ B_N(p, r) $ and $ V $ by $ V_N $ (the Voronoi diagram computed for the
+norm $ N $) only if the points are in general position. See Appendix
+\appendixref{appendix:voronoi-polyhedral-norm} for a study of some properties of
+the Voronoi diagram for a polyhedral norm. Indeed, see Figure
+\ref{fig:3d-voronoi-cube} for a look at a particular case where the chosen
+polyhedron is a cube (norm $ L^\infty $). We see that if we chose two aligned
+points, the bisectors are not lines anymore and so the Voronoi diagram does not
+decompose the plane anymore. Furthermore, the computation of the Voronoi cells
+for a polyhedral norm is a tough work (see \cite{ma2000bisectors} for a thorough
+study).
+
+\begin{figure}[h]
+    \centering
+
+    \includegraphics[scale=0.5]{3d/voronoi-cube-non-aligned}
+    \hspace{2cm}
+    \includegraphics[scale=0.5]{3d/voronoi-cube-aligned}
+    \caption{Bisector for the $ L^\infty $ norm: two non aligned points / two
+        aligned points}
+    \label{fig:3d-voronoi-cube}
+\end{figure}
+
+That's why we do not use the Voronoi diagram for the norm $ N $ but the standard
+Voronoi diagram for the $ L^2 $ norm. Instead of computing the intersection $
+V_N(p, P) \cap B(p, r) $ we compute $ V(p, P) \cap B(p, r) $. In order to
+compute this intersection, we used different methods: a naive one, one based on
+inclusion-exclusion formula. We will see that both of these methods are
+approximated ones. There is also one method which is exact but we did not have
+the time to implement it in our internship, it is based on 3D arrangements and
+overlays.
+
+Firstly, we will explain what we call the naive method. Secondly, we will study the
+inclusion-exclusion formula. Then, we will talk about the choices we made for
+the implementation and finally, we will run experiments to validate our
+expectations.
 
 % {{{1 POLYHEDRAL NORM
 \section{Polyhedral norm}
-A polyhedral norm is a norm $ N $ defined as the following:
+\label{sec:polyhedral-norm}
+A polyhedral norm is a function $ N $ defined as the following:
 
-$$ \forall x \in \mathbb{R}^d,~ N(x) = \max_{i} (x | v_i) $$
+\begin{equation}
+    \forall x \in \mathbb{R}^d,~ N(x) = \max_{i} (x | v_i)
+\end{equation}
 
 where the $ v_i $ are given vectors from $ \mathbb{R}^d $.
 
-This definition implies that the unit ball for the norm $ N $ is a polyhedron.
-Indeed, if $ x \in B_N(0, 1) $, then :
+This definition implies that the unit ball for the norm $ N $ is a
+polyhedron.Indeed, if $ x \in B_N(0, 1) $, then :
 
-$$ N(x) \leq 1 \Longleftrightarrow \forall i, (x | v_i) \leq 1 $$
+$$ N(x) \leq 1 \Longleftrightarrow \forall i,~(x | v_i) \leq 1 $$
 
 So, the unit ball is defined by linear constraints. Thus, it is an intersection
-of halfspaces and so is a convex polyhedron $ K $. Hence, computing the $ r $-offset
-of a point cloud under a polyhedral norm $ N $ is the same as computing the
-Minkowski sum (see the definition \ref{def:minkowski-sum}) of a point cloud and $ K $.
+of halfspaces and so is a convex polyhedron $ K $ The vectors $ v_i $ are the
+normal vectors to the facets of $ K $. We will denote by $ B_K(0, 1) $ the unit
+ball defined by the convex polyhedron $ K $.
 
-Conversely, if the convex polyhedron $ K $ is given then the vectors $ v_i $
-previously defined are the outwards normals of the facets of $ K $.
+% {{{1 VOLUME OF A UNION OF POLYHEDRA
+\section{Volume of a union of polyhedra}
 
-We will denote by $ B_K(0, 1) $ the unit ball defined by the convex polyhedron $ K $.
+In this section, we will show how to compute an approximation of the volume of
+a union of polyhedra using two different methods: a naive one and one based on
+inclusion-exclusion formula.
 
-% {{{1 CONSTRUCTION OF THE VORONOI DIAGRAM FOR A POLYHEDRAL NORM
-\section{Construction of the Voronoi diagram for a polyhedral norm}
-
-The main problem of a polyhedral norm is that the underlying Voronoi diagram is
-not a partition of the space anymore.
-
-For example, if we consider the $ L_\infty $ norm in the plane and two aligned
-points, we have the following Voronoi diagram:
-
-% TODO: insert figure
-
-% {{{2 SYMBOLIC PERTURBATION
-\subsection{Symbolic perturbation}
-
-Given a polyhedral norm $ N $, we define its symbolic perturbation $ N_\epsilon
-$ by: $ N_\epsilon (x) = N + \epsilon || x || $ where $ || \cdot || $ is an
-euclidean norm (typically an $ L_p $ norm where $ 1 \leq p \leq +\infty $).
-
-Then, we will show that the Voronoi cell of a point $ x $ under the norm $
-N_\epsilon $ converges (when $ \epsilon \rightarrow 0 $) towards the Voronoi
-cell defined as the following:
-
-$$ V_{N'}(x, X) = \{ y \in \mathbb{R}^d,~\forall x' \in X,~N(x - y) \leq N(x'
--y) \text{ or } (N(x - y) = N(x' - y) \text { and } || x -y || \leq || x' - y ||) \} $$
-
-First, we define the convergence of a set $ A $ towards another set $ B $: we
-say that $ A $ converges towards $ B $ if the Hausdorff distance of $ A $ and $
-B $ converges towards $ 0 $.
-
-We recall that the Hausdorff distance is defined as follows:
-
-$$ d_H(A, B) = \min \{ r \geq 0,~X \subset Y^{\oplus r} \text{ and } Y \subset
-X^{\oplus r} \} $$
-
-Now, we prove that $ V_{N_\epsilon}(x, X) $ converges towards $ V_{N'}(x, X) $
-under the Hausdorff distance.
-
-We want to prove that $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X)) \rightarrow 0 $
-Let us take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
-\epsilon \leq \epsilon_\delta $ then $ d_H(V_{N_\epsilon}(x, X), V_{N'}(x, X))
-\leq \delta $. The last inequality is equivalent to say that:
-\begin{align}
-    V_{N'}(x, X)) \subset V_{N_\epsilon}(x, X)^{\oplus \delta} \\
-    V_{N_\epsilon}(x, X) \subset V_{N'}(x, X)^{\oplus \delta}
-    \label{eqn:haussdorf-voronoi1}
-\end{align}
-
-Let us take care of the first inclusion:
-% TODO: proof
-
-And now the second inclusion:
-Let us take $ y \in V_{N_\epsilon}(x, X) $. By definition of $ N_\epsilon $, we
-have: $ \forall x' \in X,~N(x - y) + \epsilon || x - y || \leq N(x' - y) +
-\epsilon || x' - y || $. If we choose $ z = y $ then $ z $ satisfies $ || z - y
-|| \leq \delta $ and $ z \in V_{N'}(x, X) $. Indeed, using the previous
-inequality, there are two cases: either $ N(x - y) \leq N(x' - y) $ or $ N(x -
-y) = N(x' - y) $. In the latter case, the inequality reduces to: $ || x - y || \leq
-|| x' - y || $. So $ y \in V_{N'}(x, X)^{\oplus \delta} $.
-
-We also want to prove that this new Voronoi diagram has good properties, notably
-this new diagram forms a good "partition" of $ \mathbb{R}^d $. Thus, we need to
-define what a "good" partition is.
-We can define it in two ways:
-\begin{enumerate}
-    \item for any point $ x $, $ V_{N'}(x, X) $ is homeomorphic to a disk. For
-        any couple $ (x, y) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) $ is
-        homeomorphic to a segment / half-line / line. For any triplet $ (x, y,
-        z) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) \cap V_{N'}(z, X) $ is
-        homeomorphic to a point.
-    \item let us consider the open Voronoi regions: $ \ocirc{V}_N(x, X) = \{ y
-        \in X,~ N(x - y) < N(x' - y)\} $. Then, we can define a good partition
-        by saying that the complement of the open Voronoi regions must have a
-        zero measure.
-\end{enumerate}
-% TODO: definition
-
-% {{{2 CONSTRUCTION OF A VORONOI CELL
-\subsection{Construction of a Voronoi cell}
-
-The construction of the Voronoi diagram under a polyhedral norm is a complex
-topic and had been studied thoroughly in \cite{ma2000bisectors}.
-
-For the duration of this internship, we had the choice between three paths
-(by increasing order of difficulty):
-\begin{enumerate}
-    \item Construction of $ V(p, P) \cap B(p, r) $
-    \item Construction of $ V(p, P) \cap B_N(p, r) $
-    \item Construction of $ V_N(p, P) \cap B_N(p, r) $
-\end{enumerate}
-
-We chose the second path because the third one, as said previously, is a very
-complex subject and can not be done during the internship because of its length.
-Also, we can approximate the first one using the second one by choosing for $
-B_N(p, r) $ a discretization of a sphere.
-
-We used two different methods in order to evaluate the volume (or the area of
-the boundary or more generally an additive measure $ \mu $) of $ V(p, P) \cap
-B_N(p, r) $: a simple method by directly summing the quantities $ \mu(V(p, P)
-\cap B_N(p, r)) $ or by using a variant of the inclusion-exclusion formula.
-
-We will show that both of these methods are approximations.
-
-We will also briefly describe an exact method (based on 3D arrangements).
-
-% {{{3 NAIVE METHOD
-\subsubsection{Naive method}
-% TODO
-
+% {{{2 NAIVE METHOD
+\subsection{Naive method}
 We want to compute :
 
-$$ \mu(P + r B_N(0, 1)) = \sum_p \mu(\bigcup_p B_N(p, r) \cap V(p, P)) $$
+\begin{equation}
+    Vol(\bigcup_{p \in P} B_N(p, r)) = \sum_p Vol(\bigcup_p B_N(p, r) \cap V(p, P))
+\end{equation}
 
-The idea of this method is to approximate $ \mu(\bigcup_p B_N(p, r) \cap V(p,
-P)) $ by $ \mu(B_N(p, r) \cap V(p, P)) $.
-
-It is an approximation because, for example, if we want to compute the perimeter
-of the boundary of squares in 2D, there is a difference between what we want to compute
-and what we actually compute is (see the figures \ref{fig:3d-inclusion-exclusion-squares-1}
-and \ref{fig:3d-inclusion-exclusion-squares-2}).
+The idea of this method is to approximate $ Vol(\bigcup_p B_N(p, r) \cap V(p,
+P)) $ by $ Vol(B_N(p, r) \cap V(p, P)) $. Then, we just have to compute the
+intersection of halfspaces (see Section \ref{sec:3d-implementation} for
+details). It is an approximation because, for example, if we want to compute the
+perimeter of the boundary of squares in 2D, there is a difference between what
+we want to compute and what we actually compute is (see Figure
+\ref{fig:3d-inclusion-exclusion-squares}).
 
 \begin{figure}[h]
     \centering
 
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares_truth}
-    \caption{In green what we want}
-    \label{fig:3d-inclusion-exclusion-squares-1}
-
+    \hspace{2cm}
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
-    \caption{In red what we actually compute}
-    \label{fig:3d-inclusion-exclusion-squares-2}
+    \caption{In green, what we want and in red what we actually compute}
+    \label{fig:3d-inclusion-exclusion-squares}
 \end{figure}
 
-We see that there is a small difference between the two: our computation is just
+There is a small difference between the two: our computation is just
 an approximation.
 
 % TODO: explain approximation
 
-% {{{3 INCLUSION-EXCLUSION FORMULA
-\subsubsection{Inclusion-exclusion formula}
+% {{{2 INCLUSION-EXCLUSION FORMULA
+\subsection{Inclusion-exclusion formula}
 % TODO
 
 The inclusion-exclusion formula is a well known formula which describes the
 indicator function of a union of sets: given a finite number of sets $ A = \{
 A_1, \ldots, A_N \} $, we have:
 
-$$ \indicator{\bigcup A_i} = \sum_{\emptyset \neq X \subseteq A} (-1)^{card X -
-    1} \indicator{\bigcap X} $$
+\begin{equation}
+    \indicator{\bigcup A_i} = \sum_{\emptyset \neq X \subseteq A} (-1)^{card X -
+        1} \indicator{\bigcap X}
+\end{equation}
 
 This formula can also be expressed using the notion of nerve as shown in
-\cite{attali2007inclusion}. We defined the nerve of $ A = \{ A_x, x \in X \} $
-to be the graph where an edge exists between $ x $ and $ y $ only if $ A_x \cap
-A_y \neq \emptyset $.
-
-Then, we can write the inclusion-exclusion formula as:
+\cite{attali2007inclusion}. We define the nerve of $ A = \{ A_x, x \in X \} $
+to be the graph where an edge exists between $ x $ and $ y $ if $ A_x \cap A_y
+\neq \emptyset $. Then, we can write the inclusion-exclusion formula as:
 
 $$ \indicator{\bigcup A_x} = \sum_{\sigma \in Nerve(A)} (-1)^{\dim \sigma}
 \indicator{\bigcap \sigma} $$
 
-In our case, we get:
+$ \sigma $ represents any simplex in the nerve. Its dimension is defined as: $
+\dim \sigma = card \sigma - 1 $.
+
+If we consider a union of polyhedra, we can write a similar formula:
 
 \begin{equation}
     \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(B)} (-1)^{\dim \sigma}
@@ -204,33 +150,30 @@ In our case, we get:
 
 where $ B $ is the collection of all the balls $ B_N(p, r), p \in P $.
 
-We will need the following definition:
-\begin{definition}
-    The $\alpha$-complex of a set of points $ X $ denoted by $ Del(X, \alpha) $
-    is a subset of the Delaunay triangulation.
+Now, since the nerve can be a really big object, we want to restrict the
+computation to what we call the $\alpha$-complex of a set of points:
 
-    For each simplex of the Delaunay triangulation, we can associate to it a
-    characteristic radius: the radius of the smallest empty circle containing
-    the simplex.
+\begin{definition} The $\alpha$-complex of a set of points $ X $ denoted by $
+    Del(X, \alpha) $ is a subset of the Delaunay triangulation. For each simplex
+    of the Delaunay triangulation, we can associate to it a characteristic
+    radius: the radius of the smallest empty circle containing the simplex.
 
     Now, the $\alpha$-complex contains all the simplices of the Delaunay
-    triangulation whose characteristic radii is smaller than $\alpha$.
+    triangulation whose characteristic radius is smaller than $\alpha$.
 \end{definition}
 
-Now, we will approximate the equation \ref{eqn:incl_excl_simplices} by replacing $ Nerve(B)
-$ by $ Del(P, r) $.
+Now, we can ask if the formula \ref{eqn:incl_excl_simplices} is still valid if
+we replace $ Nerve(B) $ by $ Del(P, r) $.
 
-% TODO: explain why approximation
-
-A question we can ask is: is the inclusion-exclusion formula still valid if we
-replace $ Nerve(B) $ with $ Nerve(\{ B_N(p, r) \cap V(p, P), p \in P\}) $ ?
+A question we can ask is the following: is the inclusion-exclusion formula still
+valid if we replace $ Nerve(B) $ with $ Nerve(\{ B_N(p, r) \cap V(p, P), p \in
+P\}) $ ?
 
 If we want to prove this assertion, we may use the technique used to prove the
-inclusion-exclusion formula for union of balls.
-
-The proof starts by defining the subcomplex $ L_p $ induced by a vertex $ p $.
-We consider all the polyhedrons that contains $ p $ and we construct the nerve of
-it. Formally, $ L_p = Nerve(\{ B_N(x, r), p \in B_n(x, r)\}) $.
+inclusion-exclusion formula for a union of balls. The proof starts by defining
+the subcomplex $ L_p $ induced by a vertex $ p $.  We consider all the
+polyhedrons that contains $ p $ and we construct the nerve of it. Formally, $
+L_p = Nerve(\{ B_N(x, r), p \in B_n(x, r)\}) $.
 
 Then, when we evaluate the indicator function at $ p $ of the union, we can
 decompose it in two parts: simplices of $ L_p $ and the other ones.
@@ -257,14 +200,15 @@ then we have: $ K_p \subseteq L_p \subseteq K'_p $ where $ K_p $ (resp. $ K'_p $
 is the induced subcomplex of $ p $ in the simplicial complex defined by all the
 balls $ B(p, r) $ (resp. $ B(p, r') $), $ p \in P $.
 
-Then, we know that $ K_p $ and $ K'_p $ are either empty or contractible. We
-want to deduce that $ L_p $ is either empty or contractible which will end the
-proof.
+Then, we know that $ K_p $ and $ K'_p $ are either empty or contractible. If
+we are able to deduce that $ L_p $ is either empty or contractible, then the
+proof is done.
 
 % TODO: finish the proof
 
 % {{{1 IMPLEMENTATION DETAILS
 \section{Implementation details}
+\label{sec:3d-implementation}
 
 We used the same libraries as in the 2D case except for the rendering part, in
 2D, we used custom \texttt{QWidget}. In this part, we choose to use an
@@ -309,8 +253,7 @@ Programmatically, we compute this intersection in the following manner:
         there is an edge between the two corresponding primal vertices.
 \end{enumerate}
 
-Here is a simplified version of this algorithm:
-\lstinputlisting[language=C++]{code/halfspace_intersection_with_dual_3.h}
+See Appendix \appendixref{appendix:code-intersection} for a simplified version of this algorithm:
 
 Let's now explain in more details the integration of the automatic
 differentiation tool.
@@ -419,50 +362,4 @@ is a sphere and the polyhedron is a cube.
 % - description des différentes méthodes + comparaison
 % - résultats
 
-% vim: set spelllang=en :
-% {{{1 THEORY
-\section{Theory}
-
-In this section, we will show that the function that we are trying to minimize
-is not the volume of the Minkowski sum but another functional close to the
-first one.
-
-We will need the definition of the radial function of a convex set:
-
-\begin{definition}
-    For a convex set $ K $, we define the radial function $ \rho_K $ by:
-    $$ \rho_K(x) = \sup \{ r \in \R,~rx \in K \} $$
-\end{definition}
-
-Let us denote by $ A $ the following functional:
-
-$$ A(S) = \int_S \int_{-r \rho_K(-\vec{n}_S(x))}^{r \rho_K(\vec{n_S}(x))} J_\phi(x)
-dt dx $$
-
-where $ K $ is the chosen convex polyhedron and $ S $ the underlying smooth
-surface we sample points on.
-
-$ \phi $ is the usual change of variable: $ \phi(x) = x + t \vec{n}_S(x) $ for $
-x \in S $ and $ t \in [-r \rho_K(-\vec{n}_S(x)), r \rho_K(\vec{n_S}(x)) ] $.
-
-We have, in 3D, using the lemma \ref{lemma:diffeo}:
-
-\begin{align*}
-    A(S) &= \int_S \int_{-r \rho_K(-\vec{n}_S(x))}^{r \rho_K(\vec{n_S}(x))}
-    \left[ 1 + (\kappa_1(x) + \kappa_2(x)) t + \kappa_1(x) \kappa_2(x) t^2
-    \right] dt dx \\
-    &= \int_S (r \rho_K(\vec{n_S}(x)) + r \rho_K(-\vec{n_S}(x))) dx + O(r^2)
-\end{align*}
-
-Now, if $ K $ is symmetric, i.e. if $ x \in K $ then $ -x \in K $ which implies
-that $ \rho_K(\vec{n_S}(x)) = -\rho_K(-\vec{n_S}(x) $, then we get:
-
-$$ A = 2r \int_S \rho_K(\vec{n}_S(x)) dx + O(r^3) $$
-
-So:
-
-$$ \frac{1}{2r} A = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2) $$
-
-Then, the functional we minimized is $ A $ and not the volume if the Minkowski
-sum.
-
+% vim: set spelllang=en filetype=tex :

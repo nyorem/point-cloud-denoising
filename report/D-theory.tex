@@ -16,7 +16,7 @@ first need the notions of an embedding and the deformation of a surface:
 \begin{definition}
     $ X $ is a smooth embedding of $ Y $ if there exists a differentiable
     function $ f : X \to Y $ such that: $ f $ is injective and the differential
-    of $ f $ is injective.
+    of $ f $ at $ x $ is injective for any $ x \in X $.
 \end{definition}
 
 \begin{definition}
@@ -24,9 +24,9 @@ first need the notions of an embedding and the deformation of a surface:
     smooth function $ X : S_0 \times I \to \R^d $ where $ I \subseteq \R $
     (which represents the time) with the following properties:
     \begin{itemize}
-        \item $ X(S_0, .) = id $.
-        \item for any $ t \in I $, we denote $ X_t = X(S_0, t) $ and $ S_t =
-            X_t(S_0) $. $ S_t $ is an embedding of $ S_0 $ in $ \R^d $.
+        \item $ X(., 0) = id_{S_0} $.
+        \item for any $ t \in I $, we denote $ X_t = X(., t) $ and $ S_t =
+            X_t(S_0) $. $ X_t $ is an embedding of $ S_0 $ in $ \R^d $.
     \end{itemize}
 \end{definition}
 
@@ -37,7 +37,7 @@ $ of a surface $ S_0 $ such that:
     \partiald{X_t(x)}{t} = \meanv{S_t}(x)
 \end{equation}
 
-where $ \meanv{S_t}(x) $ is the mean curvature vector (see the proposition
+where $ \meanv{S_t}(x) $ is the mean curvature vector (see Definition
 \ref{prop:curvatures-surface}) of $ S_t $ at $ x $ and $ \partiald{X_t(x)}{t} $
 is the normal velocity at $ x $.
 
@@ -332,7 +332,7 @@ The following proposition bounds the error of this approximation:
 \begin{proof}
     Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $. Then, we
     parametrize $ P^r $ by $ f : S \to P^r $ where $ f(p) = p + r(p)
-    \vec{n}_S(p) $ for $ r(x) \in [0, r] $ (see
+    \vec{n}_S(p) $ for $ r(x) \in [0, r] $ (see Figure
     \ref{fig:offset-parametrization}).
 
     \begin{figure}[h]
@@ -442,7 +442,7 @@ For computing this quantity, we will define the following sets:
 \begin{itemize}
     \item $ B_1 = \{ x \in B, (x - p_i | \delta p_i) \geq 0\} $
     \item $ A^1_{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
-        "upper" gained area (see \ref{fig:demo-gradient} for a drawing of the
+        "upper" gained area (see Figure \ref{fig:demo-gradient} for a drawing of the
         situation in 2D)
     \item $ B_2 = \{ x \in B, (x - p_i | \delta p_i) \leq 0\} $
     \item $ A^2_{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
@@ -555,7 +555,7 @@ We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
         order of $ O(\frac{\epsilon^2}{r}) $.
     \item the second one is that if the sampling is dense enough then we can
         replace $ p $ by the projection of $ x $ on $ S $: $ \forall p \in S,~x
-        \in V(p, P),~p = p_S(x) + O(\epsilon) $, see figure
+        \in V(p, P),~p = p_S(x) + O(\epsilon) $, see Figure
         \ref{fig:voronoi-cylinder}.  For this approximation to hold, it is
         necessary for the pointed out distance to be greater than $ \epsilon $
         i.e. $ r \gg \epsilon $ which means that $ \frac{\epsilon}{r} $ needs to
@@ -620,9 +620,9 @@ We can summarize the situation with the following diagram:
 
 $ A^r $ represents the discretization of the area of an hypersurface: it
 is $ \frac{Vol^d(P^r)}{2r} $ which converges towards the continuous area (see
-proposition \ref{prop:approx-volume-area}). There is also a convergence property
+Proposition \ref{prop:approx-volume-area}). There is also a convergence property
 for the gradients: the discretized gradient converges towards the continuous one
-(see proposition \ref{prop:gradient-mean-curvature}).
+(see Proposition \ref{prop:gradient-mean-curvature}).
 
 In some sense, "discretization" and "gradient" commute: the gradient of the
 discretization converges towards the continuous gradient.
@@ -658,5 +658,52 @@ Finally, we were interested in replacing the ball that we use to make the
 Minkowski sum with by a convex polyhedron in order to have an anisotropic
 smoothing. A more detailed study of this problem will be done in the section
 dedicated to the 3D case.
+
+% vim: set spelllang=en :
+% {{{1 3D CASE
+\section{3D case}
+
+In this section, we will study the influence of the choice we made by replacing,
+in chapter \ref{chapter:3d}, the Voronoi diagram computed with a polyhedral norm
+with the standard one. We will show that the function that we minimized is not
+the volume of the Minkowski sum but another functional. For this, we will need
+the definition of the radial function of a convex set:
+
+\begin{definition}
+    For a convex set $ K $, we define the radial function $ \rho_K $ by:
+    $$ \rho_K(x) = \sup \{ r \in \R,~rx \in K \} $$
+\end{definition}
+
+For a surface $ S $ and a deformation $ X(p, t) = p + t \vec{n}_S(p) $ for $ t \in
+[-r \rho_K(-\vec{n}_S(p)), r \rho_K(\vec{n_S}(p)) ] $, let us denote by $ A' $
+the following functional:
+
+$$ A'(S) = \int_S \int_{-r \rho_K(-\vec{n}_S(p))}^{r \rho_K(\vec{n_S}(p))}
+J_X(p, t) dt dp $$
+
+where $ K $ is a convex polyhedron.
+
+We have, in 3D, using the lemma \ref{lemma:diffeo}:
+
+\begin{align*}
+    A'(S) &= \int_S \int_{-r \rho_K(-\vec{n}_S(x))}^{r \rho_K(\vec{n_S}(x))}
+    \left[ 1 + (\kappa_1(x) + \kappa_2(x)) t + \kappa_1(x) \kappa_2(x) t^2
+    \right] dt dx \\
+    &= \int_S (r \rho_K(\vec{n_S}(x)) + r \rho_K(-\vec{n_S}(x))) dx + O(r^2)
+\end{align*}
+
+Now, if $ K $ is symmetric, i.e. if $ x \in K $ then $ -x \in K $ which implies
+that $ \rho_K(\vec{n_S}(x)) = -\rho_K(-\vec{n_S}(x) $, then we get:
+
+\begin{equation}
+    A'(S) = 2r \int_S \rho_K(\vec{n}_S(x)) dx + O(r^3)
+\end{equation}
+
+So:
+
+$$ \frac{1}{2r} A'(S) = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2) $$
+
+Then, the functional we minimized is $ A $ and not the volume of the Minkowski
+sum.
 
 % vim: set spelllang=en :

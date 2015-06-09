@@ -23,8 +23,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage[all]{xy} % for diagrams
-\usepackage{listings}
-\usepackage{multirow}
+\usepackage{listings} % for code excerpts
+\usepackage{multirow} % for multicolumn / multirow arrays
 
 \usepackage{lineno}
 % \linenumbers
@@ -48,6 +48,7 @@
 \newcommand{\surface}{S}
 \newcommand{\mean}[1]{H_{#1}}
 \newcommand{\meanv}[1]{\vec{H}_{#1}}
+\newcommand{\appendixref}[1]{\textit{\nameref{#1}}}
 
 % Custom theorems
 \newtheorem{definition}{Definition}
@@ -151,7 +152,9 @@ Mr HÉTROY-WHEELER Franck\\
 \appendix
 
 % Appendix
-\input{A-AD.tex}
+\input{appendix-A-AD.tex}
+\input{appendix-B-code-intersection.tex}
+\input{appendix-C-voronoi-polyhedral-norm.tex}
 
 % Bibliography
 \bibliographystyle{plain}
