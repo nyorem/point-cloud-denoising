@@ -1,8 +1,13 @@
-\chapter{Halfspace intersection}
+\chapter{Half-space intersection}
 \label{appendix:code-intersection}
 
-Here is a sketch of the code used in the 3D case for computing the intersection of halfspaces:
+Here is a sketch of the code used in the 3D case for computing the intersection
+of half-spaces:
 
 \lstinputlisting[language=C++]{code/halfspace_intersection_with_dual_3.h}
+
+The function \texttt{construct\_dual} constructs the dual polyhedron by
+attaching to each vertex its corresponding primal plane. The function
+\texttt{primal\_from\_dual} constructs the primal polyhedron from the dual one.
 
 % vim: set spelllang=en :

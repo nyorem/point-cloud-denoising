@@ -259,7 +259,7 @@ In this section, we will try to compute an approximation of the area of an
 hypersurface with only knowing points sampled on it.
 
 First, the $r$-offset can also be seen as the Minkowski sum of $ K $ and the
-euclidean ball $ B(0, r) $.
+Euclidean ball $ B(0, r) $.
 
 \begin{definition}
     For any sets $ A $ and $ B $ of a vector space, we define the Minkowski sum
@@ -662,6 +662,7 @@ dedicated to the 3D case.
 % vim: set spelllang=en :
 % {{{1 3D CASE
 \section{3D case}
+\label{sec:theory-3d-case}
 
 In this section, we will study the influence of the choice we made by replacing,
 in chapter \ref{chapter:3d}, the Voronoi diagram computed with a polyhedral norm
@@ -678,9 +679,10 @@ For a surface $ S $ and a deformation $ X(p, t) = p + t \vec{n}_S(p) $ for $ t \
 [-r \rho_K(-\vec{n}_S(p)), r \rho_K(\vec{n_S}(p)) ] $, let us denote by $ A' $
 the following functional:
 
-$$ A'(S) = \int_S \int_{-r \rho_K(-\vec{n}_S(p))}^{r \rho_K(\vec{n_S}(p))}
-J_X(p, t) dt dp $$
-
+\begin{equation}
+    A'(S) = \int_S \int_{-r \rho_K(-\vec{n}_S(p))}^{r \rho_K(\vec{n_S}(p))}
+    J_X(p, t) dt dp
+\end{equation}
 where $ K $ is a convex polyhedron.
 
 We have, in 3D, using the lemma \ref{lemma:diffeo}:
@@ -693,17 +695,18 @@ We have, in 3D, using the lemma \ref{lemma:diffeo}:
 \end{align*}
 
 Now, if $ K $ is symmetric, i.e. if $ x \in K $ then $ -x \in K $ which implies
-that $ \rho_K(\vec{n_S}(x)) = -\rho_K(-\vec{n_S}(x) $, then we get:
+that $ \rho_K(\vec{n_S}(x)) = -\rho_K(-\vec{n_S}(x)) $, then we get:
 
 \begin{equation}
     A'(S) = 2r \int_S \rho_K(\vec{n}_S(x)) dx + O(r^3)
 \end{equation}
 
 So:
+\begin{equation}
+    \frac{1}{2r} A'(S) = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2)
+\end{equation}
 
-$$ \frac{1}{2r} A'(S) = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2) $$
-
-Then, the functional we minimized is $ A $ and not the volume of the Minkowski
+Thus, the functional we minimized is $ A' $ and not the volume of the Minkowski
 sum.
 
 % vim: set spelllang=en :
