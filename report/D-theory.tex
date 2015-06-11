@@ -14,9 +14,9 @@ In order to define what we call the Mean Curvature Flow, we will
 first need the notions of an embedding and the deformation of a surface:
 
 \begin{definition}
-    $ X $ is a smooth embedding of $ Y $ if there exists a differentiable
-    function $ f : X \to Y $ such that: $ f $ is injective and the differential
-    of $ f $ at $ x $ is injective for any $ x \in X $.
+    Let $ S_0 $ be a hypersurface of $ \R^d $. A map $ X: S_0 \to \R^d $ is a
+    smooth embedding if it is injective and that $ \forall x\in S_0, $ the
+    differential $ D X(x) $ is an injective linear map.
 \end{definition}
 
 \begin{definition}
@@ -35,25 +35,22 @@ $ of a surface $ S_0 $ such that:
 
 \begin{equation}
     \partiald{X_t(x)}{t} = \meanv{S_t}(x)
+    \label{eqn:mean-curvature-flow}
 \end{equation}
-
 where $ \meanv{S_t}(x) $ is the mean curvature vector (see Definition
 \ref{prop:curvatures-surface}) of $ S_t $ at $ x $ and $ \partiald{X_t(x)}{t} $
 is the normal velocity at $ x $.
 
-Put in more simple words, it says that at each step we move each point of the
-hypersurface $ S_t $ in the direction of the normal by an amount given by
-the mean curvature at this point.
+In simple words, Equation \ref{eqn:mean-curvature-flow} says that at each step
+we move each point of the hypersurface $ S_t $ in the direction of the normal by
+an amount given by the mean curvature at this point.
 
 Now, we will recall that the mean curvature flow belongs to a more general
 category of geometric flows: the gradient flows (see
-\cite{ilmanen1998lectures}). Given an energy $ f $, we say that $ S $ evolves
-according to the gradient flow of $ f $ if we have:
-
-$$ \partiald{x}{t} = \nabla f(x) $$
-
-Indeed, the next proposition shows the relation between the mean curvature flow
-and the area functional.
+\cite{ilmanen1998lectures}). In our case, it follows from the fact that the mean
+curvature vector can be identified with the gradient of a certain functional,
+namely the area of the surface. The following proposition makes this
+identification more rigorous:
 
 \begin{proposition}
     For a surface $ S_0 \subseteq \R^d $ and a deformation $ X : S_0 \times [0, T]
@@ -63,6 +60,7 @@ and the area functional.
         \lim\limits_{t \to 0} \frac{A(S_t) - A(S_0)}{t} = \int_{S_0} V(p)
         \meanv{S_0}(p) dp
     \end{equation}
+    where $ A(S) $ denotes the area of the surface $ S $.
     \label{prop:gradient-area-functional}
 \end{proposition}
 
@@ -180,10 +178,11 @@ differential of deformations of surfaces.
             \begin{equation}
                 D X_t(p) =
                 \begin{pmatrix}
-                    1 + t \phi(p) k^1_S(p) & \cdots & 0 & \multirow{4}{*}{$ 1 + t D \phi(p) $} \\
+                    1 + t \phi(p) k^1_S(p) & \cdots & 0 \\
                     \vdots                 & \ddots & \vdots                      \\
                     \vdots                 &        & 1 + t \phi(p) k^{d-1}_S(p)  \\
                     0                      & \hdots & 0                           \\
+                    \multicolumn{3}{c}{1 + t D\phi(p)} \\
                 \end{pmatrix}
             \end{equation}
         \item For any function $ \chi : X_t(S) \to \R $, we have the following
@@ -226,7 +225,7 @@ differential of deformations of surfaces.
 Then, we can tackle the proof of the proposition
 \ref{prop:gradient-area-functional}.
 
-\begin{proof}[Sketch of proof]
+\begin{proof}[Sketch of proof of Proposition \ref{prop:gradient-area-functional}]
     We use the deformation $ X : S_0 \times [0, T] $ where $ X(p, t) = p + t
     \phi(p) \vec{n}_{S_0}(p) $ for $ \phi : S_0 \to \R $ is a smooth
     function. Then, we have, using the lemma \ref{lemma:deformation} with $ \chi
@@ -235,7 +234,8 @@ Then, we can tackle the proof of the proposition
     \begin{align*}
         A(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(p) dp \\
         &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(p) k^i_{S_0}(p)) \\
-        &= \int_{S_0} 1 dp + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(T^2)
+        &= \int_{S_0} 1 dp + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(t^2) \\
+        &= A(S_0) + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(t^2)
     \end{align*}
 
     So:
@@ -256,20 +256,9 @@ the hypersurface by something which can be computed using only the point cloud.
 \section{Discretization of the area}
 
 In this section, we will try to compute an approximation of the area of an
-hypersurface with only knowing points sampled on it.
-
-First, the $r$-offset can also be seen as the Minkowski sum of $ K $ and the
-Euclidean ball $ B(0, r) $.
-
-\begin{definition}
-    For any sets $ A $ and $ B $ of a vector space, we define the Minkowski sum
-    of $ A $ and $ B $ denoted by $ A \oplus B $:
-    $$ A \oplus B = \{ a + b, a \in A, b \in B \} $$
-    \label{def:minkowski-sum}
-\end{definition}
-
-Using these notions, we can relate the area of an hypersurface to the volume of
-its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volume}.
+hypersurface with knowing only points sampled on it. We can relate the area of
+an hypersurface to the volume of its tubular neighbourhood using a variant of
+the tube formula \cite{weyl1939volume}.
 
 \begin{proposition}
     \label{prop:comp-offset-area}
@@ -286,8 +275,7 @@ its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volu
 \begin{proof}
     We have: $ Vol^d(S^r) = \int_{S^r} 1 dx $. Now, we will use the
     following deformation: $ X(p, t) = p + t \vec{n}_{S}(p) $ Using this
-    substitution and lemma \ref{lemma:diffeo} with $ \phi = 1 $ and $ \chi = 1
-    $:
+    substitution and Lemma \ref{lemma:diffeo} with $ \chi = 1 $:
 
     \begin{align*}
         Vol^d(S^r) &= \int_S \int_{-r}^r J_f(p) dt dp \\
@@ -304,7 +292,7 @@ its tubular neighbourhood using a variant of the tube formula \cite{weyl1939volu
 This proposition is related to the Minkowski content. It is used to measure the
 area of the boundary of a set: the $ d-1 $ dimensional volume in dimension $ d
 $. It is defined as follows:
-$$ \lim\limits_{\epsilon \to 0} \frac{\mu(S^{\epsilon}) - \mu(S)}{\epsilon} $$
+$$ \lim\limits_{\epsilon \to 0} \frac{Vol^d(S^{\epsilon}) - Vol^d(S)}{\epsilon} $$
 
 This is exactly what we computed: a Taylor expansion of $ Vol^d(S^r) $.
 
@@ -331,8 +319,8 @@ The following proposition bounds the error of this approximation:
 
 \begin{proof}
     Since $ P \subseteq S $, then $ Vol^d(S^r) \leq Vol^d(P^r) $. Then, we
-    parametrize $ P^r $ by $ f : S \to P^r $ where $ f(p) = p + r(p)
-    \vec{n}_S(p) $ for $ r(x) \in [0, r] $ (see Figure
+    parametrize the boundary of $ P^r $ by $ f : S \to \partial P^r $ where $
+    f(p) = p + r(p) \vec{n}_S(p) $ for $ r(p) \in [0, r] $ (see Figure
     \ref{fig:offset-parametrization}).
 
     \begin{figure}[h]
@@ -344,8 +332,8 @@ The following proposition bounds the error of this approximation:
 
     We have:
     \begin{align*}
-        r(x)^2 + \epsilon^2 = r^2 \iff& (r - r(x)) (r + r(x)) = \epsilon^2 \\
-        \iff& r - r(x) = \frac{\epsilon^2}{r + r(x)} \leq \frac{\epsilon^2}{r} \\
+        r(p)^2 + \epsilon^2 = r^2 \iff& (r - r(p)) (r + r(p)) = \epsilon^2 \\
+        \iff& r - r(p) = \frac{\epsilon^2}{r + r(p)} \leq \frac{\epsilon^2}{r} \\
     \end{align*}
 
     Now, we will use the same formula as in the previous proofs:
@@ -356,7 +344,7 @@ The following proposition bounds the error of this approximation:
         &= \int_S \int_{r(p)}^r \left( 1 + \sum_{k=1}^{d-1} t^k \sum_{i_1 < \ldots
                 < i_k} k^{i_1}_S(p) \ldots S^{i_k}_S(p) \right) dt dp \\
         &= \int_S (r - r(p)) dp + O((r - r(p))^2) \\
-        &\leq \frac{\epsilon^2}{r} A(S) + O(\frac{\epsilon^4}{r^2})
+        &\leq \frac{\epsilon^2}{r} A(S) + O(\frac{\epsilon^4}{r^2}) \qedhere
     \end{align*}
 \end{proof}
 
@@ -383,7 +371,8 @@ the area of $ S $ by the volume of $ P^r $:
         \left| \frac{Vol^d(P^r)}{2r} - A(S) \right| \leq& \left| \frac{Vol^d(P^r)}{2r} -
             \frac{Vol^d(S^r)}{2r} \right| + \left| \frac{Vol^d(S^r)}{2r} -
             A(S) \right| \\
-        \leq& \frac{\epsilon^2}{2r^2} A(S) + O(\frac{\epsilon^4}{r^3}) + O(r^2) \\
+        \leq& \frac{\epsilon^2}{2r^2} A(S) + O(\frac{\epsilon^4}{r^3}) + O(r^2)
+        \qedhere
     \end{align*}
 \end{proof}
 
@@ -395,83 +384,87 @@ Now, we want to study the gradient of this newly computed quantity.
 % {{{1 CONVERGENCE OF THE GRADIENT
 \section{Convergence of the gradient}
 
-In this section, we will derive formulae for the gradients of the volume of
-union of balls in $ \R^d $. First, we will define what we mean by "gradients":
+In this section, we will consider the functional $ A^r : \R^d, \hdots, \R^d \to
+\R $ defined as follows:
+
+\begin{equation}
+    A^r(p_1, \ldots, p_N) = Vol^d(\bigcup_{i=1}^N B(p_i, r)
+\end{equation}
+
+We will derive formulae for the gradients of $ A^r $. First, we will define what
+we mean by "gradients":
 
 \begin{definition}
-    If $ F : \R^d \times \ldots \times \R^d \to \R $ is a function over
-    $d$-dimensional point clouds, then we define $ \nabla_{p_i} F \in \R^d $ by:
+    If $ F : (\R^d)^N \to \R $ is a function over $d$-dimensional point clouds,
+    and $ p \in (\R^d)^N $, then the $j$-th ($ j \in \{1, \ldots, d\} $)
+    coordinate of $ \nabla_{p_i} F(p) \in \R^d $ for $ i \in \{1, \ldots, N\} $
+    is given by:
 
-    $$ \lim\limits_{\epsilon \to 0} \frac{F(p_1, \ldots, p_{i-1}, p_i + \epsilon
-        \delta p_i, p_{i+1}, \ldots, p_N) - F(p_1, \ldots, p_N)}{\epsilon} $$
-
-    In other words, $ \nabla_{p_i} F $ represents the variation of $ F $ if
-    we move the ith point by an amount $ \delta p_i $.
+    $$ (\nabla_{p_i} F(p))_j = \lim\limits_{\epsilon\to 0} \frac{F(p_1,\ldots,p_i+
+    \epsilon e_j, \ldots, p_N) - F(p)}{\epsilon} $$
+    where $ (e_1, \ldots, e_d) $ is the standard basis of $ \R^d $.
 \end{definition}
 
 The next proposition gives the gradient of the volume of union of balls :
 \begin{proposition}
-    Given an hypersurface $ S $ of $ \R^d $ and points sampled on it: $ (p_i) $.
-    Then, if we denote by $ A^r $ the volume of the union of balls of radius $ r
-    $, we are interested in computing the gradients (defined previously) of $ A $. We
-    have:
+    The gradient of the functional $ A^r $ at a point $ p = (p_1, \ldots, p_N) $
+    is given by:
 
     \begin{equation}
         \label{eqn:gradient_area_2d}
-        \nabla_{p_i} A^r = \int_{B} \frac{x - p_i}{||x - p_i||} dx
+        \nabla_{p_i} A^r(p) = \int_{B} \frac{x - p_i}{||x - p_i||} dx
     \end{equation}
     where $ B = \partial B(p_i, r) \cap V(p_i, P) $ is the visible boundary of
     the ball.
 \end{proposition}
 
 Note that \cite{lachand2005minimizing} tackles the problem of minimizing a
-functional over a convex body. For doing this, the authors compute the
+functional over the set of convex bodies. For doing this, the authors compute the
 derivatives of this functional: we use a similar technique to prove our
 proposition.
 
 \begin{proof}
 
-Let us say that we move the point $ p _i $ by a small quantity $ \delta p_i $,
-let's study the variation of the area of $ \bigcup_i V(p_i, P) \cap B(p_i, r) $.
+For this proof, we will use Formula \ref{eqn:area-union-balls}. Assume that we
+move the point $ p_i $ by a small quantity $ \delta p_i $, let us study the
+variation of the area of $ \bigcup_i V(p_i, P) \cap B(p_i, r) $.
 
-More formally, let's define $ A_{\epsilon} = A(V(p_i + \epsilon \delta p_i, P) \cap
+More formally, let us define $ A_{\epsilon} = A(V(p_i + \epsilon \delta p_i, P) \cap
 B(p_i + \epsilon \delta p_i, r)) $, we want to compute the following limit:
 $$ \lim\limits_{\epsilon \to 0} \frac{A_{\epsilon} - A_0}{\epsilon} $$
 
-For computing this quantity, we will define the following sets:
+To compute this quantity, we will define the following sets:
 \begin{itemize}
     \item $ B_1 = \{ x \in B, (x - p_i | \delta p_i) \geq 0\} $
-    \item $ A^1_{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
+    \item $ \mathcal{A}^1_{\epsilon} = \bigcup_{x \in B_1} [x, x + \epsilon \delta p_i] $:
         "upper" gained area (see Figure \ref{fig:demo-gradient} for a drawing of the
         situation in 2D)
     \item $ B_2 = \{ x \in B, (x - p_i | \delta p_i) \leq 0\} $
-    \item $ A^2_{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
+    \item $ \mathcal{A}^2_{\epsilon} = \bigcup_{x \in B_2} [x, x + \epsilon \delta p_i] $:
         "lower" lost area.
 \end{itemize}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{2d/2d_proof_gradient_area_1}
+    \includegraphics[scale=0.8]{2d/2d_proof_gradient_area}
     \caption{Situation for a ball $ B(p_i, r) $ in 2D}
     \label{fig:demo-gradient}
 \end{figure}
 
-Then, we have: $ A_\epsilon = A_0 + Vol(A^1_\epsilon) - Vol(A^2_\epsilon) +
-O(\epsilon^2) $
-% TODO
+Then, we have: $ A_\epsilon = A_0 + Vol(\mathcal{A}^1_\epsilon) -
+Vol(\mathcal{A}^2_\epsilon) + O(\epsilon^2) $
 
-Now, we will approximate $ Vol(A^1_\epsilon) $ write that $ Vol(A^1_\epsilon) =
-\int_{B_1} || x - z(x) || dx + o(||\delta p_i||) $. We do the same things for $
-A^2_\epsilon $.
+Now, we will evaluate $ Vol(\mathcal{A}^1_\epsilon) $, we will do similarly for $
+Vol(\mathcal{A}^2_\epsilon) $.
 
 For any $ x \in B $, we define $ z(x) $ as the intersection of the half-line $ D
-$ with the circle of center $ p_i + \epsilon \delta p_i $ of radius $ r $. We
-also parametrize the half-line $ D $ by: $ x + t \frac{x - p_i}{||x - p_i||} $
-where $ t \ge 0 $.
+$ (see Figure \ref{fig:demo-gradient}) with the circle of center $ p_i +
+\epsilon \delta p_i $ of radius $ r $. We also parametrize the half-line $ D $
+by: $ x + t \frac{x - p_i}{||x - p_i||} $ for $ t \ge 0 $.
 
-Let us find this intersection point by assuming that $ t $ is small such that $
-t^2 = t \delta p_i = o(||\delta p_i||^2) $. We need to find $ D \cap C(p_i +
-\delta p_i, r) $. Let $ t \ge 0 $ then , we have :
+Let us find this intersection point $ z(x) $, we assume that $ t $ is small by
+neglecting second order terms $ O(t^2) $. We need to find $ D \cap C(p_i +
+\delta p_i, r) $. Let $ t \ge 0 $ then, we have :
 
 \begin{equation}
     || x + t \frac{x - p_i}{||x - p_i||} - (p_i + \epsilon \delta p_i) ||^2 = r^2
@@ -485,27 +478,30 @@ If we expand this expression, we get:
         \frac{x-p_i}{|| x - p_i||} | x - (p_i + \epsilon \delta p_i) \right) = r^2 \\
     & \iff || x - p_i || ^2 - 2 \epsilon (x - p_i | \delta p_i) + || \epsilon \delta p_i || ^2 + t^2 + 2t
     \left( \frac{x-p_i}{|| x - p_i||} | x - (p_i + \epsilon \delta p_i) \right) = r^2 \\
-    & \iff -2 \epsilon (x - p_i | \delta p_i) + 2t || x - p_i|| + o(||\delta p_i||^2) = 0
+    & \iff -2 \epsilon (x - p_i | \delta p_i) + 2t || x - p_i|| + o(\epsilon^2) = 0
     \text{ because } || x - p_i || = r \\
     & \iff t = t^{\star} = \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
-    o(||\delta p_i||^2)
+    o(\epsilon^2)
 \end{align*}
 
 Then, $ z(y) = x + t^{\star} \frac{x - p_i}{||x - p_i||} $ and $ || x - z(x) || =
 t^{\star} $.
 
 We deduce that :
-$$ Vol(A^1_\epsilon) = \int_{B_1} \left[ \epsilon \left( \frac{x - p_i}{||x -
-            p_i||} | \delta p_i \right) + o(||\delta p_i||^2) \right] dx $$
+$$ Vol(\mathcal{A}^1_\epsilon) = \int_{B_1} || x - z(x) || dx = \int_{B_1}
+\left[ \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
+    o(\epsilon^2) \right] dx $$
 
 And:
 
-$$ Vol(A^1_\epsilon) - Vol(A^2_\epsilon) = \int_{B} \left[ \epsilon \left(
-        \frac{x - p_i}{||x - p_i||} | \delta p_i \right) + o(||\delta p_i||^2)
-\right] dx $$
+$$ Vol(\mathcal{A}^1_\epsilon) - Vol(\mathcal{A}^2_\epsilon) = \int_{B} \left[
+    \epsilon \left( \frac{x - p_i}{||x - p_i||} | \delta p_i \right) +
+    o(\epsilon^2) \right] dx $$
 
 Finally, we have, by linearity:
-$$ \nabla_{p_i} A^r = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
+\begin{equation*}
+    \nabla_{p_i} A^r(p) = \int_{B} \frac{x - p_i}{||x - p_i||} dx \qedhere
+\end{equation*}
 
 \end{proof}
 
@@ -517,12 +513,14 @@ and the mean curvature vector.
 
 \begin{proposition}
     Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) hypersurface
-    $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then:
+    $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then,
+    for $ p = (p_1, \ldots, p_N) \in P^N $:
     \begin{equation}
-        || \nabla_p A^r - \meanv{S}(p) || \leq TODO
+        \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) Vol(S \cap V(p_i, P)) + O(\epsilon)
     \end{equation}
-    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then
-    $ \nabla_p A^r $ converges towards the mean curvature vector of $ S $ at $ p $.
+    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then $
+    \nabla_{p_i} A^r(p) $ converges towards a quantity proportional to the
+    mean curvature vector of $ S $ at $ p_i $.
     \label{prop:gradient-mean-curvature}
 \end{proposition}
 
@@ -554,8 +552,8 @@ We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
         \ref{prop:comp-vol-offsets}, we can say that the error made is in the
         order of $ O(\frac{\epsilon^2}{r}) $.
     \item the second one is that if the sampling is dense enough then we can
-        replace $ p $ by the projection of $ x $ on $ S $: $ \forall p \in S,~x
-        \in V(p, P),~p = p_S(x) + O(\epsilon) $, see Figure
+        replace $ p_i $ by the projection of $ x \in V(p_i, P) $ on $ S $: $
+        \forall x \in V(p_i, P),~p_i = p_S(x) + O(\epsilon) $, see Figure
         \ref{fig:voronoi-cylinder}.  For this approximation to hold, it is
         necessary for the pointed out distance to be greater than $ \epsilon $
         i.e. $ r \gg \epsilon $ which means that $ \frac{\epsilon}{r} $ needs to
@@ -564,50 +562,50 @@ We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.5]{img/voronoi-cylinder}
+    \includegraphics[scale=0.6]{img/voronoi-cylinder}
     \caption{Shape of the Voronoi cells of densely sampled points}
     \label{fig:voronoi-cylinder}
 \end{figure}
 
 Using these approximations, we get:
 \begin{align*}
-    \int_{\partial{P^r} \cap V(p, P)} (x - p) dx & \stackrel{(1)}{=} \int_{\partial{S^r} \cap V(p,
-        P)} (x - p) dx + O(\epsilon^2) \\
-    &\stackrel{(2)}{=} \int_{\partial{S^r} \cap V(p, P)} (x - p_S(x)) dx +
+    \int_{\partial{P^r} \cap V(p_i, P)} (x - p_i) dx & \stackrel{(1)}{=}
+    \int_{\partial{S^r} \cap V(p_i,
+        P)} (x - p_i) dx + O(\epsilon^2) \\
+    &\stackrel{(2)}{=} \int_{\partial{S^r} \cap V(p_i, P)} (x - p_S(x)) dx +
     O(\epsilon) \\
 \end{align*}
 
 Then, we will use the substitution $ q = p_S(x) \iff x = F^{+}(q) = q +
-r \vec{n}_S(q) $ on the upper part of $ \partial{S^r} \cap V(p, P) $. Using
+r \vec{n}_S(q) $ on the upper part of $ \partial{S^r} \cap V(p_i, P) $. Using
 the lemma \ref{lemma:diffeo}, we have that $ F^{+} $ is a diffeomorphism and that
 $ J_{F^+}(q) = (1 + r k^1_S(q)) \hdots (1 + r k^{d-1}_S(q)) $.
 
-Using an analogous substitution on the lower part of $ \partial{S^r} \cap V(p,
+Using an analogous substitution on the lower part of $ \partial{S^r} \cap V(p_i,
 P) $, we get : $ J_{F^-}(q) = (1 - r k^1_S(q)) \hdots (1 - r k^{d-1}_S(q)) $. By
 subtracting the two, we obtain: $ 2 r \mean{S}(q) + O(r^2) $.
 
 It follows that:
 \begin{align*}
-    \int_{\partial{S^r} \cap V(p, P)} (x - p_S(x)) dx &= \int_{S \cap V(p, P)}
+    \int_{\partial{S^r} \cap V(p_i, P)} (x - p_S(x)) dx &= \int_{S \cap V(p_i, P)}
     \vec{n_S}(q) ( J_{F^+}(q) -J_{F^-}(q) ) dq \\
-    &= 2r \int_{S \cap V(p, P)} \meanv{S}(q) dq + O(r^2) \\
+    &= 2r \int_{S \cap V(p_i, P)} \meanv{S}(q) dq + O(r^2) \\
 \end{align*}
 
 Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
-$ \vec{n_S}(q) = \vec{n_S}(p) $, $ \meanv{S}(q) = \meanv{S}(p) $. All the other
-terms depend on the derivatives of the curvature which are negligible at this
-point. We deduce that:
+$ \vec{n_S}(q) = \vec{n_S}(p_i) $, $ \meanv{S}(q) = \meanv{S}(p_i) $. Error terms
+are negligible since they depend on the derivatives of the curvature. We deduce
+that:
 
-$$ \nabla_p A^r = 2r \meanv{S}(p) \int_{S \cap V(p, P)} 1 dq $$
+$$ \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) \int_{S \cap V(p_i, P)} 1 dq +
+O(\epsilon) $$
 
-So, using the mean curvature vector:
+Finally:
 
-$$ \nabla_p A^r = 2r \meanv{S}(p) Vol(S \cap V(p, P)) $$
-
-Which means:
-
-$$ ||\nabla_p A^r - \meanv{S}(p) || \leq | 2r Vol(S \cap V(p, P)) - 1 |
-\times|| \meanv{S}(p) ||$$
+\begin{equation*}
+    \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) Vol(S \cap V(p_i, P)) + O(\epsilon)
+    \qedhere
+\end{equation*}
 
 \end{proof}
 
@@ -626,8 +624,6 @@ for the gradients: the discretized gradient converges towards the continuous one
 
 In some sense, "discretization" and "gradient" commute: the gradient of the
 discretization converges towards the continuous gradient.
-
-% TODO
 
 % {{{1 OTHER KINDS OF DISCRETIZATIONS
 \section{Other kinds of discretizations}
@@ -654,12 +650,10 @@ boundary of a union of balls are directly connected (like for the volume of the
 union) to the mean curvature of the sampled surface. But even if we did not
 made the prove, we made experiments to show this relation.
 
-Finally, we were interested in replacing the ball that we use to make the
-Minkowski sum with by a convex polyhedron in order to have an anisotropic
-smoothing. A more detailed study of this problem will be done in the section
-dedicated to the 3D case.
+Finally, we were interested in replacing the Euclidean ball with a convex
+polyhedron in order to have an anisotropic smoothing. A more detailed study of
+this problem will be done in the next section.
 
-% vim: set spelllang=en :
 % {{{1 3D CASE
 \section{3D case}
 \label{sec:theory-3d-case}
@@ -667,8 +661,8 @@ dedicated to the 3D case.
 In this section, we will study the influence of the choice we made by replacing,
 in chapter \ref{chapter:3d}, the Voronoi diagram computed with a polyhedral norm
 with the standard one. We will show that the function that we minimized is not
-the volume of the Minkowski sum but another functional. For this, we will need
-the definition of the radial function of a convex set:
+the volume of the union of convex polyhedra but another functional. For this, we
+will need the definition of the radial function of a convex set:
 
 \begin{definition}
     For a convex set $ K $, we define the radial function $ \rho_K $ by:
@@ -706,7 +700,6 @@ So:
     \frac{1}{2r} A'(S) = \int_S \rho_K(\vec{n}_S(x)) dx + O(r^2)
 \end{equation}
 
-Thus, the functional we minimized is $ A' $ and not the volume of the Minkowski
-sum.
+Thus, the functional we minimized is $ A' $ and not the volume of the union.
 
 % vim: set spelllang=en :

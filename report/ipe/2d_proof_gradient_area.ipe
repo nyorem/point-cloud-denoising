@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70107" creator="Ipe 7.1.7">
-<info created="D:20150421142059" modified="D:20150521114536"/>
+<info created="D:20150421142059" modified="D:20150611145159"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -272,10 +272,6 @@ h
 64 0 0 64 240 688 e
 </path>
 <text transformations="translations" pos="240 688" stroke="black" type="label" width="37.684" height="6.926" depth="1.93" valign="baseline">$p_i+\epsilon \delta p_i$</text>
-<path stroke="red">
-276.572 635.501 m
-64 0 0 64 224 672 187.501 724.572 a
-</path>
 <text transformations="translations" pos="248.558 731.101" stroke="red" type="label" width="12.026" height="6.812" depth="1.49" valign="baseline">$B_1$</text>
 <path stroke="red" cap="1">
 222.752 735.988 m
@@ -310,5 +306,9 @@ h
 </path>
 <text transformations="translations" pos="202.811 611.61" stroke="red" type="label" width="12.026" height="6.812" depth="1.49" valign="baseline">$B_2$</text>
 <text transformations="translations" pos="209.932 749.132" stroke="black" type="label" width="18.062" height="7.473" depth="2.49" valign="baseline">$z(y)$</text>
+<path stroke="red">
+284.509 692.848 m
+64 0 0 64 224 672 187.766 724.755 a
+</path>
 </page>
 </ipe>

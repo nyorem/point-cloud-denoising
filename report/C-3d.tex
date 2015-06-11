@@ -74,10 +74,10 @@ implies that the unit ball for the norm $ N $ is a polyhedron. Indeed, if $ x
 
 $$ N(x) \leq 1 \Longleftrightarrow \forall i,~(x | v_i) \leq 1 $$
 
-So, the unit ball is defined by linear constraints. More precisely, it is an intersection
-of half-spaces and so is a convex polyhedron $ K $. The vectors $ v_i $ are the
-normal vectors to the facets of $ K $. We will denote by $ B_K(0, 1) $ the unit
-ball defined by the convex polyhedron $ K $.
+So, the unit ball is defined by linear constraints. More precisely, it is an
+intersection of half-spaces and so is a convex polyhedron $ K $. The vectors $
+v_i $ are the normal vectors to the facets of $ K $. We will denote by $ B_K(0,
+1) $ the unit ball defined by the convex polyhedron $ K $.
 
 % {{{1 VOLUME OF A UNION OF POLYHEDRA
 \section{Volume of a union of polyhedra}
@@ -209,13 +209,9 @@ formula.
 In this section, we will describe briefly how we implemented the two methods
 previously described.
 
-The libraries used are the same as the ones used in the 2D case except for the
-rendering part: in 2D, we used a custom \texttt{QWidget} and in 3D, we choose to
-use \texttt{QGLViewer}, an \texttt{OpenGL} based renderer.
-
 \paragraph{Intersection computation}
 
-For both methods, we need a way to compute intersection of half-spaces: for
+For both methods, we need a way to compute an intersection of half-spaces: for
 the first one, we need to compute the intersection of a Voronoi cell and a
 convex polyhedron and for the second one, we need to compute intersections of
 convex polyhedra.
@@ -223,49 +219,52 @@ convex polyhedra.
 For the first method, the naive one, a Voronoi cell is represented implicitly as
 a list of half-spaces (the planes defining the boundary of the cell).
 Half-spaces are computed using the Delaunay triangulation. If we want to compute
-the Voronoi cell of $ p $, we look at the neighbours in the Delaunay
-triangulation of $ p $. Then, for every neighbour $ v $, the corresponding
-half-space is the positive part of the bisector plane between $ p $ and $ v $.
-The latter is the  plane passing through the midpoint of the segment $ [p, v] $
-and whose normal vector is $ \vec{pv} $. Since the order of the traversal of the
-vertices of the Delaunay triangulation is not, in general, the same as the
-insertion one, we need to associate an index to a point (using a simple
-\texttt{std::map}).
+the Voronoi cell of $ p $, we look at the neighbours of $ p $ in the Delaunay
+triangulation. Then, for every neighbour $ v $, the corresponding half-space is
+the positive part of the bisector plane between $ p $ and $ v $. The latter is
+the  plane passing through the midpoint of the segment $ [p, v] $ and whose
+normal vector is $ \vec{pv} $. Since the traversal order of the vertices of the
+Delaunay triangulation is not, in general, the same as the insertion one, we
+need to associate an index to each point (using a simple \texttt{std::map}).
 
-Then, a convex polyhedron $ K $ represents the unit ball for the polyhedral norm
-$ N $ defined by $ K $. It is internally represented as a list of normal vectors
-of each of its facets. Using this representation, one can compute the translated
+Recall that a convex polyhedron $ K $ represents the unit ball for a polyhedral
+norm $ N $. $ K $ is internally represented as a list of normal vectors to each
+of its facets. Using this representation, one can compute the translated
 polyhedron $ B_N(p, r) $ for a point $ p $ and a radius $ r $ by noticing that
-it is the intersection of the half-spaces: $ \forall n,~ n_x x + n_y y + n_z z -
-(p | n) - r \leq 0 $ where $ n $ is a normal vector of a facet.
+it is the intersection of the half-spaces $ H_n $ where $ H_n $ is defined, for
+any normal vector $ n $, as follows: $ H_n = \{ x \in \R^3,~ (x | n) \leq (p |
+n) + r \} $
 
 In order to construct this intersection, we used the duality which allows us to
-replace the computation of the intersection by the computation of the convex
-hull (see \cite{preparata1979finding}) of the dual points: at each half-space, we
-can associate a dual point and conversely.
+replace the computation of an intersection by the computation of a convex hull
+(see \cite{preparata1979finding}) of dual points. The duality is defined as
+follows: for any halfspace defined as the positive part of a plane $ p $ which
+does not contain the origin and whose Cartesian equation is $ ax + by + xz + d =
+0 $, the corresponding dual point is given by $ (-\frac{a}{d}, -\frac{b}{d},
+-\frac{c}{d}) $.
 
-Programmatically, we compute this intersection in the following manner:
+Concretely, we compute the intersection in the following manner (see
+\appendixref{appendix:code-intersection} for a simplified version of the
+algorithm):
 \begin{enumerate}
     \item Compute the dual points while remembering which point is associated to
         which plane.
-    \item Compute the convex hull of these dual points, it gives us a dual
-        polyhedron. To each vertex, we associate the corresponding primal plane.
+    \item Compute the convex hull of these dual points. It gives us a dual
+        polyhedron. To each vertex of this polyhedron, we associate the
+        corresponding primal plane.
     \item To compute the primal polyhedron:
         \begin{enumerate}
             \item We first compute the primal vertices which are the dual of the
                 dual facets: each dual facet has at least 3 vertices. We know
                 the corresponding primal planes for these vertices.  Then, the
-                corresponding primal vertex is the intersection of these 3
+                corresponding primal vertex is the intersection of the 3 primal
                 planes.
-            \item Secondly, the primal facets are constructed by circulating
+            \item Secondly, primal facets are constructed by circulating
                 around the dual vertices. Each time there is an edge between two
                 dual vertices, there is an edge between the two corresponding
-                primal ones.
+                primal vertices.
         \end{enumerate}
 \end{enumerate}
-
-See Appendix \appendixref{appendix:code-intersection} for a simplified version
-of this algorithm:
 
 For the second method, we also need a way to compute the $\alpha$-complex of a
 set of points. This can be done using the \texttt{Alpha\_shapes\_3} package of
@@ -273,39 +272,40 @@ set of points. This can be done using the \texttt{Alpha\_shapes\_3} package of
 
 \paragraph{Automatic Differentiation integration}
 
-Let's now explain in more details the integration of the automatic
-differentiation tool. \texttt{CGAL} has the particularity to make easy for the
-programmer to change the number type by using the concept of a \emph{Kernel}. A
-\emph{Kernel} is a class that describes how numbers are stored in memory, how we
-can construct things (like points, planes, bisectors...) and how to evaluate
-predicates on objects (collinearity test, coplanarity test...).
+Let us now explain in more details the integration of the automatic
+differentiation tool. \texttt{CGAL} has the particularity to make things easy
+for the programmer to change the number type by using the concept of a
+\emph{Kernel}. A \emph{Kernel} is a class that describes how numbers are stored
+in memory, how we can construct things (like points, planes, bisectors...) and
+how to evaluate predicates on objects (collinearity test, coplanarity test...).
 
 There are multiple predefined kernels but we will quickly talk about two
 particular ones. \texttt{Simple\_cartesian<NT>} is the most basic one: a number
 will just be represented by \texttt{NT} and so it has inexact predicates
-evaluation and inexact constructions.
+evaluation and inexact constructions since it is subject to numerical errors.
 
 \texttt{Exact\_predicates\_inexact\_constructions\_kernel} (in short
-\texttt{Epick}) is a Kernel which use a technique called \emph{filtering} to
-ensure the predicates are always evaluated in an exact manner. In short, the
-predicate is first evaluated in an inexact way using interval arithmetic.  Then,
-if the predicate, for example, has to check whether a value is zero or not then,
+\texttt{Epick}) is a Kernel which uses a technique called \emph{filtering} to
+ensure that the predicates are always evaluated in an exact manner. In short,
+the predicate is first evaluated in an inexact way using interval arithmetic.
+If the predicate, for example, has to check whether a value is zero or not then,
 using interval arithmetic, it will need to check whether the resulting interval
 contains zero or not. If this interval does not contains zero, then a decision
-can be made. Otherwise, the computation is redone but this time using exact
+can be made. Otherwise, the computation is done again but this time using exact
 arithmetic which, in all cases, will return an answer.
 
-For the automatic differentiation, we replaced the \texttt{NT} type with our
+For the automatic differentiation, we replaced the \texttt{NT} type with a
 custom class \texttt{AD}. \texttt{AD} is a class with two members: a value and a
-vector of derivatives. It overloads all the classical arithmetic operations and
-some mathematical functions (\texttt{sqrt}, \texttt{atan2}...). For example, the
-implementation of \texttt{sqrt} for AD looks like this:
+vector of derivatives. It overloads all the classical arithmetic operators such
+as addition, subtraction, multiplication, division. It also overloads, using the
+chain rule, some mathematical functions such as \texttt{sqrt}, \texttt{atan2}...
+For example, the implementation of \texttt{sqrt} for AD looks like this:
 \lstinputlisting[language=C++]{code/sqrt_AD.h}
 
 Then, for interfacing \texttt{AD} with \texttt{CGAL}, we choose the
 \texttt{Simple\_cartesian<AD>} kernel. The choice of \texttt{Simple\_cartesian}
-may seem inappropriate because the constructions are inexact but it is enough
-for our applications.
+may seem inappropriate at first glance because the constructions are inexact but
+it is enough for our applications.
 
 % TODO
 
@@ -314,15 +314,13 @@ for our applications.
 
 % TODO
 
-We compare the two different methods using various polyhedrons as base and
-various point clouds.
+We compare the two different methods using various polyhedra and point clouds.
+If we choose a polyhedron sufficiently close from the unit sphere, we expect the
+result to be the same as in the 2D case: gradients should be oriented like the
+outward normal with a norm proportional to the mean curvature.
 
-We can choose for the polyhedron a sufficiently discretized sphere. We expect
-the result to be the same as in the 2D case: gradients oriented like the outward
-normal with a norm proportional to the mean curvature.
-
-The figures \ref{fig:3d-mean-curvature-sphere-cube} give an example where the
-point cloud is a sphere and the polyhedron is a cube.
+Figure \ref{fig:3d-mean-curvature-sphere-cube} gives an example where the point
+cloud is a sphere and the polyhedron is a cube.
 
 \begin{figure}[h]
     \centering
@@ -345,7 +343,7 @@ point cloud is a sphere and the polyhedron is a cube.
     \label{fig:3d-mean-curvature-sphere-cube}
 \end{figure}
 
-We remark that the gradients are oriented like the outward normals and that
+We observe that the gradients are oriented like the outward normals and that
 norms of these gradients seem relatively constant. This confirms the fact that
 we can simulate our work in 2D (mean curvature flow) by choosing a sufficiently
 discretized sphere.
@@ -400,6 +398,7 @@ the polyhedron we choose.
     \label{fig:3d-flow-sphere-bipyramid}
 \end{figure}
 
+% {{{1 CONCLUSION
 \section{Conclusion}
 
 In summary, we saw, in this chapter, another type of flow. We used the same

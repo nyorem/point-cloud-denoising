@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70107" creator="Ipe 7.1.7">
-<info created="D:20150520113453" modified="D:20150522114144"/>
+<info created="D:20150520113453" modified="D:20150611145601"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -321,6 +321,6 @@ h
 290.961 771.383 c
 </path>
 <text transformations="translations" pos="298.285 773.998" stroke="black" type="label" width="16.774" height="5.37" depth="0.39" valign="baseline">$ \gg \epsilon $</text>
-<text matrix="1 0 0 1 -3.66201 4.7083" transformations="translations" pos="298.808 674.601" stroke="black" type="label" width="5.012" height="4.297" depth="1.93" valign="baseline">$p$</text>
+<text matrix="1 0 0 1 -3.66201 4.7083" transformations="translations" pos="298.808 674.601" stroke="black" type="label" width="8.329" height="4.297" depth="1.93" valign="baseline">$p_i$</text>
 </page>
 </ipe>

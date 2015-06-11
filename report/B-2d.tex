@@ -36,7 +36,7 @@ We will first need the definition of the Voronoi diagram of set of points:
     p \in P $. It defines a partition of the plane $ \R^2 $.
 \end{definition}
 
-For example, the figure \ref{fig:voronoi-diagram-2d} is an example of a Voronoi
+For example, Figure \ref{fig:voronoi-diagram-2d} is an example of a Voronoi
 diagram.
 
 \begin{figure}[h]
@@ -60,7 +60,7 @@ Now, we can say that, because the Voronoi diagram defines a partition, we have:
 In order to compute this quantity, we need to know how to estimate the area of the
 intersection of a ball and a Voronoi cell.
 
-The figures \ref{fig:inter_voronoi_ball_2d} illustrate the different cases for
+Figure \ref{fig:inter_voronoi_ball_2d} illustrate the different cases for
 the intersection of a Voronoi cell and a ball in 2D.
 
 \begin{figure}[h]
@@ -94,7 +94,7 @@ triangulation corresponds to a vertex in the Voronoi diagram, an edge
 corresponds to an edge, a vertex corresponds to a face...
 
 Given this triangulation, we can compute the vertices composing the boundary of
-the  Voronoi cell (in bold in the figures \ref{fig:inter_voronoi_ball_2d}) of a
+the  Voronoi cell (in bold in Figure \ref{fig:inter_voronoi_ball_2d}) of a
 point by doing the following:
 \begin{enumerate}
     \item Access the neighbouring faces of a vertex using the
@@ -175,7 +175,7 @@ area and not of its gradient.
 
 In this section, we will study the gradient of the area of union of balls, the
 perimeter of the boundary. We used the automatic differentiation technique
-described in the appendix \ref{appendix:ad} to compute the gradient of the
+described in Appendix \appendixref{appendix:ad} to compute the gradient of the
 previously computed area.
 
 See Figures \ref{fig:gradients_area_2d} for a few examples of such gradients
@@ -239,7 +239,7 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
-The figure \ref{fig:2d-curvature-ellipse} represent the computed gradients mapped
+Figure \ref{fig:2d-curvature-ellipse} represent the computed gradients mapped
 to a colour ramp (from green to red). We observe that the gradients are more
 important where the curvature is higher and are collinear to the outward normals
 of the underlying curve.
@@ -296,7 +296,7 @@ We will test the different properties we expect the flows to have:
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
-sampled on an ellipse: figures \ref{fig:ellipse_flows}.
+sampled on an ellipse, see Figure \ref{fig:ellipse_flows}.
 
 % TODO: ajouter convergence vers cercle
 \begin{figure}[h]
@@ -311,9 +311,9 @@ sampled on an ellipse: figures \ref{fig:ellipse_flows}.
 
 \paragraph{Smoothing}
 
-We also run the perimeter flow on point clouds such as a bird (figure
-\ref{fig:bird_perimeter_flow}), a shark (figure \ref{fig:shark_perimeter_flow})
-and a square (figure \ref{fig:area_perimeter_flow_square}) to observe the
+We also run the perimeter flow on point clouds such as a bird (Figure
+\ref{fig:bird_perimeter_flow}), a shark (Figure \ref{fig:shark_perimeter_flow})
+and a square (Figure \ref{fig:area_perimeter_flow_square}) to observe the
 smoothing effect of the flows.
 
 \begin{figure}[h]
