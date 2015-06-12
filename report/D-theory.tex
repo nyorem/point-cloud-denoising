@@ -4,8 +4,10 @@
 In this chapter, all the objects will be considered, for a matter of
 simplification, to be smooth i.e. $ C^\infty $. Also, we will use the term
 "surface" to refer to any smooth compact hypersurface of $ \R^d $. We will also
-call the "area" of a surface $ \surface $ denoted by $ A(S) $ its $ (d-1)
-$-volume. The $d$-dimensional volume will be denoted by $ Vol^d $.
+call the area of a surface $ \surface $ denoted by $ A(S) $ its $ (d-1)
+$-volume. The $ d $-dimensional volume will be denoted by $ Vol^d $. In Chapter
+\ref{chapter:2d}, $ Vol^d = Area $ and in Chapter \ref{chapter:3d}, $ Vol^d =
+Vol $.
 
 % {{{1 MEAN CURVATURE FLOW
 \section{Mean Curvature Flow}
@@ -516,9 +518,10 @@ and the mean curvature vector.
     $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then,
     for $ p = (p_1, \ldots, p_N) \in P^N $:
     \begin{equation}
-        \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) Vol(S \cap V(p_i, P)) + O(\epsilon)
+        \frac{\nabla_{p_i} A^r(p)}{r \times Vol^{d-1}(\partial B(p_i,r) \cap V(p_i,P))}
+        = \meanv{S}(p_i) + O \left(\frac{\epsilon}{r}\right) + O(r)
     \end{equation}
-    Consequently, when $ \epsilon $ and $ \frac{\epsilon}{r} $ vanish then $
+    Consequently, when $ r $ and $ \frac{\epsilon}{r} $ vanish then $
     \nabla_{p_i} A^r(p) $ converges towards a quantity proportional to the
     mean curvature vector of $ S $ at $ p_i $.
     \label{prop:gradient-mean-curvature}
@@ -534,18 +537,19 @@ which will tell us how the Voronoi cells look:
 \end{lemma}
 
 \begin{lemma}
-    If $ S $ is an hypersurface, $ P $ an $\epsilon$-sampling of $ S $, $ p
-    \in P $ and $ v \in V(p, P) $ such that $ d(p, v) \ge \nu LFS(p) $ for $ \nu
-    > 0 $, then the angle at $ s $ between the vector $ v $ and the normal at
-    the surface (oriented in the same direction) is at most $
-    \arcsin(\frac{r}{\nu(1-r)}) + \arcsin(\frac{r}{(1-r)}) $.
+    If $ S $ is an hypersurface, $ P $ an $\epsilon$-sampling of $ S $, $ p \in
+    P $ and $ v \in V(p, P) $ such that $ d(p, v) \ge \alpha LFS(p) $ for $
+    \alpha > 0 $, then the angle at $ s $ between the vector $ v $ and the
+    normal at the surface (oriented in the same direction) is at most $
+    \arcsin(\frac{\epsilon}{\alpha(1-\epsilon)}) +
+    \arcsin(\frac{\epsilon}{(1-\epsilon)}) $.
 \end{lemma}
 
 These two lemmas tell us that the Voronoi cells are skinny (first lemma) and
 long (second lemma).
 
-\begin{proof}
-We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
+\begin{proof}[Proof of Porposition \ref{prop:gradient-mean-curvature}]
+We will first do two approximations on the equation \eqref{eqn:gradient_area_2d}:
 \begin{enumerate}
     \item the first one is to suppose that the offset of $ S $ is close enough
         to the offset of $ P $. Using the computation done in
@@ -557,7 +561,7 @@ We will first do two approximations on the equation \ref{eqn:gradient_area_2d}:
         \ref{fig:voronoi-cylinder}.  For this approximation to hold, it is
         necessary for the pointed out distance to be greater than $ \epsilon $
         i.e. $ r \gg \epsilon $ which means that $ \frac{\epsilon}{r} $ needs to
-        vanish.
+        vanish. This will allow us to say that: $ || x - p_i || = O(r) $.
 \end{enumerate}
 
 \begin{figure}[h]
@@ -593,18 +597,22 @@ It follows that:
 \end{align*}
 
 Finally, since we have supposed that $ S $ is $ C^{\infty} $ then, we can write:
-$ \vec{n_S}(q) = \vec{n_S}(p_i) $, $ \meanv{S}(q) = \meanv{S}(p_i) $. Error terms
-are negligible since they depend on the derivatives of the curvature. We deduce
-that:
+$ \vec{n_S}(q) = \vec{n_S}(p_i) + O(\epsilon) $, $ \meanv{S}(q) = \meanv{S}(p_i)
++ O(\epsilon) $. Error terms are negligible since they depend on the third derivative
+of the curvature. We deduce that:
 
-$$ \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) \int_{S \cap V(p_i, P)} 1 dq +
-O(\epsilon) $$
+$$ \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) \int_{S \cap V(p_i, P)} 1 dq + O(r^2)
++ O(\epsilon) $$
 
-Finally:
+Then, we can write:
 
+$$ \int_{S \cap V(p_i, P)} 1 dq = Vol^{d-1}(S\cap V(p_i,P)) \simeq \frac{1}{2}
+    Vol^{d-1}(\partial B(p_i,r) \cap V(p_i,P)) $$
+
+So:
 \begin{equation*}
-    \nabla_{p_i} A^r(p) = 2r \meanv{S}(p_i) Vol(S \cap V(p_i, P)) + O(\epsilon)
-    \qedhere
+    \frac{\nabla_{p_i} A^r(p)}{r \times Vol^{d-1}(\partial B(p_i,r) \cap V(p_i,P))}
+    = \meanv{S}(p_i) + O \left(\frac{\epsilon}{r}\right) + O(r) \qedhere
 \end{equation*}
 
 \end{proof}

@@ -21,17 +21,18 @@ in which the points will be moved.
 For doing that, we will replace the Euclidean ball $ B(0, 1) $ with a convex
 polyhedron $ B_N(0, 1) $ which can be considered as the unit ball for a certain
 norm $ N $. This norm will be called polyhedral (see Section
-\ref{sec:polyhedral-norm}). The formula \ref{eqn:area-union-balls} remains valid
-if we replace $ B(p, r) $ with $ B_N(p, r) $ and $ V $ by $ V_N $ (the Voronoi
+\ref{sec:polyhedral-norm}). Equation \eqref{eqn:area-union-balls} remains valid if
+we replace $ B(p, r) $ with $ B_N(p, r) $ and $ V $ by $ V_N $ (the Voronoi
 diagram computed for the norm $ N $) but only if the points are in general
-position. In Appendix \appendixref{appendix:voronoi-polyhedral-norm}, we study
-some properties of the Voronoi diagram for a polyhedral norm. Indeed, see Figure
-\ref{fig:3d-voronoi-cube} for a look at a particular case where the chosen
-polyhedron is a cube (norm $ L^\infty $). We see that if we choose two aligned
-points, the bisector is not a line anymore and so the Voronoi diagram does not
-partition the plane anymore. Furthermore, the computation of the Voronoi cells
-for a polyhedral norm is a tough work (see \cite{ma2000bisectors} for a thorough
-study).
+position. Indeed, see Figure \ref{fig:3d-voronoi-cube} for a look at a
+particular case where the chosen polyhedron is a cube (norm $ L^\infty $). We
+see that if we choose two aligned points, the bisector is not a line and so the
+Voronoi diagram does not partition the plane anymore. Furthermore, the
+computation of the Voronoi cells for a polyhedral norm is a tough work (see
+\cite{ma2000bisectors} for a thorough study). In Appendix
+\appendixref{appendix:voronoi-polyhedral-norm}, we study some properties of the
+Voronoi diagram for a polyhedral norm and we show that we can symbolically
+perturb $ V_N $ in order to get a partition.
 
 \begin{figure}[h]
     \centering
@@ -209,6 +210,7 @@ formula.
 In this section, we will describe briefly how we implemented the two methods
 previously described.
 
+% {{{2
 \paragraph{Intersection computation}
 
 For both methods, we need a way to compute an intersection of half-spaces: for
@@ -270,6 +272,7 @@ For the second method, we also need a way to compute the $\alpha$-complex of a
 set of points. This can be done using the \texttt{Alpha\_shapes\_3} package of
 \texttt{CGAL} and the associated classification methods.
 
+% {{{2
 \paragraph{Automatic Differentiation integration}
 
 Let us now explain in more details the integration of the automatic
@@ -305,9 +308,12 @@ For example, the implementation of \texttt{sqrt} for AD looks like this:
 Then, for interfacing \texttt{AD} with \texttt{CGAL}, we choose the
 \texttt{Simple\_cartesian<AD>} kernel. The choice of \texttt{Simple\_cartesian}
 may seem inappropriate at first glance because the constructions are inexact but
-it is enough for our applications.
-
-% TODO
+it is enough for our applications. In practice, we use a combination of
+\texttt{Epick} and \texttt{Simple\_cartesian<AD>}. For example, when computing
+an intersection of half-spaces, we construct the dual using \texttt{Epick} to
+have the exact combinatorics of the dual. Then, we use
+\texttt{Simple\_cartesian<AD>} when we effectively construct the primal
+polyhedron.
 
 % {{{1 EXPERIMENTS
 \section{Experiments}

@@ -10,7 +10,7 @@ made during measurements: the resulting point cloud will be noisy. In this work,
 we are interested in removing noise from point clouds: we call this technique
 \textit{denoising} or \textit{smoothing}.
 
-There is another issue: we only deal with points, we cannot use all the
+There is another issue: because we only deal with points, we cannot use all the
 techniques developed in image processing like the Fourier transform, wavelets...
 A common way to remove the noise from an image is to take its Fourier transform
 and filter the high frequencies. In order to apply a filter, we need a notion of
@@ -24,7 +24,7 @@ They come from different fields: computer vision, computational geometry...
 
 \begin{itemize}
     \item \textit{Gaussian / Laplacian smoothing}: each point is replaced by
-        another point computed from the nearest neighbours of that point. In
+        another one computed from the nearest neighbours of the initial point. In
         the Laplacian case, the new point is a convex combination of the
         neighbours (see \cite{vollmer1999improved}).
     \item \textit{Jet fitting} (see \cite{cazals2005estimating}): a jet is a truncated
@@ -46,18 +46,18 @@ smooth a surface. To do so, one could move each point in the direction of the
 normal to the surface by a quantity related to the mean curvature at that point.
 The sign of the mean curvature only depends on the choice of the orientation of
 the normal.  The more curved the surface is, the more important the displacement
-will be. For $ t \geq 0 $, let $ S_t $ be the surface obtained at time $ t $ and
-$ x(t, u) $ a point of $ S_t $. It turns out that the evolution of the surface
-thus produced can be modelled with a partial differential equation:
+will be. For an initial surface $ S_0 $ an $ t \geq 0 $, let $ S_t = X_t(S_0) $
+where $ X_t : S_0 \to \R^3 $. The evolution of the surface thus produced can be
+modelled with the following partial differential equation:
 
-$$ \partiald{x(t, u)}{t} = \vec{\kappa}(t, u) $$
-where $ \vec{\kappa}(t, u) $ is the mean curvature vector of $ S_t $ at $ u $
-(see Proposition \ref{prop:curvatures-surface} for a more complete definition).
+$$ \partiald{X_t(x)}{t} = \meanv{S_t}(x) $$
+where $ \meanv{S_t}(x) $ is the mean curvature vector of $ S_t $ at $ x $
+(see Definition \ref{prop:curvatures-surface} for a more complete definition).
 A family of surfaces $ S_t $ that satisfies the above equation is said to evolve
-by mean curvature flow.
+by mean curvature flow (MCF).
 
 This partial differential equation can be seen as the geometric equivalent of
-the heat equation: indeed, the Laplacian is replaced by the mean curvature
+the heat equation where the Laplacian is replaced by the mean curvature
 vector. Both of the Laplacian and the mean curvature vector can be interpreted
 as sums of eigenvalues of some matrices: the Hessian for the first quantity and
 the Shape operator for the second one.
@@ -72,7 +72,7 @@ on a noisy surface (extracted from \cite{clarenz2000anisotropic}).
     \centering
     \includegraphics[scale=0.3]{img/mean-curvature-flow-rabbit}
     \caption{Noisy surface (on the left) and after evolving by MCF (on the
-        right}
+        right)}
     \label{fig:mean-curvature-flow-ex}
 \end{figure}
 
@@ -86,27 +86,27 @@ the volume of a union of balls centered on the points of the cloud.  We will
 show that this quantity is proportional, under some conditions, to the area of
 the underlying surface. Thus, it suffices to minimize the volume of this union
 of balls to minimize the area of the underlying surface. We will call this
-volume the energy $ E(P) $ associated to the point cloud $ P = \{ p_1, \ldots,
+volume the energy $ A(P) $ associated to the point cloud $ P = \{ p_1, \ldots,
 p_N \} $.
 
 Now that we have our energy, we need to minimize it. If we are in three
-dimensions then we can see the energy $ E $ as a function $ E : \R^{3N} \to \R
+dimensions then we can see the energy $ A $ as a function $ A : \R^{3N} \to \R
 $. The main technique used for minimizing a function are based on the
 computation of its gradient. So, we will need a way to compute the gradient of $
-E $. There are many possibilities for doing this: one can use exact formulae if
+A $. There are many possibilities for doing this: one can use exact formulae if
 they exist, or finite differences...
 
 In this report, we will use another technique called \textit{Automatic
     Differentiation}. This technique is described in more details in Appendix
 \appendixref{appendix:ad}. In short, it is a technique allowing us to compute
-the derivatives of any computer program. It exploits the fact that any program
-can be thought of as a sequence of basic arithmetic operations and elementary
-functions. Now, using the chain rule and overloading the number type we can
-compute derivatives without changing too much the cost of the original function.
-This will allow us to only worry about the computation of $ E(P) $ and not of
-its gradient. This will also allow us to consider different kind of energies:
-the volume of the union of balls, the area of the boundary of the union and also
-anisotropic ones. Let us detail the latter point.
+the derivatives of any quantity evaliated by a computer program. It exploits the
+fact that any program can be thought of as a sequence of basic arithmetic
+operations and elementary functions. Now, using the chain rule and overloading
+the number type we can compute derivatives without changing too much the cost of
+the original function.  This will allow us to only worry about the computation
+of $ A(P) $ and not of its gradient. This will also allow us to consider
+different kind of energies: the volume of the union of balls, the area of the
+boundary of the union and also anisotropic ones. Let us detail the latter point.
 
 Anisotropic smoothing is a type of smoothing where the magnitude will depend on
 the point and the topology of its neighbourhood. In image processing, this
@@ -120,16 +120,17 @@ some privileged directions. These directions will be given by the user.
 
 Anisotropic flow may have applications that we did not have time to explore
 during this internship. It could be used, for example, in physically based
-simulations like crystal growth simulation. Another example would be when we
+simulations like crystal growth. Another example would be when we
 process a 3D scan of an object: we want to be able to smooth the point cloud
-while preserving certain details (the signature of the author for example).
+while preserving certain details (such as the signature of the author on a
+sculpture).
 
 This report is structured as follows: first, we study the two dimensional case.
 We show that our discrete MCF is able to smooth a point cloud and can be used to
 estimate the mean curvature vector. Then, we consider the 3D case and study an
 anisotropic flow. The final part will be dedicated to the theory: we will show
-that the constructed discrete MCF is indeed an approximation of the continuous
-MCF.
+that one step of the constructed discrete MCF is an approximation of one Euler
+step for the continuous MCF.
 
 % vim: set spelllang=en :
 
