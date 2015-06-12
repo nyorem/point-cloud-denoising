@@ -4,28 +4,29 @@
 % English
 \begin{abstract}
 
-% TODO
-During this internship, we were interested in the denoising / smoothing of point
-clouds sampled on an unknown surface. For doing that, we will use a mean
-curvature flow approach: we will move the points while minimizing an energy, the
-area of the underlying surface. So, we will need a way to approximate the area
-of a surface by only knowing points sampled on it, we will use the volume of a
-union of balls centered on the point cloud.  We will also be interested in
-another kind of flow: an anisotropic one. The magnitude of the smoothing will be
-more important in some directions dictated by the choice of the polyhedron. The
-idea is to replace the union of balls by a union of convex polyhedra and do the
-same work.
+During this internship, we were interested in the denoising, smoothing of point
+clouds sampled on an unknown surface. In order to do that, we will use a mean
+curvature flow approach: points are moved while minimizing an energy, this
+energy being the area of the underlying surface. But, we do not know the
+underlying surface, only points sampled on it. To approximate the area, we will
+use the volume of a union of balls centered on the point cloud and a gradient
+descent algorithm.  We will also be interested in another kind of flow: an
+anisotropic one. For this particular flow, the idea is to replace the union of
+balls by a union of convex polyhedra. The magnitude of the smoothing will be
+more important in some directions dictated by the choice of a convex polyhedron.
 
-This report is divided as follows: firstly, we will give a detailed introduction
-about point cloud smoothing: existing techniques and why using a mean curvature
-flow can be interesting. Then, we will study the two dimensional case. We will
-show that this technique can be used to simulate a discrete mean curvature flow
-and so smooth point clouds. The technique can also be used to estimate the mean
-curvature. Many examples will be studied. Furthermore, we will continue by
-looking at the 3D case where we will study the volume of a union of convex
-polyhedra. Several theoretical and practical issues will arise. We will explain
-the choices that were mode to solve these issues. Finally, we will look at the
-theory behind our approach.
+This report is divided as follows. Firstly, we will give a detailed introduction
+about point cloud smoothing: the existing techniques and why using a mean
+curvature flow can be interesting. Then, we will study the two dimensional case.
+We will show that this technique can be used to simulate a discrete mean
+curvature flow and to smooth point clouds. We will also see that this technique
+can be used to estimate the mean curvature. Many examples will be studied.
+Secondly, we will look at the anisotropic flow in  3D. Several theoretical and
+practical issues will arise. We will explain the choices that were mode to solve
+these issues.  Finally, we will look at the theory behind our approach. We will
+prove that, under some conditions, the area of a surface can be well
+approximated by the volume of a union of balls. We will also prove that our
+algorithm is, indeed, a discretization of the continuous mean curvature flow.
 
 \end{abstract}
 
@@ -36,32 +37,34 @@ theory behind our approach.
 % Français
 \begin{abstract} \selectlanguage{french}
 
-% TODO
-Durant ce stage, nous nous sommes intéressés au débruitage / lissage de nuages
-de points échantillonnés sur une surface inconnue. Pour faire cela, nous avons
+Durant ce stage, nous nous sommes intéressés au débruitage, lissage de nuages de
+points échantillonnés sur une surface inconnue. Pour faire cela, nous avons
 utilisé une approche basée sur le flot de courbure moyenne: nous faisons évoluer
 le nuage de points tout en minimisant une énergie, l'aire de la surface
-sous-jacente. Donc, nous avons besoin d'un moyen pour approcher l'aire de la
-surface en connaissant seulement des points échantillonnés sur celle-ci, nous
-avons utilisé le volume de l'union des boules centrées sur le nuage de point.
-Nous nous somme aussi intéressé à un autre genre de flot: un flot anisotropique.
-La magnitude du flot sera plus importante dans certaines directions privilégiées
-dictées par le choix du polyèdre. L'idée est de remplacer l'union des boules par
-une union de polyèdres convexes et de faire le même type de travail.
+sous-jacente. Mais, dans notre cas, la surface est inconnue, nous ne connaissons
+que des points échantillonnés sur celle-ci. Pour approcher l'aire de la surface,
+nous avons utilisé le volume de l'union des boules centrées sur le nuage de
+point et un algorithme basé sur une descente de gradient. Nous nous sommes aussi
+intéressé à un autre type de flot: un flot anisotropique.  Pour ce flot, l'idée
+est de remplacer l'union des boules par une union de polyèdres convexes. La
+magnitude du flot sera plus importante dans certaines directions privilégiées,
+dictées par le choix du polyèdre.
 
 Ce rapport est structuré de la manière suivante: tout d'abord, nous donnerons
 une introduction détaillée sur les techniques existantes de lissage de nuages de
 points et pourquoi il est intéressant d'avoir choisi une approche basée sur le
 flot de courbure moyenne. Ensuite, nous étudierons le cas bidimensionnelle. Nous
 montrerons que cette technique peut être utilisée pour simuler un flot de
-courbure moyenne discret et donc de lisser des nuages de points. Cette technique
-peut aussi être utilisée pour estimer la courbure moyenne. Beaucoup d'exemples
-illustreront ces résultats. Par la suite, nous nous intéresserons au cas 3D pour
-lequel nous étudierons le volume d'une union de polyèdres convexes. Nous serons
-confrontés à des difficultés aussi bien théoriques que pratiques. Nous
-expliquerons alors les choix qui ont été faits pour résoudre les problèmes
-rencontrés. Enfin, nous nous intéresserons à la théorie utilisée derrière notre
-approche.
+courbure moyenne discret et de lisser des nuages de points. Nous verrons
+aussi que cette technique peut être utilisée pour estimer la courbure
+moyenne. Beaucoup d'exemples illustreront ces résultats. Ensuite, nous nous
+intéresserons au cas anisotropique en 3D. Nous serons confrontés à des
+difficultés aussi bien théoriques que pratiques. Nous expliquerons alors les
+choix qui ont été faits pour résoudre les problèmes rencontrés. Enfin, nous nous
+intéresserons à la théorie utilisée derrière notre approche. Nous montrerons
+que, sous certaines conditions, l'aire de la surface peut être approchée par le
+volume d'une union de boules. Nous prouverons aussi que notre algorithme est
+bien une discrétisation du flot de courbure moyenne continu.
 
 \end{abstract}
 

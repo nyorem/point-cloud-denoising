@@ -1,44 +1,44 @@
 \chapter{Automatic Differentiation}
 \label{appendix:ad}
 
-The automatic differentiation is a technique used for computing the derivatives,
-gradient of programs. It relies on the fact that no matter how complex a program
+The automatic differentiation is a technique used for computing the derivatives
+functions. It relies on the fact that no matter how complex a computer program
 is, it is composed of a sequence of elementary arithmetic operations (such as
 addition, subtraction, multiplication, division) and elementary functions (exp,
-log, cos, sin...) It extensively uses the chain rule on these operations to
-compute derivatives of arbitrary order.
+log, cos, sin...). Automatic Differentiation extensively uses the chain rule on
+these operations to compute derivatives.
 
-It is not the same as the symbolic or the numerical differentiation (like finite
+It is not the same as symbolic or numerical differentiation (like finite
 differences). Indeed, automatic differentiation can be used to compute
 derivatives of programs and not only mathematical functions without using
-approximations like with numerical differentiation.
+approximations as in numerical differentiation.
 
 Let us suppose that we want to compute the derivative of a function $ f $ with a
 single one dimensional argument $ x $. To do that, we will replace the number
 type that is to say that we will replace $ x $ by $ x + \epsilon x' $ where $
 \epsilon $ satisfies the property $ \epsilon^2 = 0 $ ($ x + \epsilon x' $ is
 said to be a dual number). Then, we overload all the arithmetical operations:
-addition, subtraction, multiplication, division.
+addition, subtraction, multiplication, division. For instance: $ (x + \epsilon
+x') \times (y + \epsilon y') = x y + \epsilon (x y' + x' y) $.
 
-Then we call $ f $ with this variable: $ f(x + \epsilon x') = y + \epsilon y' $.
-We conclude that $ y = f(x) $ and $ y' = x' f'(x) $ . Indeed for small values of
-$ \epsilon $, we have the following first order Taylor expansion: $ f(x +
-\epsilon x') = f(x) + \epsilon x' f'(x) + ... $. $ x' $ is called a seed and can
-be chosen arbitrarily, we can for instance choose $ x ' = 1 $ and so $ y' =
-f'(x) $.
+Then we call $ f $ with this number, the result is also a dual number: $ f(x +
+\epsilon x') = y + \epsilon y' $.  Furthermore, for small values of $ \epsilon
+$, we have the following first order Taylor expansion: $ f(x + \epsilon x') =
+f(x) + \epsilon x' f'(x) + ... $ By identification, we get $ y = f(x) $ and $
+y' = x' f(x) $. $ x' $ is called a seed and can be chosen arbitrarily, we can
+for instance choose $ x ' = 1 $ so that $ y' = f'(x) $.
 
 This process can be easily extended to handle functions like $ f : \R^n
-\rightarrow \R $ in order to compute gradients of such functions. This is what
-we did during the internship: we considered a function over $ n $ points in
-dimension $ d $ as a function $ f : \R^{dn} \rightarrow \R $.
+\rightarrow \R $ in order to compute gradients. This is what we used during the
+internship: we considered a function over $ n $ points in dimension $ d $ as a
+function $ f : \R^{dn} \rightarrow \R $.
 
 This technique is interesting because it allows us to compute accurate
 derivatives of functions very easily and efficiently. Indeed, we only have to
 change the number type and write the good implementations of the basic
-arithmetic operations and overloaded mathematical functions.  Another advantage
-is that in \texttt{CGAL}, this is easy to do since the library can be
+arithmetic operations and overloaded mathematical functions. It also allows us
+to only focus on the computation of the value and not its derivative. Another
+advantage is that in \texttt{CGAL}, this is easy to do since the library can be
 parametrized by the number type.
-
-% TODO
 
 % vim: set spelllang=en filetype=tex :

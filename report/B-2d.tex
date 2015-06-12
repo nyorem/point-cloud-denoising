@@ -4,40 +4,44 @@
 % {{{1 INTRODUCTION
 \section{Introduction}
 
-In this part, we focus on point clouds in 2D which sample a planar curve.
-We will develop algorithms to smooth them by minimizing different energies. First, we
-will consider the area of a union of disks centered on the point cloud.  We will
-also test other types of energies such as the perimeter of the boundary,
-weighted area and weighted perimeter of the boundary.
+In this part, we focus on point clouds in 2D which sample a planar curve.  We
+will develop algorithms to smooth them by minimizing different energies. First,
+we will consider for the energy the area of a union of disks centered on the
+point cloud.  We will also test other types of energies such as the perimeter of
+the boundary, a weighted area and a weighted perimeter of the boundary.
 
-Firstly, we will show how to compute the area of a union of disks.  Then, we
-will run different experiments to verify that the gradient of a union of disks
-is proportional to the mean curvature of the underlying curve. Finally, we will
-run our flows on different point clouds with different parameters to show
-that it can simulate discrete mean curvature flows.
+Firstly, we will explain how to compute the area of a union of disks.  Then, we
+will run different experiments to check that the gradient of a union of disks is
+proportional to the mean curvature of the underlying curve. Finally, we will run
+our flows on different point clouds with different parameters to show that it
+can simulate discrete mean curvature flows and indeed smooth point clouds.
 
 % {{{1 AREA OF A UNION OF BALLS
 \section{Area of a union of balls}
 
 Let $ P $ be a finite set of points in 2D.  We call the union of disks with
 radius $ r $ centered on $ P $, the $r$-offset and we will denote it by $ P^r $.
-
 We will first need the definition of the Voronoi diagram of set of points:
 
 \begin{definition}
-    Given a set of points $ P \in \R^2 $, we define the Voronoi cell of $ p \in
-    P $ by:
-    $$ V(p, P) = \{ q \in E,~ \forall p' \in P,~|| p  - q || \leq || p' -
-    q || \} $$
-    In other words, the Voronoi cell of $ p $ is composed of all the points which are
-    closer to $ p $ than to any other points in $ P $.
-
-    Then, the Voronoi diagram of $ P $ is composed of all the Voronoi cells of $
-    p \in P $. It defines a partition of the plane $ \R^2 $.
+    Given a set of points $ P \subseteq \R^2 $ also called sites, we define the
+    Voronoi cell of $ p \in P $ by:
+    $$ V(p, P) = \{ x \in \R^2,~ \forall p' \in P,~|| p  - x || \leq || p' -
+    x || \} $$
+    In other words, the Voronoi cell of $ p $ is composed of all the points
+    which are closer to $ p $ than to any other points in $ P $.  Then, the
+    Voronoi diagram of $ P $ is composed of all the Voronoi cells of $ p \in P
+    $. It defines a partition of the plane $ \R^2 $.
 \end{definition}
 
-For example, Figure \ref{fig:voronoi-diagram-2d} is an example of a Voronoi
-diagram.
+For example, Figure \ref{fig:voronoi-diagram-2d} provides an example of Voronoi
+diagram. Now, we can say that, because the Voronoi diagram defines a partition,
+we have:
+
+\begin{equation}
+    Area(P^r) = Area \left( \bigcup_p B(p, r) \right) = \sum_p Area(V(p, P) \cap B(p, r))
+    \label{eqn:area-union-balls}
+\end{equation}
 
 \begin{figure}[h]
     \centering
@@ -47,21 +51,13 @@ diagram.
     \label{fig:voronoi-diagram-2d}
 \end{figure}
 
-Now, we can say that, because the Voronoi diagram defines a partition, we have:
-
-\begin{equation}
-    Area(P^r) = Area \left( \bigcup_p B(p, r) \right) = \sum_p Area(V(p, P) \cap B(p, r))
-    \label{eqn:area-union-balls}
-\end{equation}
-
 % {{{3 ALGORITHM
 \paragraph{Algorithm}
 
-In order to compute this quantity, we need to know how to estimate the area of the
-intersection of a ball and a Voronoi cell.
-
-Figure \ref{fig:inter_voronoi_ball_2d} illustrate the different cases for
-the intersection of a Voronoi cell and a ball in 2D.
+In order to compute this quantity, we need to know how to estimate the area of
+the intersection of a ball and a Voronoi cell. Figure
+\ref{fig:inter_voronoi_ball_2d} illustrates different cases we may encounter
+when intersecting a Voronoi cell and a ball in 2D.
 
 \begin{figure}[h]
     \centering
@@ -84,44 +80,46 @@ the intersection of a Voronoi cell and a ball in 2D.
         \label{fig:inter_voronoi_ball_2d:c}
     \end{minipage}
 
-   \caption{Different cases for the intersection between a Voronoi cell and a sphere}
+   \caption{Different cases for the intersection between a Voronoi cell and a
+       disk}
    \label{fig:inter_voronoi_ball_2d}
 \end{figure}
 
 We use \texttt{CGAL} to compute the Delaunay triangulation of our point set: it
 is the dual of the Voronoi diagram. A triangle in the Delaunay
 triangulation corresponds to a vertex in the Voronoi diagram, an edge
-corresponds to an edge, a vertex corresponds to a face...
+corresponds to an edge, a site corresponds to a face...
 
 Given this triangulation, we can compute the vertices composing the boundary of
-the  Voronoi cell (in bold in Figure \ref{fig:inter_voronoi_ball_2d}) of a
-point by doing the following:
+the  Voronoi cell of a point by doing the following:
 \begin{enumerate}
-    \item Access the neighbouring faces of a vertex using the
+    \item Access the neighbouring faces of a site using the
         \texttt{incident\_faces} method.
     \item Compute the Voronoi vertices (circumcenters) of these faces using the
         \texttt{dual} method.
 \end{enumerate}
 
-In 2D, consider the intersection of the Voronoi cell of $ p $ and a ball $ B(p,
-r) $. The boundary of this intersection is composed of segments and circular
-arcs. There are two types of points connecting those elements: some are Voronoi
-vertices (in red) and some are intersections of Voronoi edges and circles (in
-blue). We will refer to the red points as the interior points and to the blue
-ones as intersection points.
+We are now ready to compute the intersection of the Voronoi cell of $ p $ and a
+ball $ B(p, r) $. The boundary of this intersection is composed of segments and
+circular arcs. There are two types of points connecting those elements: some are
+Voronoi vertices (in red) and some are intersections of Voronoi edges and
+circular arcs (in blue). We will refer to the red points as the interior points
+and to the blue ones as intersection points.
 
 First, we construct an array of all the points composing the boundary of the
 intersection. In order to do this, we loop over the vertices composing the
 Voronoi cell: for any Voronoi vertex $ v $, we have access to the next one in
 the counterclockwise order and so we construct the corresponding edge. We check
 whether this edge intersects the ball or not and we construct the intersection
-point if necessary.. In parallel, we maintain a boolean indicating whether the
-current point is interior or not. By doing that, we can construct an ordered
-list of all the points present on the boundary of the intersection.
+points if necessary. In parallel, we maintain a boolean indicating whether the
+current vertex is interior or not to $ B(p, r) $. By doing that, we can
+construct an ordered list of all blue and red the points present on the boundary
+of the intersection.
 
-Then, we loop over this array, for any points $ u $ and $ v $, we can construct
-the edge $ e = uv $. Depending on whether the points $ u $ and $ v $ are
-interior or not, the contribution of $ e $ to the global area will be different:
+Then, we loop over this array. For any two consecutive points $ u $ and $ v $,
+we can construct the edge $ e = uv $. Depending on whether the points $ u $ and
+$ v $ are interior or not, the contribution of $ e $ to the global area will be
+different:
 \begin{itemize}
     \item if $ u $ and $ v $ are interior points, we add the area of triangle $ upv $.
     \item if $ u $ or $ v $ is interior point, we add the area of triangle $ upv $.
@@ -132,9 +130,9 @@ interior or not, the contribution of $ e $ to the global area will be different:
 
 Some special cases need to be handled:
 \begin{itemize}
-    \item the boundary of the Voronoi cell is entirely outside the ball (i.e.
-        there are no intersection), then we add $ \pi r^2 $ to the area of the
-        union (see Figure \ref{fig:inter_voronoi_ball_2d:b}).
+    \item the boundary of the Voronoi cell lies entirely outside the ball, then
+        we add $ \pi r^2 $ to the area of the union (see Figure
+        \ref{fig:inter_voronoi_ball_2d:b}).
     \item the boundary consists of two intersection points $ p $ and $ q $, then
         we add the triangle $ pvq $ and the angular sector $ \vec{vp}, \vec{vq}
         $ (see Figure \ref{fig:inter_voronoi_ball_2d:c}).
@@ -144,8 +142,9 @@ Some special cases need to be handled:
 
 This algorithm allows us to compute exactly the area of a union of disks.
 
-We use the same technique for computing the perimeter of the boundary of the
-intersection except that if there are no intersection then the perimeter is $ 2
+We use the same technique for computing the contribution of each disk $ B(p, r)
+$ to the perimeter of the boundary of the union of disks except that if $ B(p,
+r) $ is contained in $ V(p, P) $ then the contribution to the perimeter is $ 2
 \pi r $ and instead of adding triangles areas or angular sectors, we only add
 length of circular arcs.
 
@@ -173,12 +172,12 @@ area and not of its gradient.
 % {{{2 GRADIENT
 \subsection{Gradient}
 
-In this section, we will study the gradient of the area of union of balls, the
-perimeter of the boundary. We used the automatic differentiation technique
-described in Appendix \appendixref{appendix:ad} to compute the gradient of the
-previously computed area.
+In this section, we will illustrate on some examples what gives the computation
+of the gradient of the area of union of balls and the gradient of the perimeter
+of the boundary. We used the automatic differentiation technique described in
+Appendix \appendixref{appendix:ad}.
 
-See Figures \ref{fig:gradients_area_2d} for a few examples of such gradients
+See Figure \ref{fig:gradients_area_2d} for a few examples of such gradients
 for different input point sets. The colour of the vector depend on the norm of
 the gradient: the bigger the gradient is, the redder the vector will be.
 
@@ -187,11 +186,12 @@ the gradient: the bigger the gradient is, the redder the vector will be.
 
     \includegraphics[scale=0.3]{2d/area/ellipse-100-01-15-gradients}
     \includegraphics[scale=0.3]{2d/area/square-40-001-100-gradients}
-    \subcaption{Gradients of the area for points sampled on an ellipse / a square}
+    \caption{Gradients of the area for points on an ellipse (left) and on a
+        square (right)}
     \label{fig:gradients_area_2d}
 \end{figure}
 
-We did the same thing using the gradient of the perimeter of the boundary on the
+We did the same thing with the gradient of the perimeter of the boundary on the
 same point clouds (see Figures \ref{fig:gradients_perimeter_2d}).
 
 \begin{figure}[h]
@@ -199,12 +199,13 @@ same point clouds (see Figures \ref{fig:gradients_perimeter_2d}).
     \includegraphics[scale=0.3]{2d/perimeter/ellipse-100-01-15-gradients}
     \includegraphics[scale=0.3]{2d/perimeter/square-40-001-100-gradients}
 
-    \subcaption{Gradients of the perimeter for points sampled on an ellipse / a square}
+    \caption{Gradients of the perimeter for points on an ellipse (left) and on a
+        square (right)}
     \label{fig:gradients_perimeter_2d}
 \end{figure}
 
 In the previous screenshots, we observe that the gradients are in the same
-direction as the normals to the underlying curve. This is the case if the radius
+direction as the normals to the underlying curve. This is the case if the radii
 of the balls are big enough and if the sampling is sufficiently uniform. Also,
 the norm of these gradients is related to the mean curvature of the underlying
 curve (see Proposition \ref{prop:gradient-mean-curvature}).
@@ -239,7 +240,7 @@ $$ \kappa(t) = \frac{ab}{(a^2 \cos^2(t) + b^2 \sin^2(t))^{\frac{3}{2}} } $$
 We compare this for $ t = \frac{2 k \pi}{N} $ for $ k = 0 \ldots N - 1 $ with
 the computed ones where $ N $ is the number of samples.
 
-Figure \ref{fig:2d-curvature-ellipse} represent the computed gradients mapped
+Figure \ref{fig:2d-curvature-ellipse} represents the computed gradients mapped
 to a colour ramp (from green to red). We observe that the gradients are more
 important where the curvature is higher and are collinear to the outward normals
 of the underlying curve.
@@ -253,8 +254,6 @@ of the underlying curve.
         perimeter}
     \label{fig:2d-curvature-ellipse}
 \end{figure}
-
-% TODO: pictures
 
 Now, we study the absolute difference between the computed and expected
 curvatures for different choices of gradients (area, perimeter of the boundary,
@@ -284,15 +283,14 @@ We will also be interested in weighted versions of functionals: we can weight
 the gradient of the area by the perimeter of the visible part (the circular arcs
 composing the intersection of the Voronoi cell and the ball) of the restricted
 region. But by doing that, we can divide by $ 0 $ so we need to choose a small
-time step in order to avoid the case where a point does not see anything.
+time step in order to avoid the case where the contribution of a site to the
+perimeter vanishes.
 
 We will test the different properties we expect the flows to have:
 \begin{enumerate}
     \item Smooth the point clouds: remove outliers, noise
     \item Minimize the area of a union of balls
 \end{enumerate}
-
-% TODO
 
 We did some experiments to validate our results: we first compared the two
 gradient flows (area and perimeter of the boundary) to a set of points uniformly
@@ -377,26 +375,22 @@ of our algorithm, see Figure \ref{fig:ellipse_noise_flow}.
 \end{figure}
 
 We notice that the gradient flow of the area may create holes in the point set
-which is not the case for the gradient flow of the perimeter.
-
-On the contrary, the gradient flow of the perimeter of the boundary will smooth
-the point set while redistributing the points in an uniform way.
-
-% TODO: explain why
-This can be explained by looking on a simple case with two intersecting balls:
+which is not the case for the gradient flow of the perimeter.  On the contrary,
+the gradient flow of the perimeter of the boundary will smooth the point set
+while redistributing the points in an uniform way.  This can be explained by
+looking to a simple case with two intersecting balls:
 \begin{itemize}
-    \item \textit{for the perimeter}: the gradients are directed towards the outside
-        and so the balls will be merged because we can say, using the triangle
-        inequality, that in order to minimize the perimeter the balls must come
-        closer.
-    \item \textit{for the area}: using the same reasoning, in order to minimize the area,
-        it is possible that the gradients are oriented in opposite directions
-        because the area gain may be more costly than moving the balls closer.
+    \item \textit{for the perimeter}: the gradients are directed towards the
+        outside and so the balls will be merged because it is easy to see, using
+        the triangle inequality, that in order to minimize the perimeter the
+        balls must come closer.
+    \item \textit{for the area}: it is possible that, in order to minimize the
+        area, we gain more by moving the balls apart rather than closer.
 \end{itemize}
 
 The chosen radius will also influence the smoothing: points which are too far
 away from other points (at distance greater than the radius) will not move. The
-bigger radius is, the more points will move in big groups. Indeed, the
+bigger the radius is, the more points will move in big groups. Indeed, the
 radius indicates how to take the neighbours of a point into account. The more
 neighbours we take into account, the more "global" the movement will be.
 
@@ -429,8 +423,6 @@ different amplitudes see Figure \ref{fig:ellipse_osc2_flow}.
     \label{fig:ellipse_osc2_flow}
 \end{figure}
 
-% TODO: explain why
-
 Lastly, we generate points on a line segment and fixed the two points of the
 extremities. Then, we apply our flow on this point set. We expect the flow to
 smooth the point set: points should get closer and closer to an uniformly
@@ -442,7 +434,8 @@ sampled set of points. See Figure \ref{fig:line_fixed_flow}.
     \includegraphics[scale=0.5]{2d/area/line-01-15-0}
     \includegraphics[scale=0.5]{2d/area/line-01-15-50}
     \includegraphics[scale=0.5]{2d/perimeter/line-05-15-50}
-    \caption{Area / perimeter flow of points on a segment: 0 / 50 iterations}
+    \caption{Left: Initial point set. Middle and right: area / perimeter flow of
+        points on a segment after 50 iterations}
 
     \label{fig:line_fixed_flow}
 \end{figure}
@@ -484,10 +477,5 @@ removed when we use the weighted versions of the flows.
 % Also, we want to use polyhedral (anisotropic) norms, a thing that the previous
 % method does not allow since it only deals with intersection of a Voronoi cell
 % and a ball and we need a way to intersect a Voronoi cell and a polygon.
-
-% TODO:
-% - description
-% - résultats
-% - bilan + transition
 
 % vim: set spelllang=en :

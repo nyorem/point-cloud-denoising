@@ -1,15 +1,44 @@
 \chapter{Conclusion \& Perspectives}
 
-% TODO:
+% TODO
 
-Some perspectives would be:
+During this internship, we developed different algorithms for point cloud
+smoothing. In Chapter \ref{chapter:2d}, we looked at one which allows us to
+estimate the mean curvature and smooth 2D point clouds using a discretization of
+the mean curvature flow. Instead of minimizing a continuous area, we minimize a
+discrete one: the volume of a union of balls. In order to do that, we use a
+gradient descent based algorithm combined with the Automatic Differentiation
+technique.
+
+Then, in Chapter \ref{chapter:3d}, we extended this algorithm in 3D by replacing
+the union of balls with a union of convex polyhedra. The obtained flow has
+different properties than the normal mean curvature flow: it is anisotropic. We
+showed that the choice of the convex polyhedron influence the directions of the
+anisotropic smoothing.
+
+Finally, in Chapter \ref{chapter:theory}, we examined the theoretical properties
+of our discretization of the area. We proved that the approximation of the area
+of a surface by the volume of a union of balls is a good under some conditions.
+We also proved that the flow we constructed in Chapter \ref{chapter:2d} is
+indeed a discretization of the mean curvature flow: the gradient of the volume
+of a union of balls converge towards a quantity proportional to the mean
+curvature vector.
+
+There is still some place left for improvements:
 \begin{itemize}
-    \item a better understanding of the behaviour of the algorithm when we use
-        as the functional the area of the boundary, notably, the relation
-        between the gradients and the mean curvature
-    \item a simulation of the "true" functional in 3D: minimizing the volume of
-        the Minkowksi sum $ P + rK $ instead of the one given in  % \ref{TODO}
-    \item implement an exact computation in 3D using arrangements and overlays
+    \item We did the proof of the convergence for the gradient of the volume of
+        the union (see Proposition \ref{prop:gradient-mean-curvature}). It would
+        be interesting to study the convergence of the gradient of the area of
+        the boundary. Our experiments seem to show that this gradient tends to
+        converge also to a quantity proportional to the mean curvature vector.
+    \item Correct the algorithm in 3D in order to minimize the good functional.
+        Indeed, we saw in Section \ref{sec:theory-3d-case} that we do not
+        minimize the volume of the union of convex polyhedra but another,
+        related functional. It would be interesting to manage to find a way to
+        use the true functional.
+    \item Implement an exact computation of the volume of the union in 3D using
+        arrangements and overlays.
+    \item Use the 3D algorithm to simulate crystal growth in physics.
 \end{itemize}
 
 % vim: set spelllang=en :
