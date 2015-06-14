@@ -33,34 +33,49 @@ Let us take a $ \delta > 0 $, we want to find $ \epsilon_\delta $ such that if $
     \label{eqn:haussdorf-voronoi1}
 \end{align}
 
-Let us take care of the first inclusion:
-% TODO: proof
+Let us take care of the first inclusion. Let us take $ y \in V_{N'}(x, X) $. By
+definition we have, for a given $ x' \in X $:
+$$
+N(x - y) \leq N(x' -y) \text{ or } (N(x - y) = N(x' - y) \text { and } || x -y
+|| \leq || x' - y ||)
+$$
+So, we have two cases:
+\begin{itemize}
+    \item $ N(x - y) \leq N(x' - y) $: TODO
+    \item $ N(x - y) = N(x' - y) $ and $ || x - y || \leq || x' - y || $: in
+        this case, we have:
+        \begin{align*}
+            N_\epsilon(x - y) &= N(x - y) + \epsilon || x - y || \\
+            &= N(x' - y) + \epsilon|| x - y || \\
+            & \leq N(x' - y) + \epsilon || x' - y || = N_\epsilon(x' - y) \\
+            & \implies y \in V_{N_\epsilon}(x, X) \\
+            & \implies y \in V_{N_\epsilon}(x, X)^\delta \text{ for any } \delta
+            \geq 0
+        \end{align*}
+\end{itemize}
 
-And now the second inclusion:
-Let us take $ y \in V_{N_\epsilon}(x, X) $. By definition of $ N_\epsilon $, we
-have: $ \forall x' \in X,~N(x - y) + \epsilon || x - y || \leq N(x' - y) +
-\epsilon || x' - y || $. Then, we will show that $ y \in V_{N'}(x, X) $. Indeed, using the previous
-inequality, there are two cases: either $ N(x - y) \leq N(x' - y) $ or $ N(x -
-y) = N(x' - y) $. In the former case, we have directly that $ y \in V_{N'}(x, X)
-$ by definition. In the latter case, the inequality reduces to: $ || x - y || \leq
-|| x' - y || $ and so $ y \in V_{N'}(x, X) $ i.e. $ y \in V_{N'}(x, X)^{\delta}
-$ for any $ \delta $.
+And now the second inclusion. Let us take $ y \in V_{N_\epsilon}(x, X) $. By
+definition of $ N_\epsilon $, we have: $ \forall x' \in X,~N(x - y) + \epsilon
+|| x - y || \leq N(x' - y) + \epsilon || x' - y || $. Then, we will show that $
+y \in V_{N'}(x, X) $. Indeed, using the previous inequality, there are two
+cases: either $ N(x - y) \leq N(x' - y) $ or $ N(x - y) = N(x' - y) $. In the
+former case, we have directly that $ y \in V_{N'}(x, X) $ by definition. In the
+latter case, the inequality reduces to: $ || x - y || \leq || x' - y || $ and so
+$ y \in V_{N'}(x, X) $ i.e. $ y \in V_{N'}(x, X)^{\delta} $ for any $ \delta $.
 
-We also want to prove that this new Voronoi diagram has good properties, notably
+We can also prove that this new Voronoi diagram has good properties, notably
 that this new diagram forms a good "partition" of $ \mathbb{R}^d $. Thus, we need to
 define what a "good" partition is. We can define it in two ways:
 \begin{enumerate}
-    \item for any point $ x $, $ V_{N'}(x, X) $ is homeomorphic to a disk. For
-        any couple $ (x, y) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) $ is
-        homeomorphic to a segment / half-line / line. For any triplet $ (x, y,
-        z) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) \cap V_{N'}(z, X) $ is
-        homeomorphic to a point.
+    \item for any point $ x $, $ V_{N'}(x, X) $ is homeomorphic (continuously
+        deformable) to a disk. For any couple $ (x, y) $, $ V_{N'}(x, X) \cap
+        V_{N'}(y, X) $ is homeomorphic to a segment / half-line / line. For any
+        triplet $ (x, y, z) $, $ V_{N'}(x, X) \cap V_{N'}(y, X) \cap V_{N'}(z,
+        X) $ is homeomorphic to a point.
     \item let us consider the open Voronoi regions: $ \ocirc{V}_N(x, X) = \{ y
-        \in X,~ N(x - y) < N(x' - y)\} $. Then, we can say that we have a good
-        partition if the complement of the open Voronoi regions have zero
-        measure.
+        \in X,~ N(x - y) < N(x' - y)\} $. Then, we have a good partition if the
+        complement of the open Voronoi regions have a zero measure.
 \end{enumerate}
-% TODO: definition
 
 % vim: set spelllang=en :
 

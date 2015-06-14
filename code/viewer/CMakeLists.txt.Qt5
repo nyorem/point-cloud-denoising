@@ -11,7 +11,7 @@ add_definitions (-std=c++11 -Wall)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Qt5
-set (CMAKE_PREFIX_PATH "/usr/local/Cellar/qt5/5.4.0/")
+set (CMAKE_PREFIX_PATH "/usr/local/Cellar/qt5/5.4.2/")
 # For automoc to work headers and source files must be in the same directory
 set (CMAKE_AUTOMOC ON)
 set (CMAKE_INCLUDE_CURRENT_DIR ON)

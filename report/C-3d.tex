@@ -1,3 +1,7 @@
+% TODO: talk about inclusion-exclusion computation time
+
+% inlusion-exclusion: comparaison nuage de points
+
 \chapter{3D case}
 \label{chapter:3d}
 
@@ -11,25 +15,25 @@ of balls centered at the points and move the points in the opposite direction to
 the one given by the gradient of the volume. An algorithm for computing the
 volume can be found in \cite{cazals2011computing}. Since we expect the same
 results as in the 2D case (see Chapter \ref{chapter:theory} for a
-justification), we preferred to focus to an other kind of flow: an anisotropic
+justification), we preferred to focus on another kind of flow: an anisotropic
 one.
 
 The idea of this flow is to replace the union of balls with a union of convex
 polyhedra. The choice of the polyhedron will directly influence the directions
 in which the points will be moved.
 
-For doing that, we will replace the Euclidean ball $ B(0, 1) $ with a convex
+To do that, we will replace the Euclidean ball $ B(0, 1) $ with a convex
 polyhedron $ B_N(0, 1) $ which can be considered as the unit ball for a certain
 norm $ N $. This norm will be called polyhedral (see Section
-\ref{sec:polyhedral-norm}). Equation \eqref{eqn:area-union-balls} remains valid if
-we replace $ B(p, r) $ with $ B_N(p, r) $ and $ V $ by $ V_N $ (the Voronoi
-diagram computed for the norm $ N $) but only if the points are in general
-position. Indeed, see Figure \ref{fig:3d-voronoi-cube} for a look at a
-particular case where the chosen polyhedron is a cube (norm $ L^\infty $). We
-see that if we choose two aligned points, the bisector is not a line and so the
-Voronoi diagram does not partition the plane anymore. Furthermore, the
-computation of the Voronoi cells for a polyhedral norm is a tough work (see
-\cite{ma2000bisectors} for a thorough study). In Appendix
+\ref{sec:polyhedral-norm}). Equation \eqref{eqn:area-union-balls} remains valid
+if we replace $ B(p, r) $ with $ B_N(p, r) $ and $ V $ by $ V_N $ (the Voronoi
+diagram computed for the norm $ N $) only if the points are in general position.
+Indeed, see Figure \ref{fig:3d-voronoi-cube} for a look at a particular case
+where the chosen polyhedron is a cube (norm $ L^\infty $). We see that if we
+choose two aligned points, the bisector is not a line and so the Voronoi diagram
+does not partition the plane anymore. Furthermore, the computation of the
+Voronoi cells for a polyhedral norm is a tough work (see \cite{ma2000bisectors}
+for a thorough study). In Appendix
 \appendixref{appendix:voronoi-polyhedral-norm}, we study some properties of the
 Voronoi diagram for a polyhedral norm and we show that we can symbolically
 perturb $ V_N $ in order to get a partition.
@@ -40,12 +44,12 @@ perturb $ V_N $ in order to get a partition.
     \includegraphics[scale=0.5]{3d/voronoi-cube-non-aligned}
     \hspace{2cm}
     \includegraphics[scale=0.5]{3d/voronoi-cube-aligned}
-    \caption{Bisector for the $ L^\infty $ norm: two non aligned points / two
-        aligned points}
+    \caption{Bisector for the $ L^\infty $ norm: two non aligned points (on the
+        left) and two aligned points (on the right)}
     \label{fig:3d-voronoi-cube}
 \end{figure}
 
-For computing the volume of $ \bigcup_{p \in P} B_N(p, r) $, we implemented two
+To compute the volume of $ \bigcup_{p \in P} B_N(p, r) $, we implemented two
 different methods: a naive one and one based on inclusion-exclusion formula.  In
 the naive one, we make the following approximation: instead of summing up over
 all intersections $ V_N(p, P) \cap B_N(p, r) $, we sum up over all $ V(p, P)
@@ -56,7 +60,7 @@ There is also one method which is exact but we did not have the time to
 implement it in our internship, it is based on 3D arrangements and overlays.
 
 Firstly, we will define formally what we call a polyhedral norm. Then, we will
-explain our naive method. Secondly, we will explain the inclusion-exclusion
+explain the naive method. Secondly, we will explain the inclusion-exclusion
 formula we used in our second method. Then, we will talk about the choices we
 made for the implementation and finally, we will run experiments to validate our
 expectations.
@@ -64,7 +68,7 @@ expectations.
 % {{{1 POLYHEDRAL NORM
 \section{Polyhedral norm}
 \label{sec:polyhedral-norm}
-A polyhedral norm is a function $ N $ defined as follows:
+A polyhedral norm is a function $ N : \R^d \to \R $ defined as follows:
 
 \begin{equation}
     \forall x \in \mathbb{R}^d,~ N(x) = \max_{i} (x | v_i)
@@ -96,13 +100,12 @@ We want to compute :
 \end{equation}
 
 The idea of this method is to approximate $ Vol(\bigcup_p B_N(p, r) \cap V(p,
-P)) $ by $ Vol(B_N(p, r) \cap V(p, P)) $. Then, we just have to compute the
+P)) $ by $ Vol(B_N(p, r) \cap V(p, P)) $. So, we just have to compute the
 intersection of half-spaces (see Section \ref{sec:3d-implementation} for
 details). It is an approximation because, for example, if we want to compute the
 perimeter of the boundary of squares in 2D, there is a difference between what
 we want to compute and what we actually compute (see Figure
-\ref{fig:3d-inclusion-exclusion-squares}): our computation is just an
-approximation.
+\ref{fig:3d-inclusion-exclusion-squares}).
 
 \begin{figure}[h]
     \centering
@@ -110,7 +113,7 @@ approximation.
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares_truth}
     \hspace{2cm}
     \includegraphics[scale=0.8]{3d/3d_perimeter_squares}
-    \caption{In green, what we want and in red what we actually compute}
+    \caption{In green, what we want to compute and in red what we actually compute}
     \label{fig:3d-inclusion-exclusion-squares}
 \end{figure}
 
@@ -130,9 +133,9 @@ This formula can also be expressed using the notion of nerve as shown in
 \cite{attali2007inclusion}. We define the nerve of $ A = \{ A_x, x \in X \} $ to
 be the simplicial complex \footnote{A simplicial complex is a generalization of
     a triangulation: it is a collection of simplices like vertices, edges,
-    triangles, tetrahedra...} where a simplex $ \sigma $ exists between $ x_1
-\ldots, x_k $ if $ \bigcap\limits_{i=1}^k A_{x_i} \neq \emptyset $. Then, we can
-write the inclusion-exclusion formula as:
+    triangles, tetrahedra...} where a simplex $ \sigma $ exists between the
+points $ x_1 \ldots, x_k $ if $ \bigcap\limits_{i=1}^k A_{x_i} \neq \emptyset $.
+Then, we can write the inclusion-exclusion formula as:
 
 $$ \indicator{\bigcup A_x} = \sum_{\sigma \in Nerve(A)} (-1)^{\dim \sigma}
 \indicator{\bigcap \sigma} $$
@@ -144,7 +147,7 @@ $ \sigma $ represents any simplex in the nerve. Its dimension is defined as: $
     \indicator{\bigcap \sigma}
     \label{eqn:incl_excl_simplices}
 \end{equation}
-where $ \mathcal{B}_N $ is the collection of all balls $ B_N(p, r), p \in P $.
+where $ \mathcal{B}_N $ is the collection of all balls $ B_N(p, r),~p \in P $.
 
 Now, since the nerve can be a really big object, we want to restrict the
 computation to what we call the $\alpha$-complex of a set of points:
@@ -158,17 +161,16 @@ computation to what we call the $\alpha$-complex of a set of points:
     triangulation whose characteristic radius is smaller than $\alpha$.
 \end{definition}
 
-Now, we can ask if the formula \ref{eqn:incl_excl_simplices} is still valid if
-we replace $ Nerve(\mathcal{B}_N) $ by $ Del(P, r) $.
-
-If we want to prove this assertion, we may use the technique used to prove the
-inclusion-exclusion formula for a union of balls. The proof starts by defining
-the subcomplex $ L_p $ induced by a vertex $ p $.  We consider all the
-polyhedrons that contains a given point $ x $ and we construct the nerve of it.
-Formally, $ L_x = Nerve(\{ B_N(p, r),~x \in B_N(p, r)\}) $.
+Now, we can wonder if the formula \ref{eqn:incl_excl_simplices} is still valid
+if we replace $ Nerve(\mathcal{B}_N) $ by $ Del(P, r) $.  If we want to prove
+this assertion, we may use the technique used to prove the inclusion-exclusion
+formula for a union of balls. The proof starts by defining the subcomplex $ L_x
+$ induced by a point $ x $. It is defined as the nerve of the set of all the
+polyhedrons that contains a $ x $. Formally, $ L_x = Nerve(\{ B_N(p, r),~x \in
+B_N(p, r)\}) $.
 
 Then, when we evaluate the indicator function at $ x $ of the union, we can
-decompose it in two parts: simplices of $ L_x $ and the other ones.
+decompose it in two parts: the simplices of $ L_x $ and the other ones.
 
 \begin{align*}
     \indicator{\bigcup B_N(p, r)}(x) &= \sum_{\sigma \in L_x} (-1)^{\dim \sigma}
@@ -182,16 +184,16 @@ decompose it in two parts: simplices of $ L_x $ and the other ones.
 Here, $ \chi $ is the Euler characteristic.
 
 Now, if we show that $ L_x $ is contractible (can be continuously deformed to a
-point), we know that $ \chi(L_x) = 1 $. Obviously, we also have $
+point), we will have that $ \chi(L_x) = 1 $. Obviously, we also have $
 \indicator{\bigcup B_N(p, r)}(x) = 0 $ if $ x $ is not in the union and we will
 conclude that the formula \ref{eqn:incl_excl_simplices} is true. But it appears
 that there exists cases where the formula is not correct: see Figure
 \ref{fig:incl_excl-examples}. In this figure, we can see that in the
-$\alpha$-complex for the $ L^\infty $ norm, the triangle does not exist. It
-means that in the formula the intersection between the three squares will not be
-taken into account and so the final result will be incorrect. During this
-internship, we did not have the time to estimate the error made by using this
-formula.
+$\alpha$-complex for the $ L^\infty $ norm, the triangle, which was present in
+the $\alpha$-complex for the $ L^2 $ norm, does not exist. It means that in the
+formula the intersection between the three squares will not be taken into
+account and so the final result will be incorrect. During this internship, we
+did not have the time to estimate the error made by using this formula.
 
 \begin{figure}[h]
     \centering
@@ -210,7 +212,7 @@ formula.
 In this section, we will describe briefly how we implemented the two methods
 previously described.
 
-% {{{2
+% {{{2 INTERSECTION COMPUTATION
 \paragraph{Intersection computation}
 
 For both methods, we need a way to compute an intersection of half-spaces: for
@@ -227,7 +229,7 @@ the positive part of the bisector plane between $ p $ and $ v $. The latter is
 the  plane passing through the midpoint of the segment $ [p, v] $ and whose
 normal vector is $ \vec{pv} $. Since the traversal order of the vertices of the
 Delaunay triangulation is not, in general, the same as the insertion one, we
-need to associate an index to each point (using a simple \texttt{std::map}).
+need to associate an index to each point (using a \texttt{std::map}).
 
 Recall that a convex polyhedron $ K $ represents the unit ball for a polyhedral
 norm $ N $. $ K $ is internally represented as a list of normal vectors to each
@@ -262,9 +264,9 @@ algorithm):
                 corresponding primal vertex is the intersection of the 3 primal
                 planes.
             \item Secondly, primal facets are constructed by circulating
-                around the dual vertices. Each time there is an edge between two
-                dual vertices, there is an edge between the two corresponding
-                primal vertices.
+                around the dual vertices. For each dual vertex, we circulate
+                on the facets around this vertex. For each dual facet, we add the
+                corresponding primal vertex to the primal facet.
         \end{enumerate}
 \end{enumerate}
 
@@ -272,8 +274,8 @@ For the second method, we also need a way to compute the $\alpha$-complex of a
 set of points. This can be done using the \texttt{Alpha\_shapes\_3} package of
 \texttt{CGAL} and the associated classification methods.
 
-% {{{2
-\paragraph{Automatic Differentiation integration}
+% {{{2 AUTOMATIC DIFFERENTIAZTION INTEGRATION
+\paragraph{Automatic differentiation integration}
 
 Let us now explain in more details the integration of the automatic
 differentiation tool. \texttt{CGAL} has the particularity to make things easy
@@ -311,22 +313,41 @@ may seem inappropriate at first glance because the constructions are inexact but
 it is enough for our applications. In practice, we use a combination of
 \texttt{Epick} and \texttt{Simple\_cartesian<AD>}. For example, when computing
 an intersection of half-spaces, we construct the dual using \texttt{Epick} to
-have the exact combinatorics of the dual. Then, we use
+have the exact combinatorics of the dual polyhedron. Then, we use
 \texttt{Simple\_cartesian<AD>} when we effectively construct the primal
 polyhedron.
 
 % {{{1 EXPERIMENTS
 \section{Experiments}
 
-% TODO
-
 We compare the two different methods using various polyhedra and point clouds.
-If we choose a polyhedron sufficiently close from the unit sphere, we expect the
-result to be the same as in the 2D case: gradients should be oriented like the
-outward normal with a norm proportional to the mean curvature.
+Let us first observe that naive method is, computationally speaking, less
+costly. Indeed, for each iteration, it requires to compute $ n $ intersections
+where $ n $ is the number of points whereas the inclusion-exclusion one requires
+to compute $ n + e + f + c > n $ intersections where $ e, f, c $ is the number
+of edges, triangles and tetrahedra in the $ \alpha $-complex.
 
-Figure \ref{fig:3d-mean-curvature-sphere-cube} gives an example where the point
-cloud is a sphere and the polyhedron is a cube.
+First, we test the naive method on 16 points sampled on a circle, see Figure
+\ref{fig:3d-circle} for an example where the polyhedron is a cube. We observe
+that the gradients are oriented in the interior for the 4 points which are close
+to the corners of the cube. This will make the flow converge towards a cube.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{3d/circle-inter-cube}
+    \includegraphics[scale=0.3]{3d/circle-gradients}
+    \caption{Intersections of Voronoi cells and a cube (on the left) and
+        gradients of the volume (on the right)}
+    \label{fig:3d-circle}
+\end{figure}
+
+Now we test that if we choose a polyhedron sufficiently close from the unit
+sphere, we expect the result to be the same as in the 2D case: gradients should
+be oriented like the outward normal with a norm proportional to the mean
+curvature. See Figure \ref{fig:3d-mean-curvature-sphere-sphere} for an example
+where the point cloud is a sphere and the polyhedron is a discretized sphere.
+See also \ref{fig:3d-mean-curvature-models} for other examples of normal
+estimation.
 
 \begin{figure}[h]
     \centering
@@ -338,86 +359,77 @@ cloud is a sphere and the polyhedron is a cube.
     \begin{minipage}{0.32\linewidth}
         \centering
         \includegraphics[scale=0.3]{3d/sphere-1000}
-        \subcaption{Initial point cloud: 1000 points on a sphere}
+        \subcaption{Initial point cloud}
     \end{minipage}
     \begin{minipage}{0.32\linewidth}
         \centering
         \includegraphics[scale=0.3]{3d/sphere-sphere-1000-05}
         \subcaption{Gradients of the volume}
     \end{minipage}
-    \caption{Sphere / cube}
-    \label{fig:3d-mean-curvature-sphere-cube}
+    \caption{Polyhedron: discretized sphere / Point cloud: 1000 points on a sphere}
+    \label{fig:3d-mean-curvature-sphere-sphere}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.2]{3d/fandisk-normals}
+    \includegraphics[scale=0.2]{3d/fin90-normals}
+    \caption{Normal estimation on the \texttt{fandisk} and \texttt{fin90} models}
+    \label{fig:3d-mean-curvature-models}
 \end{figure}
 
 We observe that the gradients are oriented like the outward normals and that
 norms of these gradients seem relatively constant. This confirms the fact that
-we can simulate our work in 2D (mean curvature flow) by choosing a sufficiently
-discretized sphere.
+we can simulate in 3D what we did in 2D (mean curvature flow).
 
-We also did some experiments for checking the convergence of the flow. Figures
-\ref{fig:3d-flow-sphere-cube} and \ref{fig:3d-flow-sphere-bipyramid} give
-examples where the point cloud is a sphere and the polyhedron is a cube and a
-bipyramid. On these examples, we can see that the flow seems to converge towards
-the polyhedron we choose.
+We also did some experiments for checking the convergence of the flow. Figure
+\ref{fig:3d-flow-sphere} gives examples where the point cloud is a sphere and
+the polyhedron is a cube, a bipyramid and an icosahedron. On these examples, we
+can see that the flow seems to converge towards the polyhedron we choose.
 
 \begin{figure}[h]
     \centering
-    \begin{minipage}{0.32\linewidth}
+    \begin{subfigure}[b]{\textwidth}
         \centering
-        \includegraphics[scale=0.4]{3d/sphere-cube-0}
-        \subcaption{Initial sphere with 1000 points}
-    \end{minipage}
-    \begin{minipage}{0.32\linewidth}
-        \centering
-        \includegraphics[scale=0.4]{3d/sphere-cube-10}
-        \subcaption{After 10 iterations}
-    \end{minipage}
-    \begin{minipage}{0.32\linewidth}
-        \centering
+        \includegraphics[scale=0.7]{3d/sphere-cube-0}
+        \includegraphics[scale=0.5]{3d/sphere-cube-10}
         \includegraphics[scale=0.3]{3d/sphere-cube-cube}
-        \subcaption{Shape of the cube}
-    \end{minipage}
+        \subcaption{Cube}
+    \end{subfigure}
 
-    \caption{Flow of a sphere under a cube}
-    \label{fig:3d-flow-sphere-cube}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \begin{minipage}{0.32\linewidth}
+    \begin{subfigure}[b]{\textwidth}
         \centering
-        \includegraphics[scale=0.4]{3d/sphere-cube-0}
-        \subcaption{Initial sphere with 1000 points}
-    \end{minipage}
-    \begin{minipage}{0.32\linewidth}
-        \centering
-        \includegraphics[scale=0.4]{3d/sphere-bipyramid-10}
-        \subcaption{After 10 iterations}
-    \end{minipage}
-    \begin{minipage}{0.32\linewidth}
-        \centering
+        \includegraphics[scale=0.6]{3d/sphere-cube-0}
+        \includegraphics[scale=0.3]{3d/sphere-bipyramid-10}
         \includegraphics[scale=0.3]{3d/sphere-bipyramid-bipyramid}
-        \subcaption{Shape of the bipyramid}
-    \end{minipage}
+        \subcaption{Bipyramid}
+    \end{subfigure}
 
-    \caption{Flow of a sphere under a bipyramid}
-    \label{fig:3d-flow-sphere-bipyramid}
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \includegraphics[scale=0.3]{3d/sphere-icosahedron-0}
+        \includegraphics[scale=0.25]{3d/sphere-icosahedron-10}
+        \includegraphics[scale=0.3]{3d/sphere-icosahedron-icosahedron}
+        \subcaption{Icosahedron}
+    \end{subfigure}
+
+    \caption{Flow of a sphere under different polyhedra after 10 iterations}
+    \label{fig:3d-flow-sphere}
 \end{figure}
 
 % {{{1 CONCLUSION
 \section{Conclusion}
 
-In summary, we saw, in this chapter, another type of flow. We used the same
-techniques as the ones developed in Chapter \ref{chapter:2d} by replacing a
-union of balls with a union of convex polyhedra.
+In summary, we saw, in this chapter, another type of flow: an anisotropic one.
+We used the same techniques as the ones developed in Chapter \ref{chapter:2d} by
+replacing a union of balls with a union of convex polyhedra.
 
-We saw that the obtained flow has different properties than the mean curvature
-flow: the convergence shape will depend on which polyhedron we chose.
+We also saw that, using a discretization of a sphere for the polyhedron, we can
+obtain similar results as the ones obtained in 2D. Using this technique, we can
+estimate mean curvature and simulate discrete mean curvature flow on 3D point
+clouds.
 
-% TODO:
-
-% TODO:
-% - comparaison des différentes méthodes
-% - résultats
+We observed that the obtained flow has different properties than the mean
+curvature one: the convergence shape will depend on the polyhedron we chose.
 
 % vim: set spelllang=en filetype=tex :

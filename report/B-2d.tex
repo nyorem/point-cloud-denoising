@@ -50,12 +50,14 @@ Indeed:
 \begin{align*}
     x \in B(q, r) \cap V(p, P) & \implies || x - q || \leq r \text{ and } \forall
     p' \in P,~ || x - p || \leq || x - p' || \\
-    & \implies || x - p || \leq || x - q || \leq \text { with } p' = q
+    & \implies x \in V(p, P) \text{ and } || x - p || \leq || x - q || \leq r
+    \text { with } p' = q \\
+    & \implies x \in B(p, r) \cap V(p, P)
 \end{align*}
 This imply:
 $$
-V(p, P) \cap P^r = V(p, P) \cap \bigcup_q B(q, r) = \bigcup_q V(p, P) \cap B(q,
-r) = V(p, P) \cap B(p, r)
+V(p, P) \cap P^r = V(p, P) \cap \bigcup_q B(q, r) = \bigcup_q \left( V(p, P) \cap B(q,
+r) \right) = V(p, P) \cap B(p, r)
 $$
 
 \begin{figure}[h]
@@ -511,9 +513,11 @@ following common properties:
     \item Smooth the point set: remove the outliers / noise
     \item Can be used to estimate the mean curvature
 \end{itemize}
-
 But, there are differences between the two flows. The main one is that the area
 flow has the tendency to create holes in the point cloud. This difference is
-removed when we use the weighted versions of the flows.
+removed when we use the weighted version of the flow.
+
+We also saw that we can use these flows to estimate the mean curvature on point
+clouds.
 
 % vim: set spelllang=en :

@@ -25,7 +25,7 @@
 
 // Comment to disable the computation of the intersections of
 // the Voronoi cells and the polyhedron
-#define COMPUTE_INTERSECTIONS
+/* #define COMPUTE_INTERSECTIONS */
 
 Scene::Scene () {
     // view options
@@ -117,6 +117,7 @@ int Scene::open (QString filename) {
 
     if (ext == "off") {
         // read polyhedral ball B_N(0, 1)
+        m_ball.clear();
         m_balls.clear();
         std::cout << "read polyhedral ball...";
         in >> m_ball;
