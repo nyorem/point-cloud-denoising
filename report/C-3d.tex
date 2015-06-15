@@ -1,7 +1,3 @@
-% TODO: talk about inclusion-exclusion computation time
-
-% inlusion-exclusion: comparaison nuage de points
-
 \chapter{3D case}
 \label{chapter:3d}
 
@@ -274,7 +270,7 @@ For the second method, we also need a way to compute the $\alpha$-complex of a
 set of points. This can be done using the \texttt{Alpha\_shapes\_3} package of
 \texttt{CGAL} and the associated classification methods.
 
-% {{{2 AUTOMATIC DIFFERENTIAZTION INTEGRATION
+% {{{2 AUTOMATIC DIFFERENTIATION INTEGRATION
 \paragraph{Automatic differentiation integration}
 
 Let us now explain in more details the integration of the automatic
@@ -324,7 +320,7 @@ We compare the two different methods using various polyhedra and point clouds.
 Let us first observe that naive method is, computationally speaking, less
 costly. Indeed, for each iteration, it requires to compute $ n $ intersections
 where $ n $ is the number of points whereas the inclusion-exclusion one requires
-to compute $ n + e + f + c > n $ intersections where $ e, f, c $ is the number
+to compute $ n + e + f + c > n $ intersections where $ e, f, c $ are the numbers
 of edges, triangles and tetrahedra in the $ \alpha $-complex.
 
 First, we test the naive method on 16 points sampled on a circle, see Figure
@@ -341,13 +337,27 @@ to the corners of the cube. This will make the flow converge towards a cube.
     \label{fig:3d-circle}
 \end{figure}
 
+Then, we test both methods on a point cloud composed of the 8 corners of a cube
+and with a cube as the polyhedron, see Figure \ref{fig:3d-cube-comparison} for
+the results. We observe that both gradients are correctly oriented.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.2]{3d/cube-cube-15-naive}
+    \includegraphics[scale=0.2]{3d/cube-cube-15-ie}
+    \caption{Naive method (on the left) and inclusion-exclusion method (on the
+        right). Solid blue lines represent the intersections of the Voronoi
+        cells with a cube}
+    \label{fig:3d-cube-comparison}
+\end{figure}
+
 Now we test that if we choose a polyhedron sufficiently close from the unit
 sphere, we expect the result to be the same as in the 2D case: gradients should
 be oriented like the outward normal with a norm proportional to the mean
 curvature. See Figure \ref{fig:3d-mean-curvature-sphere-sphere} for an example
 where the point cloud is a sphere and the polyhedron is a discretized sphere.
-See also \ref{fig:3d-mean-curvature-models} for other examples of normal
-estimation.
+See also \ref{fig:3d-mean-curvature-models} for another example of normal
+estimation on a more complex point cloud.
 
 \begin{figure}[h]
     \centering
@@ -372,9 +382,8 @@ estimation.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2]{3d/fandisk-normals}
-    \includegraphics[scale=0.2]{3d/fin90-normals}
-    \caption{Normal estimation on the \texttt{fandisk} and \texttt{fin90} models}
+    \includegraphics[scale=0.4]{3d/fandisk-normals}
+    \caption{Normal estimation on points sampled on the \texttt{fandisk} model}
     \label{fig:3d-mean-curvature-models}
 \end{figure}
 
@@ -382,7 +391,7 @@ We observe that the gradients are oriented like the outward normals and that
 norms of these gradients seem relatively constant. This confirms the fact that
 we can simulate in 3D what we did in 2D (mean curvature flow).
 
-We also did some experiments for checking the convergence of the flow. Figure
+We also do other experiments to check the convergence of the flow. Figure
 \ref{fig:3d-flow-sphere} gives examples where the point cloud is a sphere and
 the polyhedron is a cube, a bipyramid and an icosahedron. On these examples, we
 can see that the flow seems to converge towards the polyhedron we choose.

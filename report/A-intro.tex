@@ -7,8 +7,8 @@ exist to build a mesh from a point cloud such that the one described in
 \cite{alexa2003computing}. But an important problem may arise when processing
 point clouds: since the 3D scanner is a physically-based device, error can be
 made during measurements: the resulting point cloud will be noisy. In this work,
-we are interested in removing noise from point clouds: we call this technique
-\textit{denoising} or \textit{smoothing}.
+we are interested in removing the noise from point clouds: this technique is
+called \textit{denoising} or \textit{smoothing}.
 
 There is another issue: because we only deal with points, we cannot use all the
 techniques developed in image processing like the Fourier transform, wavelets...
@@ -46,7 +46,7 @@ smooth a surface. To do so, one could move each point in the direction of the
 normal to the surface by a quantity related to the mean curvature at that point.
 The sign of the mean curvature only depends on the choice of the orientation of
 the normal.  The more curved the surface is, the more important the displacement
-will be. For an initial surface $ S_0 $ an $ t \geq 0 $, let $ S_t = X_t(S_0) $
+will be. For an initial surface $ S_0 $ and $ t \geq 0 $, let $ S_t = X_t(S_0) $
 where $ X_t : S_0 \to \R^3 $. The evolution of the surface thus produced can be
 modelled with the following partial differential equation:
 
@@ -99,7 +99,7 @@ they exist, or finite differences...
 In this report, we will use another technique called \textit{Automatic
     Differentiation}. This technique is described in more details in Appendix
 \appendixref{appendix:ad}. In short, it is a technique allowing us to compute
-the derivatives of any quantity evaliated by a computer program. It exploits the
+the derivatives of any quantity evaluated by a computer program. It exploits the
 fact that any program can be thought of as a sequence of basic arithmetic
 operations and elementary functions. Now, using the chain rule and overloading
 the number type we can compute derivatives without changing too much the cost of
@@ -131,6 +131,9 @@ estimate the mean curvature vector. Then, we consider the 3D case and study an
 anisotropic flow. The final part will be dedicated to the theory: we will show
 that one step of the constructed discrete MCF is an approximation of one Euler
 step for the continuous MCF.
+
+All the code developed during this internship is available at the following
+address: \url{http://tinyurl.com/p5nwrsz}.
 
 % vim: set spelllang=en :
 

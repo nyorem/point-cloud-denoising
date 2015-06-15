@@ -311,12 +311,13 @@ $. This gradient descent will be done using a constant timestep (Euler explicit
 scheme). More precisely, given a point cloud $ P = (p_1, \ldots, p_N) \in \R^2
 \times \ldots \times \R^2 $, we defined $ A^r(P) = A(\bigcup_{i=1}^N B(p_i, r))
 $, see Chapter \ref{chapter:theory} for the computation of the gradient $
-\nabla_{p_i} A^r(P) $. Then, the Euler step is defined as follows:
+\nabla_{p_i} A^r(P) $. Then, the Euler step starting from a point cloud $ P^t =
+(p_i^t) $ is defined as follows:
 
 \begin{equation}
-    p_i^{t+1} = p_i^t - \tau \nabla_{p_i} A^r(P)
+    p_i^{t+1} = p_i^t - \tau \nabla_{p_i} A^r(P^t)
 \end{equation}
-where $ \tau > 0 $ is a constant.
+where $ \tau > 0 $ is a constant, and we set: $ P^{t+1} = (p_i^{t+1}) $
 
 We will also be interested in weighted versions of functionals: we can weight
 the gradient of the area by the area of the restricted Voronoi cell or we can
@@ -474,9 +475,10 @@ flow create holes whereas the perimeter flow smooth the point cloud.
 Lastly, we generate points on a line segment and fixed the two points of the
 extremities. Then, we apply our flow on this point set. We expect the flow to
 smooth the point set: points should get closer and closer to an uniformly
-sampled set of points. See Figure \ref{fig:line_fixed_flow}. The results are
-coherent with our expectations: final points are more uniformly distributed than
-the initial ones.
+sampled set of points. See Figure \ref{fig:line_fixed_flow}. The radius is
+chosen in a way so that the union of the disks is composed of $ 5 $ connected
+components. The results are coherent with our expectations: final points are
+more uniformly distributed than the initial ones.
 
 \begin{figure}[h]
     \centering

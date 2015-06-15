@@ -37,15 +37,15 @@ algorithm is, indeed, a discretization of the continuous mean curvature flow.
 % Français
 \begin{abstract} \selectlanguage{french}
 
-Durant ce stage, nous nous sommes intéressés au débruitage, lissage de nuages de
-points échantillonnés sur une surface inconnue. Pour faire cela, nous avons
-utilisé une approche basée sur le flot de courbure moyenne: nous faisons évoluer
-le nuage de points tout en minimisant une énergie, l'aire de la surface
+Durant ce stage, nous nous sommes intéressés au débruitage, ou lissage, de
+nuages de points échantillonnés sur une surface inconnue. Pour faire cela, nous
+avons utilisé une approche basée sur le flot de courbure moyenne: nous faisons
+évoluer le nuage de points tout en minimisant une énergie, l'aire de la surface
 sous-jacente. Mais, dans notre cas, la surface est inconnue, nous ne connaissons
 que des points échantillonnés sur celle-ci. Pour approcher l'aire de la surface,
 nous avons utilisé le volume de l'union des boules centrées sur le nuage de
 point et un algorithme basé sur une descente de gradient. Nous nous sommes aussi
-intéressé à un autre type de flot: un flot anisotropique.  Pour ce flot, l'idée
+intéressés à un autre type de flot: un flot anisotropique.  Pour ce flot, l'idée
 est de remplacer l'union des boules par une union de polyèdres convexes. La
 magnitude du flot sera plus importante dans certaines directions privilégiées,
 dictées par le choix du polyèdre.
@@ -53,9 +53,9 @@ dictées par le choix du polyèdre.
 Ce rapport est structuré de la manière suivante: tout d'abord, nous donnerons
 une introduction détaillée sur les techniques existantes de lissage de nuages de
 points et pourquoi il est intéressant d'avoir choisi une approche basée sur le
-flot de courbure moyenne. Ensuite, nous étudierons le cas bidimensionnelle. Nous
+flot de courbure moyenne. Ensuite, nous étudierons le cas bidimensionnel. Nous
 montrerons que cette technique peut être utilisée pour simuler un flot de
-courbure moyenne discret et de lisser des nuages de points. Nous verrons
+courbure moyenne discret et pour lisser des nuages de points. Nous verrons
 aussi que cette technique peut être utilisée pour estimer la courbure
 moyenne. Beaucoup d'exemples illustreront ces résultats. Ensuite, nous nous
 intéresserons au cas anisotropique en 3D. Nous serons confrontés à des
