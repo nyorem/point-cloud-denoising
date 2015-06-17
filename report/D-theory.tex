@@ -234,7 +234,7 @@ Then, we can tackle the proof of the proposition
     = 1 $:
 
     \begin{align*}
-        A(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_{\phi}(p) dp \\
+        A(S_t) &= \int_{S_t} 1 dx = \int_{S_0} J_X(p) dp \\
         &= \int_{S_0} \prod_{i=1}^{d-1} (1 + t \phi(p) k^i_{S_0}(p)) \\
         &= \int_{S_0} 1 dp + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(t^2) \\
         &= A(S_0) + t \int_{S_0} \phi(p) \meanv{S_0}(p) dx + O(t^2)
