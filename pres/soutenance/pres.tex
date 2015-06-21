@@ -6,11 +6,21 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{bbm}
 
 % Custom commands
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\indicator}[1]{\mathbbm{1}_{#1}}
+\newcommand{\meanv}[1]{\vec{H}_{#1}}
 
 \usetheme{Frankfurt}
+
+% Add slide numbering
+\useoutertheme{infolines}
+\setbeamertemplate{headline}{} % removes the headline that infolines inserts
+
+% Remove navigation symbols
+\beamertemplatenavigationsymbolsempty
 
 \AtBeginSection[]
 {
@@ -34,6 +44,7 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Outline}
     \tableofcontents
 \end{frame}
 
@@ -49,7 +60,7 @@
         \item Object of interest: point clouds
         \item Easy to obtain: 3D scanner
         \item Create more complex models: meshes
-        \item Issue: measurement error, noise $ \to $ smoothing
+        \item Issue: measurement error, presence of noise $ \to $ smoothing
     \end{itemize}
 
     \begin{figure}
@@ -62,9 +73,10 @@
     \newpage
     How?
     \begin{itemize}
-        \item Image processing tools unusable: Fourier Transform...
+        \item Image processing tools unusable: Fourier Transform, Laplacian
+            filter...
         \item No parametrization: neighbours?
-        \item Other idea: mean curvature flow
+        \item Other idea: Mean curvature flow
     \end{itemize}
 
     \begin{figure}
@@ -74,8 +86,8 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Introduction}
-    % \framesubtitle{Flot de courbure moyenne}
+    \frametitle{Mean curvature flow}
+    % \framesubtitle{Mean curvature flow}
 
     Mean curvature flow:
     \begin{itemize}
@@ -94,26 +106,26 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Introduction}
-    % \framesubtitle{Comment?}
+    \frametitle{Approximation}
+    % \framesubtitle{How?}
 
     \begin{itemize}
         \item Approximate the area of the surface: union of balls
         \item Minimizing an energy $ E : \R^{dN} \to \R $: gradient descent
-        \item Gradient computation: automatic differentiation
+        \item Gradient computation:
             \begin{itemize}
                 \item Gradients: variation of the energy when we move each of
                     the points
-                \item Overloading of the number type, usual arithmetic
-                    operations, functions, chain rule
+                \item Automatic Differentiation: overloading of the number type,
+                    usual arithmetic operations, functions, chain rule
             \end{itemize}
         \item Other energies: area of the boundary, weighted, anisotropic
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Introduction}
-    % \framesubtitle{Objectifs}
+    \frametitle{Objectives}
+    % \framesubtitle{Objectives}
 
     \emph{Objectives}
     \begin{enumerate}
@@ -129,66 +141,20 @@
     \end{enumerate}
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Introduction}
-%     % \framesubtitle{Quelques notions}
-
-%     \begin{definition}[Offset d'un nuage de points]
-%         Le $r$-offset d'une nuage de points $ P \subseteq \mathbb{R}^d $ est
-%         défini par:
-%         $$ P^r = \bigcup_{p \in P} B(p, r) $$
-%     \end{definition}
-
-%     \begin{definition}[$\epsilon$-échantillon]
-%         Pour une hypersurface $ S $, on dit que $ P \subseteq \mathbb{R}^d $ est
-%         un $\epsilon$-échantillon de $ S $ si:
-%         $$ \bigcup_{p \in P} B(p, \epsilon) \subseteq S $$
-%     \end{definition}
-% \end{frame}
-
-% \begin{frame}[allowframebreaks]
-%     \frametitle{Introduction}
-%     % \framesubtitle{Résultats théoriques}
-
-%     \begin{theorem}[Approximation de l'aire d'une hypersurface]
-%         Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et $ P $ un
-%         $\epsilon$-échantillon de $ S $, alors:
-%         $$ | \frac{Vol^d(P^r)}{2r} - Vol^{d-1}(S) | \leq \frac{\epsilon^2}{2r^2} +
-%         O(\frac{\epsilon^4}{r^3}) + O(r^2) $$
-%     \end{theorem}
-
-%     \begin{theorem}[Gradient de l'aire]
-%         Si $ A = Vol^d(P^r) $ alors en notant $ \nabla_{p_i} A $ la limite
-%         suivante:
-%         $$ \lim\limits_{\epsilon \to 0} \frac{A(p_1, \ldots, p_{i-1}, p_i + \epsilon
-%             \delta p_i, p_{i+1}, \ldots, p_N) - A(p_1, \ldots, p_N)}{\epsilon} $$
-%         On a:
-%         $$ \nabla_{p_i} A = \int_{B} \frac{x - p_i}{||x - p_i||} dx $$
-%         où $ B = \partial B(p_i, r) \cap V(p_i, P) $.
-%     \end{theorem}
-
-%     \begin{theorem}[Approximation de la courbure moyenne]
-%         Soit une hypersurface $ S $ de $ \mathbb{R}^d $ et soit $ P $ un
-%         $\epsilon$-échantillon de $ S $, on a:
-%         $$ \nabla_p A \approx 2 r \vec{\kappa}(p) Vol(V(p, P) \cap
-%         M) $$
-%     \end{theorem}
-% \end{frame}
-
 % {{{1 2D
 \section{2D case}
 
 \subsection{Problem}
 \begin{frame}
     \frametitle{Problem}
-    % \framesubtitle{Flot de courbure moyenne}
+    % \framesubtitle{Mean curvature flow}
 
     Mean curvature flow on point clouds: gradient descent
     \begin{itemize}
         \item Computation of the energy $ E $: area (or perimeter of the boundary) of a union of balls
         \item Gradient computation
-        \item Points displacement (Explicit Euler method): $ p'_i = p_i - \tau
-            \nabla E (p_i) $ where $ \tau $ is a constant
+        \item Points update (Explicit Euler method): $ p'_i = p_i - \tau
+            \nabla_{p_i} E (P) $ where $ \tau $ is a constant
     \end{itemize}
 
     \begin{figure}
@@ -199,7 +165,7 @@
 
 \begin{frame}
     \frametitle{Volume computation}
-    % \framesubtitle{Flot de courbure moyenne}
+    % \framesubtitle{Mean curvature flow}
 
     Voronoi diagram with \texttt{CGAL}
     \begin{figure}
@@ -210,13 +176,16 @@
     \end{figure}
 
     Then:
-    $$ E \left( \bigcup_p B(p, r) \right) = \sum_p E(V(p, P) \cap B(p, r)) $$
+    \begin{align*}
+        E(P^r) = E \left( \bigcup_p B(p, r) \right) &= \sum_p E(V(p, P) \cap P^r) \\
+        &= \sum_p E(V(p, P) \cap B(p, r)) \\
+    \end{align*}
 \end{frame}
 
 \subsection{Mean curvature estimation}
 \begin{frame}
     \frametitle{Mean curvature estimation}
-    % \framesubtitle{Exemples}
+    % \framesubtitle{Examples}
 
     Examples: curvature of an ellipse
     \begin{figure}
@@ -230,7 +199,7 @@
 \subsection{Mean curvature flow}
 \begin{frame}
     \frametitle{Mean curvature flow}
-    % \framesubtitle{Exemples}
+    % \framesubtitle{Examples}
 
     Examples: flow of a noisy ellipse
     \begin{figure}
@@ -246,12 +215,12 @@
 
 \begin{frame}
     \frametitle{Mean curvature flow}
-    % \framesubtitle{Exemples}
+    % \framesubtitle{Examples}
 
     Results:
     \begin{itemize}
         \item Area and perimeter of the boundary: smoothing
-        \item Area: creation of holes
+        \item Area: creation of holes $ \to $ use weighted area
     \end{itemize}
 
     \begin{figure}
@@ -259,7 +228,29 @@
         \includegraphics[scale=0.22]{img/ellipse-outliers}
         \includegraphics[scale=0.22]{img/ellipse-outliers-area}
         \includegraphics[scale=0.22]{img/ellipse-outliers-perimeter}
-        \caption{Point clouds with outliers / area / perimeter of the boundary}
+        \caption{Point cloud with outliers / area / perimeter of the boundary}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Properties}
+    % \framesubtitle{Examples}
+
+    Smoothing:
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/square}
+        \includegraphics[scale=0.2]{img/square-smooth-area}
+        \includegraphics[scale=0.2]{img/square-smooth-perimeter}
+        \caption{Smoothing of the corners of a square}
+    \end{figure}
+
+    Area / perimeter minimization:
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/values-square-area}
+        \includegraphics[scale=0.2]{img/values-ellipse-perimeter}
+        \caption{Evolution of the area on a square / perimeter on an ellipse}
     \end{figure}
 \end{frame}
 
@@ -269,34 +260,87 @@
 \subsection{Problem}
 \begin{frame}
     \frametitle{Problem}
-    % \framesubtitle{Flot anisotrope}
+    % \framesubtitle{Anisotropic flow}
 
     Anisotropic flow:
     \begin{itemize}
-        \item Union of convex polyhedra
-        \item Choice of the polyhedron $ \to $ will influence the directions
-            on which points will be moved
+        \item Union of balls $ \iff $ Union of convex polyhedra
+        \item Choice of the polyhedron $ \to $ smoothing will be more important
+            in some directions
     \end{itemize}
 
     Different methods:
     \begin{itemize}
-        \item Naive (approximated): intersection between a Voronoi cell and a
+        \item Naive (approximation): intersection between a Voronoi cell and a
             convex polyhedron
-        \item Inclusion-exclusion formulae (approximated)
+        \item Inclusion-exclusion formulae (approximation)
         \item 3D arrangements (exact?)
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Examples}
-    % \framesubtitle{Polyèdres}
+    % \framesubtitle{Polyhedra}
 
     Polyhedra:
     \begin{itemize}
-        \item Discretization of a sphere: normal and mean curvature estimation
+        \item Discretization of a sphere: normal, mean curvature estimation
         \item Cube ($ L_{\infty} $ norm)
         \item Bipyramid ($ L_1 $ norm)
+        \item Icosahedron
     \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/sphere-polyhedron-200}
+        \includegraphics[scale=0.2]{img/cube}
+        \includegraphics[scale=0.2]{img/icosahedron}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Naive method}
+    % \framesubtitle{Naive method}
+
+    Idea: replace $ Vol(\bigcup_p B_N(p, r) \cap V(p, P)) $ by $ Vol(B_N(p, r) \cap V(p, P)) $
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.5]{img/3d_perimeter_squares}
+        \hspace{2cm}
+        \includegraphics[scale=0.5]{img/3d_perimeter_squares_truth}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/circle-cube-inter}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Inclusion-exclusion method}
+    % \framesubtitle{Inclusion-exclusion method}
+
+    Approximation of:
+
+$$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
+(-1)^{\dim \sigma} \indicator{\bigcap \sigma} $$
+
+    where $ Nerve(\mathcal{B}_N) $ is replaced by $ Del(P, r) $: the
+    $\alpha$-complex of $ P $ for $ \alpha = r $.
+
+    Comparison of both methods:
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{img/cube-cube-15-naive}
+        \includegraphics[scale=0.15]{img/cube-cube-15-ie}
+    \end{figure}
+\end{frame}
+
+\subsection{Implementation}
+\begin{frame}
+    \frametitle{Implementation details}
+    % \framesubtitle{Implementation details}
 
     Intersection computation:
     \begin{itemize}
@@ -305,29 +349,43 @@
         \item Duality
     \end{itemize}
 
+    Automatic differentiation integration:
+    \begin{itemize}
+        \item \emph{Kernel} parametrized by a number type
+        \item Replace the number type by a custom class \texttt{AD}
+        \item \texttt{AD} = value and a vector of derivatives + overloading and
+            chain rule
+    \end{itemize}
+
+    Combination of two kernels:
+    \begin{itemize}
+        \item \texttt{Epick} for the exact combinatorics
+        \item \texttt{Simple\_cartesian<AD>} for the construction
+    \end{itemize}
+\end{frame}
+
+\subsection{Normal estimation}
+\begin{frame}
+    \frametitle{Normal estimation}
+    % \framesubtitle{Examples}
+
+    On a sphere:
     \begin{figure}
         \centering
-        \includegraphics[scale=0.2]{img/circle-cube-inter}
+        \includegraphics[scale=0.15]{img/sphere-1000}
+        \includegraphics[scale=0.15]{img/sphere-sphere-1000-05}
+    \end{figure}
+
+    On the \texttt{fandisk} model:
+    \begin{figure}
+        \includegraphics[scale=0.18]{img/fandisk-normals}
     \end{figure}
 \end{frame}
 
 \subsection{Anisotropic flow}
 \begin{frame}
-    \frametitle{Normal estimation}
-    % \framesubtitle{Exemples}
-
-    On a sphere:
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.22]{img/sphere-polyhedron-200}
-        \includegraphics[scale=0.2]{img/sphere-1000}
-        \includegraphics[scale=0.2]{img/sphere-sphere-1000-05}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
     \frametitle{Anisotropic flow}
-    % \framesubtitle{Exemples}
+    % \framesubtitle{Examples}
 
     Cube: 10 iterations
     \begin{figure}
@@ -346,19 +404,61 @@
     \end{figure}
 \end{frame}
 
+% {{{1 THEORY
+\section{Theory}
+
+\begin{frame}
+    \frametitle{Theory}
+    % \framesubtitle{Some results}
+
+    Approximation of the area of a surface:
+    \begin{block}{Proposition}
+        Given an hypersurface $ S $, an $\epsilon$-sampling of $ S $: $ P $, we
+        have:
+        $$
+            | \frac{Vol^d(P^r)}{2r} - A(S) | \leq \frac{\epsilon^2}{2r^2} +
+            O \left(\frac{\epsilon^4}{r^3} \right) + O(r^2)
+        $$
+    \end{block}
+
+    Convergence of the discretized gradient:
+    \begin{block}{Proposition}
+        Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) hypersurface
+        $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then,
+        for $ p = (p_1, \ldots, p_N) \in P^N $:
+        $$
+            \frac{\nabla_{p_i} A^r(p)}{r \times Vol^{d-1}(\partial B(p_i,r) \cap V(p_i,P))}
+            = \meanv{S}(p_i) + O \left(\frac{\epsilon}{r}\right) + O(r)
+        $$
+    \end{block}
+\end{frame}
+
 % {{{1 PERSPECTIVES
 \section{Perspectives}
 
 \begin{frame}
     \frametitle{Perspectives}
-    % \framesubtitle{Sous-titre}
+    % \framesubtitle{Perspectives}
 
     \begin{itemize}
         \item Prove the convergence of the area of the boundary towards the mean
             curvature vector
-        \item Better understanding of the gradient of the anisotropic flow
+        \item Better understanding of the gradient of the anisotropic flow:
+            weight the area by the support function
         \item Improve the computation in 3D (use 3D arrangements?)
         \item Crystal growth simulation (anisotropic case)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Perspectives}
+    % \framesubtitle{PhD Thesis}
+
+    PhD Thesis:
+    \begin{itemize}
+        \item Minimal surfaces: surface that minimizes its area while having a
+            fixed boundary
+        \item Anisotropic minimal surfaces
     \end{itemize}
 \end{frame}
 
@@ -371,4 +471,4 @@
 
 \end{document}
 
-% vim: set spelllang=fr :
+% vim: set spelllang=en :
