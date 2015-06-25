@@ -66,8 +66,8 @@ void random_on_ellipse_2 (int N,
 
         double noise = gen();
 
-        Point_2 p(a * points[i].x() + noise,
-                  b * points[i].y() + noise);
+        Point_2 p(a * points[i].x(),
+                  b * points[i].y());
 
         int k = T * i / N;
         double A;
@@ -77,7 +77,7 @@ void random_on_ellipse_2 (int N,
             A = Amax * 2;
         }
 
-        *(out++) = p + v * A * sin(2 * i * M_PI / T);
+        *(out++) = p + v * noise + v * A * sin(2 * i * M_PI / T);
     }
 }
 

@@ -156,6 +156,26 @@ int Scene::open (QString filename) {
     return 0;
 }
 
+void Scene::save (QString filename) {
+    QFileInfo fileinfo(filename);
+    std::ofstream out(filename.toUtf8());
+
+    out << m_pointcloud;
+}
+
+void Scene::saveNormals (QString filename) {
+    if (m_pointcloud.size() != m_vectorfield.size())
+        return;
+
+    QFileInfo fileinfo(filename);
+    std::ofstream out(filename.toUtf8());
+
+    for (size_t i = 0; i < m_pointcloud.size(); ++i) {
+        Point_cloud::Point p = m_pointcloud[i];
+        out << p << " " << m_vectorfield[p] << "\n";
+    }
+}
+
 void Scene::compute_balls () {
     m_balls.clear();
     m_pointsAD.clear();
@@ -378,7 +398,7 @@ void Scene::nsteps () {
 void Scene::add_noise () {
     bool ok = false;
     double squaredVariance = QInputDialog::getDouble(NULL, "Parameters", "Squared Variance",
-                                                     0.01, 0, 10, 3, &ok);
+                                                     0.01, 0, 1, 4, &ok);
 
     if (!ok) {
         return;

@@ -178,6 +178,21 @@ void MainWindow::on_actionOpen_triggered () {
     }
 }
 
+void MainWindow::on_actionSave_triggered () {
+    QString filename = QFileDialog::getSaveFileName(0, tr("Save Point Cloud"),
+                                                    QDir::currentPath(),
+                                                    tr("Point Clouds (*.xyz)"));
+    m_pScene->save(filename);
+}
+
+void MainWindow::on_actionSaveNormals_triggered () {
+    QString filename = QFileDialog::getSaveFileName(0, tr("Save Point Cloud"),
+                                                    QDir::currentPath(),
+                                                    tr("Point Clouds (*.xyz)"));
+
+    m_pScene->saveNormals(filename);
+}
+
 void MainWindow::on_actionReset_triggered () {
     m_pScene->clear_ball();
     m_pScene->clear_balls();

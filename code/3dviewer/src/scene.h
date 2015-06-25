@@ -60,6 +60,8 @@ class Scene {
 
         // file menu
         int open (QString filename);
+        void save (QString filename);
+        void saveNormals (QString filename);
 
         // algorithms menu
         bool ask_method (int& method);
@@ -113,12 +115,6 @@ class Scene {
 
         // rendering
         void render ();
-        // TODO: remove following unused functions
-        void render_edges (); // polyhedron edges
-        void render_facets (); // polyhedron facets
-        void render_point_cloud (); // point cloud
-        void render_vector_field (); // vector field
-        void render_intersections (); // intersections
 };
 
 #endif // SCENE_H

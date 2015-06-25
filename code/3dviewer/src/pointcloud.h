@@ -89,6 +89,7 @@ class CPoint_cloud {
 
 // I/O =================================================
 
+// Input
 template <typename Kernel>
 std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
     typedef typename CPoint_cloud<Kernel>::Point Point;
@@ -105,6 +106,18 @@ std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
     }
 
     return in;
+}
+
+// Output
+template <typename Kernel>
+std::ostream& operator<< (std::ostream& out, CPoint_cloud<Kernel>& cloud) {
+    typedef typename CPoint_cloud<Kernel>::Point Point;
+
+    for (int i = 0; i < cloud.size(); ++i) {
+        out << cloud[i] << "\n";
+    }
+
+    return out;
 }
 
 #endif // _POINTCLOUD_H_

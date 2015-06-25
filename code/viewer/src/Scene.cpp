@@ -124,16 +124,15 @@ void Scene::nSteps () {
                                  1, 0, 100, 10);
 
     for (int i = 0; i <= N; ++i) {
-        // TODO: remove (use python bindings)
-        // Output centers positions
-        std::stringstream filename_centers;
-        filename_centers << "centers" << m_currentIter++ << ".txt";
-        std::ofstream centers(filename_centers.str());
-        for (std::vector<Point_2>::iterator pit = m_points->begin();
-             pit != m_points->end();
-             ++pit) {
-            centers << *pit << std::endl;
-        }
+        // DEBUG: output centers positions
+        /* std::stringstream filename_centers; */
+        /* filename_centers << "centers" << m_currentIter++ << ".txt"; */
+        /* std::ofstream centers(filename_centers.str()); */
+        /* for (std::vector<Point_2>::iterator pit = m_points->begin(); */
+        /*      pit != m_points->end(); */
+        /*      ++pit) { */
+        /*     centers << *pit << std::endl; */
+        /* } */
 
         // Update the gradients
         computeGradients();
@@ -177,9 +176,10 @@ void Scene::computeGradients () {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
 
     // Compute the gradients
-    FunctionUnion_ad f(m_radius, true);
-    /* FunctionUnion_ad f(m_radius); */
-    f(points_vec);
+    /* FunctionUnion_ad f(m_radius, true); */
+    std::ofstream vals("values.txt", std::ofstream::app);
+    FunctionUnion_ad f(m_radius);
+    vals << f(points_vec).value() << "\n";
     Eigen::VectorXd grad = f.grad();
 
     // Update the gradients

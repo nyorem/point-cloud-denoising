@@ -50,6 +50,12 @@ class CVector_field {
             addPoints(pbegin, pbeyond, vbegin, vbeyond);
         }
 
+        // SIZE ==================================================
+
+        size_t size () const {
+            return vector_field.size();
+        }
+
         // ADD / REMOVE VECTORS ==================================
         void addVector (Point p, Vector v) {
             vector_field[p] = v;
@@ -107,7 +113,7 @@ class CVector_field {
                 Point p = mit->first;
                 Vector v = mit->second;
                 /* v = v / CGAL::sqrt(v.squared_length()); */
-                Point q = p + 3 * v;
+                Point q = p + v;
                 /* Point q = p + v; */
 
                 double rr, gg, bb;

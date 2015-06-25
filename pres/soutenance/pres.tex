@@ -7,6 +7,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
 \usepackage{bbm}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
 
 % Custom commands
 \newcommand{\R}{\mathbb{R}}
@@ -51,45 +53,93 @@
 % {{{1 INTRODUCTION
 \section{Introduction}
 
-\begin{frame}[allowframebreaks]
-    \frametitle{Introduction}
-    % \framesubtitle{Introduction}
+\begin{frame}
+    \frametitle{Introduction I}
+
+    % 3D graphics (video games), engineering (test models), motion capture
+    % objet continu (maillage), pas discret (nuage)
 
     What?
     \begin{itemize}
-        \item Object of interest: point clouds
-        \item Easy to obtain: 3D scanner
-        \item Create more complex models: meshes
-        \item Issue: measurement error, presence of noise $ \to $ smoothing
+        \item Object of interest: point clouds sampled on surfaces
+            \begin{itemize}
+                \item Easy to obtain: 3D scanner
+                \item Create more complex digitalized models: meshes
+            \end{itemize}
     \end{itemize}
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.25]{img/noise-2d}
-        \includegraphics[scale=0.2]{img/elephant-point-cloud}
-        \includegraphics[scale=0.2]{img/elephant-mesh}
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/elephant-point-cloud}
+            \subcaption*{3D point cloud}
+        \end{subfigure}
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/elephant-mesh}
+            \subcaption*{Triangulated surface}
+        \end{subfigure}
     \end{figure}
+\end{frame}
 
-    \newpage
+\begin{frame}
+    \frametitle{Introduction II}
+
+    % on considèrera peu de bruit
+
+    \begin{itemize}
+        \item Issue: measurement error, presence of noise, outliers
+        \begin{itemize}
+            \item Smoothing, denoising
+            \item Small amount of noise: $ d(S, P) < \epsilon $
+        \end{itemize}
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \begin{subfigure}{.5\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/noise-2d}
+            \subcaption*{2D point clouds with outliers}
+        \end{subfigure}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Introduction III}
+
     How?
     \begin{itemize}
-        \item Image processing tools unusable: Fourier Transform, Laplacian
-            filter...
+        \item Image processing tools unusable: Fourier Transform...
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{img/lena}
+        \hspace{0.5cm}
+        \includegraphics[scale=0.3]{img/lena-ft}
+        \hspace{0.5cm}
+        \includegraphics[scale=0.24]{img/image-pixels}
+    \end{figure}
+
+    \begin{itemize}
         \item No parametrization: neighbours?
+        \item Specific methods for point clouds: Laplacian, jet, bilateral
+            smoothing...
         \item Other idea: Mean curvature flow
     \end{itemize}
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.3]{img/mean-curvature-flow-cube}
+        \includegraphics[scale=0.25]{img/mean-curvature-flow-cube}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Mean curvature flow}
-    % \framesubtitle{Mean curvature flow}
+    \framesubtitle{On a surface}
 
-    Mean curvature flow:
     \begin{itemize}
         \item Move each point of a surface in the direction of the normal by a
             quantity related to the mean curvature at that point
@@ -101,23 +151,36 @@
     \begin{figure}
         \centering
         \includegraphics[scale=0.25]{img/osculating-circle}
-        \includegraphics[scale=0.22]{img/mean-curvature-flow-rabbit}
+        \includegraphics[scale=0.05]{img/curvatures-3d}
+        \includegraphics[scale=0.2]{img/mean-curvature-flow-rabbit}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Approximation}
-    % \framesubtitle{How?}
+    \frametitle{Approximation I}
+
+    Approximate the area of the surface: union of balls
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.45]{img/curve-2d}
+        \hspace{0.5cm}
+        \includegraphics[scale=0.4]{img/curve-2d-offset}
+        \caption*{Example in 2D}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Approximation II}
 
     \begin{itemize}
-        \item Approximate the area of the surface: union of balls
-        \item Minimizing an energy $ E : \R^{dN} \to \R $: gradient descent
-        \item Gradient computation:
+        \item Energy $ E $: for a point cloud $ P = (p_1, \ldots,
+            p_N) \in \R^{dN} $, $ E(P) \in \R $
+        \item Minimization: gradient descent
+        \item Gradient computation $ \nabla E(P) $ using Automatic Differentiation
             \begin{itemize}
-                \item Gradients: variation of the energy when we move each of
-                    the points
-                \item Automatic Differentiation: overloading of the number type,
-                    usual arithmetic operations, functions, chain rule
+                \item Overloading of the number type
+                \item Overloading of usual arithmetic operations, functions, chain rule
             \end{itemize}
         \item Other energies: area of the boundary, weighted, anisotropic
     \end{itemize}
@@ -125,7 +188,6 @@
 
 \begin{frame}
     \frametitle{Objectives}
-    % \framesubtitle{Objectives}
 
     \emph{Objectives}
     \begin{enumerate}
@@ -136,7 +198,7 @@
 
     \emph{Applications:}
     \begin{enumerate}
-        \item Mean curvature estimation
+        \item Mean curvature and normal estimation
         \item Smoothing / Denoising
     \end{enumerate}
 \end{frame}
@@ -147,14 +209,13 @@
 \subsection{Problem}
 \begin{frame}
     \frametitle{Problem}
-    % \framesubtitle{Mean curvature flow}
 
     Mean curvature flow on point clouds: gradient descent
     \begin{itemize}
         \item Computation of the energy $ E $: area (or perimeter of the boundary) of a union of balls
         \item Gradient computation
-        \item Points update (Explicit Euler method): $ p'_i = p_i - \tau
-            \nabla_{p_i} E (P) $ where $ \tau $ is a constant
+        \item Points update (Explicit Euler method): $ P' = P - \tau
+            \nabla E (P) $ where $ \tau $ is a constant
     \end{itemize}
 
     \begin{figure}
@@ -164,14 +225,13 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Volume computation}
-    % \framesubtitle{Mean curvature flow}
+    \frametitle{Area computation}
 
-    Voronoi diagram with \texttt{CGAL}
+    Voronoi diagram 
     \begin{figure}
         \centering
         \includegraphics[scale=0.28]{img/voronoi-curve-2d}
-        \hfill
+        \hspace{1cm}
         \includegraphics[scale=0.28]{img/voronoi-offset-2d}
     \end{figure}
 
@@ -185,37 +245,102 @@
 \subsection{Mean curvature estimation}
 \begin{frame}
     \frametitle{Mean curvature estimation}
-    % \framesubtitle{Examples}
+    \framesubtitle{On an ellipse}
 
-    Examples: curvature of an ellipse
+    $$
+    \nabla E(P) =
+        \begin{pmatrix}
+            \nabla_{p_1} E(P) \\
+            \vdots \\
+            \nabla_{p_N} E(P) \\
+        \end{pmatrix}
+        \in \R^{dN}
+    $$
+
     \begin{figure}
         \centering
-        \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-area}
-        \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-perimeter}
-        \caption{E = Area / E = Perimeter of the boundary}
+        \begin{subfigure}{.45\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-area}
+            \subcaption*{E = Area}
+        \end{subfigure}
+        \begin{subfigure}{.45\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/curvature-ellipse-200-15-perimeter}
+            \subcaption*{E = Perimeter of the boundary}
+        \end{subfigure}
     \end{figure}
 \end{frame}
 
 \subsection{Mean curvature flow}
-\begin{frame}
+\begin{frame}[allowframebreaks]
     \frametitle{Mean curvature flow}
-    % \framesubtitle{Examples}
+    \framesubtitle{On a noisy ellipse}
 
-    Examples: flow of a noisy ellipse
+    % COMM: périmètre plus uniforme, pas de temps choisi assez petit pour pas
+    % que ça explose
+
     \begin{figure}
         \centering
-        \includegraphics[scale=0.22]{img/ellipse-200-noised-var-1-area}
-        \includegraphics[scale=0.22]{img/ellipse-noised-area-5-01}
+        \includegraphics[scale=0.18]{img/ellipse-area-dense-0}
+        \includegraphics[scale=0.18]{img/ellipse-area-dense-10}
+        \includegraphics[scale=0.18]{img/ellipse-area-dense-50}
+        \includegraphics[scale=0.15]{img/area-dense}
+        \caption*{Area: $ i = 0, 10, 50 $}
+    \end{figure}
 
-        \includegraphics[scale=0.22]{img/ellipse-200-noised-var-1-perimeter}
-        \includegraphics[scale=0.22]{img/ellipse-noised-perimeter-7-2}
-        \caption{Area / Perimeter of the boundary}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-dense-0}
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-dense-10}
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-dense-50}
+        \includegraphics[scale=0.15]{img/perimeter-dense}
+        \caption*{Perimeter of the boundary: $ i = 0, 10, 50 $}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.18]{img/ellipse-area-sparse-0}
+        \includegraphics[scale=0.18]{img/ellipse-area-sparse-10}
+        \includegraphics[scale=0.18]{img/ellipse-area-sparse-50}
+        \includegraphics[scale=0.15]{img/area-sparse}
+        \caption*{Area: $ i = 0, 10, 50 $}
+    \end{figure}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-sparse-0}
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-sparse-10}
+        \includegraphics[scale=0.18]{img/ellipse-perimeter-sparse-50}
+        \includegraphics[scale=0.15]{img/perimeter-sparse}
+        \caption*{Perimeter of the boundary: $ i = 0, 10, 50 $}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Properties}
+    \framesubtitle{Smoothing}
+
+    % COMM: bruit est réduit (pas élminimé)
+
+    \begin{enumerate}
+        \item Smoothing
+        \item Convergence towards a circle
+    \end{enumerate}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.2]{img/square-noisy-3-15-01}
+        \includegraphics[scale=0.2]{img/square-noisy-3-15-01-3}
+        \includegraphics[scale=0.2]{img/square-noisy-3-15-01-6}
+        \caption*{Smoothing of the corners of a square: $ i = 0, 3, 6 $}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Mean curvature flow}
-    % \framesubtitle{Examples}
+
+    % COMM: préciser que l'on bruite une partie précise de l'ellipse
 
     Results:
     \begin{itemize}
@@ -225,32 +350,11 @@
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.22]{img/ellipse-outliers}
-        \includegraphics[scale=0.22]{img/ellipse-outliers-area}
-        \includegraphics[scale=0.22]{img/ellipse-outliers-perimeter}
-        \caption{Point cloud with outliers / area / perimeter of the boundary}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Properties}
-    % \framesubtitle{Examples}
-
-    Smoothing:
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.2]{img/square}
-        \includegraphics[scale=0.2]{img/square-smooth-area}
-        \includegraphics[scale=0.2]{img/square-smooth-perimeter}
-        \caption{Smoothing of the corners of a square}
-    \end{figure}
-
-    Area / perimeter minimization:
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.2]{img/values-square-area}
-        \includegraphics[scale=0.2]{img/values-ellipse-perimeter}
-        \caption{Evolution of the area on a square / perimeter on an ellipse}
+        \includegraphics[scale=0.2]{img/ellipse-balls-15}
+        \includegraphics[scale=0.2]{img/ellipse-outliers}
+        \includegraphics[scale=0.2]{img/ellipse-outliers-area}
+        \includegraphics[scale=0.2]{img/ellipse-outliers-perimeter}
+        \caption*{Point cloud / area / perimeter of the boundary}
     \end{figure}
 \end{frame}
 
@@ -260,7 +364,6 @@
 \subsection{Problem}
 \begin{frame}
     \frametitle{Problem}
-    % \framesubtitle{Anisotropic flow}
 
     Anisotropic flow:
     \begin{itemize}
@@ -271,8 +374,7 @@
 
     Different methods:
     \begin{itemize}
-        \item Naive (approximation): intersection between a Voronoi cell and a
-            convex polyhedron
+        \item Naive (approximation)
         \item Inclusion-exclusion formulae (approximation)
         \item 3D arrangements (exact?)
     \end{itemize}
@@ -280,46 +382,60 @@
 
 \begin{frame}
     \frametitle{Examples}
-    % \framesubtitle{Polyhedra}
 
     Polyhedra:
     \begin{itemize}
-        \item Discretization of a sphere: normal, mean curvature estimation
         \item Cube ($ L_{\infty} $ norm)
         \item Bipyramid ($ L_1 $ norm)
-        \item Icosahedron
+        \item Discretization of a sphere: normal, mean curvature estimation
     \end{itemize}
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.2]{img/sphere-polyhedron-200}
         \includegraphics[scale=0.2]{img/cube}
-        \includegraphics[scale=0.2]{img/icosahedron}
+        \includegraphics[scale=0.2]{img/bipyramid}
+        \includegraphics[scale=0.2]{img/sphere-polyhedron-200}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Naive method}
-    % \framesubtitle{Naive method}
+    % DEMO: sphere
 
-    Idea: replace $ Vol(\bigcup_p B_N(p, r) \cap V(p, P)) $ by $ Vol(B_N(p, r) \cap V(p, P)) $
+    Idea: replace $ E(V(p, P) \cap \bigcup_p B_N(p, r)) $ by $ E( V(p, P) \cap
+    B_N(p, r)) $ in:
+
+    $$
+    E \left( \bigcup_p B_N(p, r) \right) = \sum_p E(V(p, P) \cap \bigcup_p
+    B_N(p, r))
+    $$
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.5]{img/3d_perimeter_squares}
-        \hspace{2cm}
-        \includegraphics[scale=0.5]{img/3d_perimeter_squares_truth}
+        \includegraphics[scale=0.4]{img/3d_perimeter_squares_truth}
+        \hspace{1.5cm}
+        \includegraphics[scale=0.4]{img/3d_perimeter_squares}
     \end{figure}
 
     \begin{figure}
         \centering
-        \includegraphics[scale=0.2]{img/circle-cube-inter}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.2]{img/cube}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.15]{img/circle-cube-inter}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.3]{img/sphere-cube-inter}
+        \end{subfigure}
     \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Inclusion-exclusion method}
-    % \framesubtitle{Inclusion-exclusion method}
 
     Approximation of:
 
@@ -329,29 +445,42 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
     where $ Nerve(\mathcal{B}_N) $ is replaced by $ Del(P, r) $: the
     $\alpha$-complex of $ P $ for $ \alpha = r $.
 
-    Comparison of both methods:
+    % comparaison avec résultats attendus
+
+    Example:
     \begin{figure}
         \centering
-        \includegraphics[scale=0.15]{img/cube-cube-15-naive}
-        \includegraphics[scale=0.15]{img/cube-cube-15-ie}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.2]{img/cube}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.15]{img/cube-cube-15-naive}
+            \subcaption*{Naive method}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[scale=0.15]{img/cube-cube-15-ie}
+            \subcaption*{Inclusion-exclusion method}
+        \end{subfigure}
     \end{figure}
 \end{frame}
 
 \subsection{Implementation}
 \begin{frame}
     \frametitle{Implementation details}
-    % \framesubtitle{Implementation details}
 
     Intersection computation:
     \begin{itemize}
-        \item Voronoi cell and a convex polyhedron
+        \item Voronoi cell and convex polyhedron / Convex polyhedra
         \item Half-space intersection
         \item Duality
     \end{itemize}
 
     Automatic differentiation integration:
     \begin{itemize}
-        \item \emph{Kernel} parametrized by a number type
+        \item \texttt{CGAL} \emph{Kernel} parametrized by a number type
         \item Replace the number type by a custom class \texttt{AD}
         \item \texttt{AD} = value and a vector of derivatives + overloading and
             chain rule
@@ -364,14 +493,37 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
     \end{itemize}
 \end{frame}
 
+\subsection{Anisotropic flow}
+\begin{frame}
+    \frametitle{Anisotropic flow}
+
+    Cube: 10 iterations
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{img/cube}
+        \includegraphics[scale=0.15]{img/sphere-025-05-0}
+        \includegraphics[scale=0.15]{img/sphere-025-05-2}
+        \includegraphics[scale=0.15]{img/sphere-025-05-15}
+    \end{figure}
+
+    Bipyramid: 10 iterations
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.15]{img/bipyramid}
+        \includegraphics[scale=0.4]{img/sphere-cube-0}
+        \includegraphics[scale=0.2]{img/sphere-bipyramid-10}
+    \end{figure}
+\end{frame}
+
 \subsection{Normal estimation}
 \begin{frame}
     \frametitle{Normal estimation}
-    % \framesubtitle{Examples}
+    % DEMO: fandisk + insister sous-échantillonnage
 
     On a sphere:
     \begin{figure}
         \centering
+        \includegraphics[scale=0.2]{img/sphere-polyhedron-200}
         \includegraphics[scale=0.15]{img/sphere-1000}
         \includegraphics[scale=0.15]{img/sphere-sphere-1000-05}
     \end{figure}
@@ -382,41 +534,19 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
     \end{figure}
 \end{frame}
 
-\subsection{Anisotropic flow}
-\begin{frame}
-    \frametitle{Anisotropic flow}
-    % \framesubtitle{Examples}
-
-    Cube: 10 iterations
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.4]{img/sphere-cube-0}
-        \includegraphics[scale=0.3]{img/sphere-cube-10}
-        \includegraphics[scale=0.2]{img/sphere-cube-cube}
-    \end{figure}
-
-    Bipyramid: 10 iterations
-    \begin{figure}
-        \centering
-        \includegraphics[scale=0.4]{img/sphere-cube-0}
-        \includegraphics[scale=0.2]{img/sphere-bipyramid-10}
-        \includegraphics[scale=0.2]{img/sphere-bipyramid-bipyramid}
-    \end{figure}
-\end{frame}
 
 % {{{1 THEORY
 \section{Theory}
 
 \begin{frame}
     \frametitle{Theory}
-    % \framesubtitle{Some results}
 
     Approximation of the area of a surface:
     \begin{block}{Proposition}
         Given an hypersurface $ S $, an $\epsilon$-sampling of $ S $: $ P $, we
         have:
         $$
-            | \frac{Vol^d(P^r)}{2r} - A(S) | \leq \frac{\epsilon^2}{2r^2} +
+            \left| \frac{Vol^d(P^r)}{2r} - A(S) \right| \leq \frac{\epsilon^2}{2r^2} +
             O \left(\frac{\epsilon^4}{r^3} \right) + O(r^2)
         $$
     \end{block}
@@ -425,9 +555,9 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
     \begin{block}{Proposition}
         Given an $\epsilon$-sampling $ P $ of a smooth ($ C^{\infty} $) hypersurface
         $ S $ and $ r \ge 0 $ such that: $ \epsilon \leq r \leq reach(M) $, then,
-        for $ p = (p_1, \ldots, p_N) \in P^N $:
+        for $ P = (p_1, \ldots, p_N) \in P^N $:
         $$
-            \frac{\nabla_{p_i} A^r(p)}{r \times Vol^{d-1}(\partial B(p_i,r) \cap V(p_i,P))}
+            \frac{\nabla_{p_i} A^r(P)}{r \times Vol^{d-1}(\partial B(p_i, r) \cap V(p_i, P))}
             = \meanv{S}(p_i) + O \left(\frac{\epsilon}{r}\right) + O(r)
         $$
     \end{block}
@@ -438,7 +568,6 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
 
 \begin{frame}
     \frametitle{Perspectives}
-    % \framesubtitle{Perspectives}
 
     \begin{itemize}
         \item Prove the convergence of the area of the boundary towards the mean
@@ -446,23 +575,28 @@ $$ \indicator{\bigcup B_N(p, r)} = \sum_{\sigma \in Nerve(\mathcal{B}_N)}
         \item Better understanding of the gradient of the anisotropic flow:
             weight the area by the support function
         \item Improve the computation in 3D (use 3D arrangements?)
+        \item Comparison with other smoothing methods
         \item Crystal growth simulation (anisotropic case)
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Perspectives}
-    % \framesubtitle{PhD Thesis}
 
     PhD Thesis:
     \begin{itemize}
-        \item Minimal surfaces: surface that minimizes its area while having a
-            fixed boundary
+        \item Minimal surfaces: surface that minimizes its area for given
+            boundary conditions
         \item Anisotropic minimal surfaces
     \end{itemize}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.35]{img/catenoid}
+        \includegraphics[scale=0.15]{img/costa-minimal}
+    \end{figure}
 \end{frame}
 
-% \plain{Merci!}
 \begin{frame}
     \begin{center}
         \huge{Thank you!}

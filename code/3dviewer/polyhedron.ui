@@ -45,6 +45,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveNormals"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
@@ -237,6 +239,16 @@
   <action name="actionChangeRadius">
    <property name="text">
     <string>Change radius</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSaveNormals">
+   <property name="text">
+    <string>Save with normals</string>
    </property>
   </action>
  </widget>

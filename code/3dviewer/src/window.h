@@ -42,6 +42,8 @@ class MainWindow : public CGAL::Qt::DemosMainWindow {
 
         // file menu
         void on_actionOpen_triggered ();
+        void on_actionSave_triggered ();
+        void on_actionSaveNormals_triggered ();
         void on_actionReset_triggered ();
         void open (QString filename);
 
