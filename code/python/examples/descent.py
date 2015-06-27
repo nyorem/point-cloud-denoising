@@ -34,14 +34,14 @@ points = np.array(genpoints.from_file("data/" + cloud + ".xy"))
 # radius = 0.5
 
 # shark perimeter
-# radius = 0.8
+radius = 0.8
 
 # maple leaf perimeter
 # radius = 0.5
 
 # kenny perimeter
-radius = 15
-timestep_per = 5
+# radius = 15
+# timestep_per = 5
 
 # cartman
 # radius = 15
@@ -51,7 +51,7 @@ timestep_per = 5
 
 iter = 50
 timestep_vol = 0.1
-# timestep_per = 0.05
+timestep_per = 0.05
 timestep_weighted_vol = 0.0025
 timestep_weighted_per = 0.001
 
@@ -67,9 +67,9 @@ def find_min_max (points):
 
 xmin, xmax, ymin, ymax = find_min_max(points)
 
-var = 10
+# var = 10
 # bird
-# var = 0.1
+var = 0.1
 
 def step_gradient_descent_perimeter (points, radius,timestep, weighted = False):
     grad = unionballs.gradient_perimeter_boundary(points, radius, weighted)

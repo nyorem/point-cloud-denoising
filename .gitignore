@@ -55,3 +55,4 @@ others/
 **/*.so
 **/*.pyc
 code/python/examples/**/*.png
+**/*.bak
