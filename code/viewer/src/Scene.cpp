@@ -11,6 +11,9 @@
 #include <fstream>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QDialogButtonBox>
 
 Scene::Scene (QObject *parent) : QGraphicsScene(parent) {
     init();
@@ -119,7 +122,41 @@ void Scene::randomPointsEllipse (int N, float a, float b,
     m_dt->insert(points.begin(), points.end());
 }
 
+bool Scene::askMethod (int& method) {
+    // Choose the method of the computation of the gradients
+    QDialog dialog(NULL);
+    dialog.setWindowTitle("Gradient method");
+    QFormLayout formLayout(&dialog);
+
+    QComboBox *gradientMethod = new QComboBox();
+    gradientMethod->addItem("Area");
+    gradientMethod->addItem("Perimeter of the boundary");
+
+    formLayout.addRow(gradientMethod);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                                       Qt::Horizontal, &dialog);
+    formLayout.addRow(buttonBox);
+
+    QObject::connect(buttonBox, SIGNAL(accepted()),
+                     &dialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()),
+                     &dialog, SLOT(reject()));
+
+    if (dialog.exec() == QDialog::Accepted) {
+        method = gradientMethod->currentIndex();
+
+        return true;
+    }
+
+    return false;
+}
+
 void Scene::nSteps () {
+    int method = 0;
+    if (! askMethod(method)) {
+        return;
+    }
+
     int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
                                  1, 0, 100, 10);
 
@@ -135,7 +172,7 @@ void Scene::nSteps () {
         /* } */
 
         // Update the gradients
-        computeGradients();
+        computeGradients(method);
 
         // New point cloud: gradient descent
         Points_2 new_points;
@@ -172,15 +209,21 @@ void Scene::nSteps () {
     }
 }
 
-void Scene::computeGradients () {
+void Scene::computeGradients (int method) {
     VectorXd_ad points_vec = pointCloudToVector<VectorXd_ad>(m_points->begin(), m_points->end());
+    Eigen::VectorXd grad;
+    std::ofstream vals("values.txt", std::ofstream::app);
 
     // Compute the gradients
-    /* FunctionUnion_ad f(m_radius, true); */
-    std::ofstream vals("values.txt", std::ofstream::app);
-    FunctionUnion_ad f(m_radius);
-    vals << f(points_vec).value() << "\n";
-    Eigen::VectorXd grad = f.grad();
+    if (method == 0) { // Area
+        AreaUnion_ad f(m_radius);
+        vals << f(points_vec).value() << "\n";
+        grad = f.grad();
+    } else if (method == 1) { // Perimeter of the boundary
+        PerimeterBoundaryUnion_ad f(m_radius);
+        vals << f(points_vec).value() << "\n";
+        grad = f.grad();
+    }
 
     // Update the gradients
     std::vector<Vector_2> gradients_vectors;

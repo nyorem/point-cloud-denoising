@@ -245,7 +245,11 @@ void MainWindow::toggleGradients () {
 }
 
 void MainWindow::computeGradients () {
-    m_view->m_scene->computeGradients();
+    int method = 0;
+    if (! m_view->m_scene->askMethod(method)) {
+        return;
+    }
+    m_view->m_scene->computeGradients(method);
 }
 
 void MainWindow::toggleDecomposition () {

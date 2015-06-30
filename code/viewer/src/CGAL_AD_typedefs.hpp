@@ -15,12 +15,12 @@ typedef std::function<FT_ad(const VectorXd_ad &x)> Function_ad;
 // Perimeter
 typedef UnionBalls<Point_ad, FT_ad, VectorXd_ad,
                    Accumulator<FT_ad>,
-                   AngularSectorPerimeterAccumulator<FT_ad> > FunctionUnion_ad;
+                   AngularSectorPerimeterAccumulator<FT_ad> > PerimeterBoundaryUnion_ad;
 
 // Area
-/* typedef UnionBalls<Point_ad, FT_ad, VectorXd_ad, */
-/*                    TriangleAreaAccumulator<FT_ad>, */
-/*                    AngularSectorAreaAccumulator<FT_ad> > FunctionUnion_ad; */
+typedef UnionBalls<Point_ad, FT_ad, VectorXd_ad,
+                   TriangleAreaAccumulator<FT_ad>,
+                   AngularSectorAreaAccumulator<FT_ad> > AreaUnion_ad;
 
 // Area weigthed by the perimeter
 /* typedef WeightedUnionBalls<Point_ad, FT_ad, VectorXd_ad, */
