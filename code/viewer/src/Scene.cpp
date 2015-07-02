@@ -160,6 +160,9 @@ void Scene::nSteps () {
     int N = QInputDialog::getInt(NULL, "Parameters", "Number of steps",
                                  1, 0, 100, 10);
 
+    m_timestep = QInputDialog::getDouble(NULL, "Gradient descent", "Timestep",
+                                         0.5, 0, 100, 3);
+
     for (int i = 0; i <= N; ++i) {
         // DEBUG: output centers positions
         /* std::stringstream filename_centers; */

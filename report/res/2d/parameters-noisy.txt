@@ -1,0 +1,8 @@
+dense: 200 pts, r = 15, \sigma^2 = 3
+moins dense: 100 pts
+
+aire:
+tau = 0.05
+
+périmètre:
+tau = 1
