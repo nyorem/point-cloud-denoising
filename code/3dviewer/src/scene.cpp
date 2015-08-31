@@ -302,7 +302,7 @@ void Scene::compute_gradients (int method) {
     }
 
     std::cout << "value: " << val_ad << std::endl;
-    for (int i = 0; i < m_pointcloud.size(); ++i) {
+    for (size_t i = 0; i < m_pointcloud.size(); ++i) {
         std::cout << m_pointcloud[i] << ": " << v(3 * i) << ", ";
         std::cout << g(3 * i) << ", " << g(3 * i + 1) << ", " << g(3 * i + 2) << std::endl;
     }
@@ -383,7 +383,7 @@ void Scene::nsteps () {
         compute_gradients(method);
         std::vector<Point_3> new_points;
 
-        for (int p = 0; p < m_pointcloud.size(); ++p) {
+        for (size_t p = 0; p < m_pointcloud.size(); ++p) {
             Point_3 pp = m_pointcloud[p];
             Vector_3 grad = m_vectorfield[pp];
             new_points.push_back(pp - timestep * grad);

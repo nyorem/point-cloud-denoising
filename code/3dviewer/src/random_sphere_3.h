@@ -20,7 +20,7 @@ void random_sphere_3 (size_t N,
                       bool uniform,
                       OutputIterator out) {
     if (uniform) {
-        for (int i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             double z = rr(-1.0, 1.0);
             double theta = rr(-M_PI, M_PI);
             double x = sin(theta) * sqrt(1 - z * z);
@@ -30,7 +30,7 @@ void random_sphere_3 (size_t N,
     } else {
         CGAL::Random_points_on_sphere_3<Point> g(r);
 
-        for (int i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             *out++ = *g;
             g++;
         }
@@ -48,7 +48,7 @@ void random_ellipsoid_3 (size_t N,
     std::vector<Point> points;
     random_sphere_3<Point>(N, 1.0, uniform, std::back_inserter(points));
 
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         Point p(a * points[i].x(),
                 b * points[i].y(),
                 c * points[i].z());

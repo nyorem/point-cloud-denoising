@@ -102,7 +102,6 @@ FT inclusion_exclusion_minkowski_sum_pointcloud_convex_polyhedron (PointIterator
     typedef CGAL::Triangulation_data_structure_3<Vb, Fb> Tds;
     typedef CGAL::Delaunay_triangulation_3<Kernel, Tds> Triangulation_3;
     typedef CGAL::Fixed_alpha_shape_3<Triangulation_3> Alpha_shape_3;
-    typedef typename Alpha_shape_3::Vertex_handle Vertex_handle;
     typedef typename Alpha_shape_3::Edge Edge;
     typedef typename Alpha_shape_3::Facet Facet;
     typedef typename Alpha_shape_3::Cell_handle Cell_handle;

@@ -171,7 +171,6 @@ Vector minkowski_sum_pointcloud_convex_polyhedron_vector_out_3 (PointIterator pb
 
     DT dt(pbegin, pbeyond);
 
-    int i = 0;
     for (typename DT::Finite_vertices_iterator vit = dt.finite_vertices_begin();
          vit != dt.finite_vertices_end();
          ++vit) {
@@ -271,8 +270,8 @@ struct UnionPolyhedra {
                                                                                              m_radius);
 
         FTAD val = 0;
-        for (int i = 0; i < m_values.rows(); ++i) {
-            val += m_values(i);
+        for (int j = 0; j < m_values.rows(); ++j) {
+            val += m_values(j);
         }
 
         if (i == -1) {

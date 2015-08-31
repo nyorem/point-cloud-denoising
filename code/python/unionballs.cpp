@@ -81,7 +81,7 @@ np::ndarray perimeter_union_balls_2 (const np::ndarray &points,
     // Convert Eigen vector to numpy array
     auto pvals = np::zeros(p::make_tuple(vals.rows()),
                            np::dtype::get_builtin<double>());
-    for (size_t i = 0; i < vals.rows(); ++i) {
+    for (int i = 0; i < vals.rows(); ++i) {
         pvals[i] = vals[i];
     }
 
@@ -113,7 +113,7 @@ np::ndarray gradient_perimeter_union_balls_2 (const np::ndarray &points,
     // Convert Eigen vector to numpy array
     auto pgrad = np::zeros(p::make_tuple(grad.rows()),
                            np::dtype::get_builtin<double>());
-    for (size_t i = 0; i < grad.rows(); ++i) {
+    for (int i = 0; i < grad.rows(); ++i) {
         pgrad[i] = grad[i];
     }
 
@@ -144,7 +144,7 @@ np::ndarray volume_union_balls_2 (const np::ndarray &points,
     // Convert Eigen vector to numpy array
     auto pvals = np::zeros(p::make_tuple(vals.rows()),
                            np::dtype::get_builtin<double>());
-    for (size_t i = 0; i < vals.rows(); ++i) {
+    for (int i = 0; i < vals.rows(); ++i) {
         pvals[i] = vals[i];
     }
 
@@ -176,7 +176,7 @@ np::ndarray gradient_volume_union_balls_2 (const np::ndarray &points,
     // Convert Eigen vector to numpy array
     auto pgrad = np::zeros(p::make_tuple(grad.rows()),
                            np::dtype::get_builtin<double>());
-    for (size_t i = 0; i < grad.rows(); ++i) {
+    for (int i = 0; i < grad.rows(); ++i) {
         pgrad[i] = grad[i];
     }
 
@@ -207,7 +207,7 @@ np::ndarray gradient_volume_union_balls_weighted_perimeter_2 (const np::ndarray 
     // Convert Eigen vector to numpy array
     auto pgrad = np::zeros(p::make_tuple(grad.rows()),
                            np::dtype::get_builtin<double>());
-    for (size_t i = 0; i < grad.rows(); ++i) {
+    for (int i = 0; i < grad.rows(); ++i) {
         pgrad[i] = grad[i];
     }
 

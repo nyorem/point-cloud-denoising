@@ -111,9 +111,7 @@ std::istream& operator>> (std::istream& in, CPoint_cloud<Kernel>& cloud) {
 // Output
 template <typename Kernel>
 std::ostream& operator<< (std::ostream& out, CPoint_cloud<Kernel>& cloud) {
-    typedef typename CPoint_cloud<Kernel>::Point Point;
-
-    for (int i = 0; i < cloud.size(); ++i) {
+    for (size_t i = 0; i < cloud.size(); ++i) {
         out << cloud[i] << "\n";
     }
 

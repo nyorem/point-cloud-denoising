@@ -20,8 +20,6 @@ namespace CGAL {
                          Point const& origin,
                          Polyhedron &dual) {
         typedef typename std::iterator_traits<PlaneIterator>::value_type Plane_3_ad;
-        typedef typename CGAL::Kernel_traits<Plane_3_ad>::Kernel AD_kernel;
-        typedef Point Point_3_ad;
 
         typedef CGAL::Exact_predicates_inexact_constructions_kernel Epick_kernel;
         typedef Epick_kernel::Plane_3 Plane_3_epick;

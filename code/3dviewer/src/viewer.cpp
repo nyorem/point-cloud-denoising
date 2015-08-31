@@ -8,7 +8,7 @@ Viewer::Viewer (QWidget* parent) :
     QGLViewer(parent),
     m_pScene(NULL),
     m_custom_mouse(false) {
-    setBackgroundColor(::Qt::white);
+    /* setBackgroundColor(::Qt::white); */
     toggleGridIsDrawn();
 }
 

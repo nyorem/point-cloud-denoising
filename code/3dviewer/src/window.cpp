@@ -15,6 +15,7 @@
 #include <QHeaderView>
 #include <QClipboard>
 #include <QInputDialog>
+#include <QMimeData>
 
 MainWindow::MainWindow (QWidget* parent)
 : CGAL::Qt::DemosMainWindow(parent) {
