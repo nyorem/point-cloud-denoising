@@ -22,7 +22,6 @@ void intersection_sphere_voronoi_cell_2 (FTri &ftri, FArc &farc,
                                          double radius) {
     typedef typename Kernel::Point_2 Point;
     typedef typename Kernel::Line_2 Line;
-    typedef typename Kernel::FT FT;
     typedef typename Kernel::Segment_2 Segment;
 
     Point P = v->point();
@@ -39,7 +38,7 @@ void intersection_sphere_voronoi_cell_2 (FTri &ftri, FArc &farc,
     bool isInside = (p0 - P).squared_length() <= radius * radius;
     bool allOutside = !isInside;
 
-    const int N = adjacent_voronoi_vertices.size();
+    const size_t N = adjacent_voronoi_vertices.size();
 
     // Voronoi edges
     std::vector<Segment> voronoi_edges;

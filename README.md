@@ -11,10 +11,10 @@
 
 ## Dependencies
 
-* CGAL
+* CGAL >=4.7
 * Eigen
 * CMake
-* Qt4 or Qt5
+* Qt5
 
 Python bindings:
 

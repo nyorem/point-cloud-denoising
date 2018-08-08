@@ -91,7 +91,7 @@ typename Kernel::FT volume_ball_voronoi_cell_2_debug (DT const& dt,
         adjacent_voronoi_vertices.push_back(dt.dual(fc));
     } while (++fc != done);
 
-    const int N = adjacent_voronoi_vertices.size();
+    const size_t N = adjacent_voronoi_vertices.size();
 
     // Test if the first Voronoi vertex is inside
     Point p0 = adjacent_voronoi_vertices[0];
