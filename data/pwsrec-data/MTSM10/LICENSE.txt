@@ -1,0 +1,18 @@
+---------------------------------------------------------------------------------------
+Restrictions 
+---------------------------------------------------------------------------------------
+Please be sure to cite the source of any data you use from this dataset (proper citation mentioned below). This dataset is meant for academic research and non-commercial purpose only. Any commercial use requires prior permissions from the authors. 
+
+
+
+---------------------------------------------------------------------------------------
+Citation 
+---------------------------------------------------------------------------------------
+For the purpose of citing this dataset, please refer to
+
+Ravish Mehra, Pushkar Tripathi, Alla Sheffer, Niloy J. Mitra, 
+Visibility of noisy point cloud data, 
+Computers & Graphics, Volume 34, Issue 3, Shape Modelling International (SMI) Conference 2010, June 2010, Pages 219-230, ISSN 0097-8493, DOI: 10.1016/j.cag.2010.03.002.
+(http://www.sciencedirect.com/science/article/B6TYG-4YMB660-1/2/eb083cf7f95ad4248c925f87e7348706)
+
+

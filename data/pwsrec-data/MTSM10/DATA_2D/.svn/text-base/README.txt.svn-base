@@ -1,0 +1,9 @@
+This folder contains various 2D point clouds used in our publication "Visibility of noisy point cloud data". The format of the data is extremely simple. It consists of X Y coordinates of the 2D point cloud in each line. For e.g.  if the 2D point cloud has N points, its data file has the format
+
+x_1 y_1
+x_2 y_2
+x_3 y_3
+...
+...
+...
+x_N y_N
